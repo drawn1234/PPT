@@ -120,28 +120,33 @@
       top: 0;
       bottom: 0;
 
-      width: 9%;
-      min-width: 72px;
+      width: 56px;
 
       border: 0;
       padding: 0;
 
-      color: rgba(255, 255, 255, 0);
+      color: rgba(255, 255, 255, 0.72);
       background: transparent;
 
       cursor: pointer;
-      transition:
-        color 0.2s ease,
-        background 0.2s ease;
-    }
 
-    .page-zone:hover {
-      color: rgba(255, 255, 255, 0.72);
+      transition: background 0.22s ease;
     }
 
     .page-zone.prev {
       left: 0;
+    }
 
+    .page-zone.next {
+      right: 0;
+    }
+
+    /*
+     * 仅鼠标进入对应边缘热区或键盘聚焦时，
+     * 才显示轻微边缘渐变。
+     */
+    .page-zone.prev:hover,
+    .page-zone.prev:focus-visible {
       background: linear-gradient(
         90deg,
         rgba(5, 6, 10, 0.55),
@@ -149,9 +154,8 @@
       );
     }
 
-    .page-zone.next {
-      right: 0;
-
+    .page-zone.next:hover,
+    .page-zone.next:focus-visible {
       background: linear-gradient(
         -90deg,
         rgba(5, 6, 10, 0.55),
@@ -159,8 +163,14 @@
       );
     }
 
-    .page-zone:disabled {
+    .page-zone:focus {
+      outline: none;
+    }
+
+    .page-zone:disabled,
+    .page-zone[hidden] {
       opacity: 0;
+      visibility: hidden;
       pointer-events: none;
     }
 
@@ -185,14 +195,34 @@
       backdrop-filter: blur(10px);
 
       font-size: 21px;
+
+      opacity: 0;
+      transition:
+        opacity 0.22s ease,
+        transform 0.22s ease;
     }
 
-    .prev .zone-icon {
+    .page-zone.prev .zone-icon {
       left: 20px;
     }
 
-    .next .zone-icon {
+    .page-zone.next .zone-icon {
       right: 20px;
+    }
+
+    .page-zone.prev:hover .zone-icon,
+    .page-zone.next:hover .zone-icon {
+      opacity: 0.8;
+    }
+
+    .page-zone.prev:focus-visible .zone-icon {
+      opacity: 0.8;
+      transform: translateY(-50%) translateX(2px);
+    }
+
+    .page-zone.next:focus-visible .zone-icon {
+      opacity: 0.8;
+      transform: translateY(-50%) translateX(-2px);
     }
 
     /* 底部控制栏 */
@@ -217,12 +247,27 @@
 
       box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
 
-      opacity: 0.28;
-      transition: opacity 0.2s ease;
+      opacity: 0;
+      transform: translateY(calc(100% + 22px));
+      pointer-events: none;
+
+      transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
     }
 
-    .controls:hover {
+    /*
+     * 显示控制栏的几种触发场景：
+     * 窗口底部热区、鼠标移动、自身 hover、
+     * 内部元素键盘聚焦、帮助面板打开。
+     */
+    #presentation.controls-visible .controls,
+    #presentation.controls-pinned .controls,
+    .controls:hover,
+    .controls:focus-within {
       opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
     }
 
     .page-number {
@@ -273,54 +318,6 @@
       color: var(--white);
       border-color: rgba(139, 124, 255, 0.35);
       background: rgba(139, 124, 255, 0.1);
-    }
-
-    /* 左下角页面名称 */
-    .slide-info {
-      position: fixed;
-      z-index: 30;
-      left: 22px;
-      bottom: 18px;
-
-      max-width: 360px;
-      height: 36px;
-      padding: 0 15px;
-
-      display: flex;
-      align-items: center;
-      gap: 10px;
-
-      border: 1px solid var(--line);
-      border-radius: 18px;
-
-      color: #a7abb7;
-      background: rgba(18, 19, 29, 0.76);
-      backdrop-filter: blur(12px);
-
-      font-size: 11px;
-
-      opacity: 0.2;
-      transition: opacity 0.2s ease;
-    }
-
-    .slide-info:hover {
-      opacity: 1;
-    }
-
-    .slide-info-dot {
-      width: 6px;
-      height: 6px;
-      flex: 0 0 auto;
-
-      border-radius: 50%;
-      background: var(--purple);
-      box-shadow: 0 0 9px rgba(139, 124, 255, 0.65);
-    }
-
-    .slide-name {
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
     }
 
     /* 帮助面板 */
@@ -415,30 +412,31 @@
       display: none;
     }
 
-    /* 全屏时弱化控制区域 */
-    :fullscreen .controls,
-    :fullscreen .slide-info {
-      opacity: 0.06;
-    }
-
-    :fullscreen .controls:hover,
-    :fullscreen .slide-info:hover {
-      opacity: 1;
-    }
-
-    /* 触屏设备隐藏大面积翻页热区 */
-    @media (hover: none) {
+    /* 弱化动画偏好下，取消位移动画 */
+    @media (prefers-reduced-motion: reduce) {
+      .controls,
+      #slide-frame,
+      .zone-icon,
       .page-zone {
-        width: 14%;
+        transition: none;
       }
 
+      .controls {
+        transform: none;
+      }
+
+      #presentation.controls-visible .controls,
+      #presentation.controls-pinned .controls,
+      .controls:hover,
+      .controls:focus-within {
+        transform: none;
+      }
+    }
+
+    /* 触屏设备隐藏圆形翻页图标 */
+    @media (hover: none) {
       .page-zone .zone-icon {
         display: none;
-      }
-
-      .controls,
-      .slide-info {
-        opacity: 0.75;
       }
     }
   </style>
@@ -448,16 +446,14 @@
   <main id="presentation">
 
     <!-- 页面加载提示 -->
-    <div id="loading" class="loading">
+    <div id="loading" class="loading hidden">
       LOADING PRESENTATION
     </div>
 
-    <!-- 每一页通过 iframe 独立加载，避免 CSS 冲突 -->
-    <iframe
-      id="slide-frame"
-      title="演示文稿页面"
-      allowfullscreen
-    ></iframe>
+    <!--
+      每一页通过 iframe 独立加载，避免 CSS 冲突。
+      iframe 由脚本创建，以便在创建前绑定 load 监听。
+    -->
 
     <!-- 顶部进度 -->
     <div class="progress-track">
@@ -483,12 +479,6 @@
       <span class="zone-icon">›</span>
     </button>
 
-    <!-- 当前页面信息 -->
-    <div class="slide-info">
-      <span class="slide-info-dot"></span>
-      <span id="slide-name" class="slide-name"></span>
-    </div>
-
     <!-- 底部操作栏 -->
     <nav class="controls" aria-label="演示控制">
       <div id="page-number" class="page-number"></div>
@@ -499,7 +489,7 @@
         id="prev-button"
         class="control-button"
         type="button"
-        title="上一页"
+        aria-label="上一页"
       >
         ‹
       </button>
@@ -508,7 +498,7 @@
         id="next-button"
         class="control-button"
         type="button"
-        title="下一页"
+        aria-label="下一页"
       >
         ›
       </button>
@@ -517,7 +507,7 @@
         id="fullscreen-button"
         class="control-button"
         type="button"
-        title="全屏"
+        aria-label="全屏"
       >
         ⛶
       </button>
@@ -526,7 +516,7 @@
         id="help-button"
         class="control-button"
         type="button"
-        title="快捷键"
+        aria-label="快捷键说明"
       >
         ?
       </button>
@@ -582,7 +572,7 @@
      * ====================================================
      *
      * file：HTML 文件路径
-     * title：左下角显示的页面名称
+     * title：页面名称（用于浏览器标签标题）
      */
 
     const slides = [
@@ -600,59 +590,59 @@
       },
       {
         file: "4-工作产出.html",
-        title: "工作产出"
+        title: "工作与产出"
       },
       {
         file: "4-工作产出1.html",
-        title: "工作产出2"
+        title: "工作内容｜从基础能力到业务体验"
       },
       {
         file: "6-工作成果1.html",
-        title: "平台会员接入 · 情境与功能"
+        title: "平台会员接入｜情境与功能"
       },
       {
         file: "7-工作成果2.html",
-        title: "平台会员接入 · 行动与结果"
+        title: "平台会员接入｜行动与结果"
       },
       {
         file: "8-工作挑战1.html",
-        title: "AI 应用实践"
+        title: "弹幕挑战｜问题现象"
       },
       {
         file: "9-工作挑战2.html",
-        title: "AI 能力边界与人工判断"
+        title: "弹幕挑战｜处理链路"
       },
       {
         file: "10-工作挑战3.html",
-        title: "下一步规划"
+        title: "弹幕挑战｜排查行动与结果"
       },
       {
         file: "11-AI应用实践.html",
-        title: "工作产出"
+        title: "AI 应用实践｜协作模式"
       },
       {
         file: "12-AI案例.html",
-        title: "工作产出2"
+        title: "AI 案例反思｜猜测不等于实际"
       },
       {
         file: "13-AI使用.html",
-        title: "平台会员接入 · 情境与功能"
+        title: "AI 能力边界与人工判断"
       },
       {
         file: "14-AI转变.html",
-        title: "平台会员接入 · 行动与结果"
+        title: "AI 使用转变｜从要答案到放大判断"
       },
       {
         file: "15-下一步规划.html",
-        title: "AI 应用实践"
+        title: "下一步规划｜从完成任务到独立负责"
       },
       {
         file: "16-谢语.html",
-        title: "AI 能力边界与人工判断"
+        title: "谢谢聆听"
       }
     ];
 
-    const frame = document.getElementById("slide-frame");
+    let frame = null;
     const loading = document.getElementById("loading");
 
     const prevZone = document.getElementById("prev-zone");
@@ -665,16 +655,27 @@
       "fullscreen-button"
     );
 
+    const controlsEl = document.querySelector(".controls");
+
     const helpButton = document.getElementById("help-button");
     const helpPanel = document.getElementById("help-panel");
     const helpClose = document.getElementById("help-close");
 
     const progressBar = document.getElementById("progress-bar");
     const pageNumber = document.getElementById("page-number");
-    const slideName = document.getElementById("slide-name");
 
     let currentIndex = getInitialPage();
     let changing = false;
+    let navigationToken = 0;
+    let loadFallbackTimer = null;
+    let boundKeydownWindow = null;
+    let controlsTimer = null;
+    let helpOpen = false;
+    let pointerInRevealZone = false;
+
+    const CONTROLS_HIDE_DELAY = 1700;
+    const CONTROLS_REVEAL_ZONE = 80;
+    const IFRAME_LOAD_TIMEOUT = 5000;
 
     /**
      * 支持通过 URL 页码直接打开。
@@ -700,6 +701,9 @@
 
     /**
      * 显示指定页面。
+     *
+     * 等待 iframe 真正加载完成后再淡入，
+     * 避免未加载完成就淡入造成切页闪烁。
      */
     function showSlide(index, direction = "next", immediate = false) {
       if (
@@ -714,6 +718,17 @@
 
       changing = true;
 
+      /*
+       * 递增请求令牌，防止旧页面延迟触发的
+       * load / 超时回调错误结束新页面切换。
+       */
+      const token = ++navigationToken;
+
+      clearTimeout(loadFallbackTimer);
+      loadFallbackTimer = null;
+
+      frame.classList.add("is-loading");
+
       if (!immediate) {
         frame.classList.add(
           direction === "prev"
@@ -722,24 +737,62 @@
         );
       }
 
-      const delay = immediate ? 0 : 170;
+      /*
+       * 立即显示加载层，避免旧页面可见。
+       */
+      loading.classList.remove("hidden");
+
+      /*
+       * 首次加载立即切换；
+       * 后续切换等待约 150ms 淡出后再切换 src。
+       */
+      const delay = immediate ? 0 : 150;
 
       window.setTimeout(() => {
+        if (token !== navigationToken) {
+          return;
+        }
+
         currentIndex = index;
 
         frame.src = targetSlide.file;
         updateInterface();
         updateAddress();
 
-        window.setTimeout(() => {
-          frame.classList.remove(
-            "changing-prev",
-            "changing-next"
-          );
+        /*
+         * 加载失败时的兜底，
+         * 避免 changing 被永久锁死。
+         */
+        loadFallbackTimer = window.setTimeout(
+          () => {
+            if (token !== navigationToken) {
+              return;
+            }
 
-          changing = false;
-        }, 60);
+            finalizeSlideChange();
+          },
+          IFRAME_LOAD_TIMEOUT
+        );
       }, delay);
+    }
+
+    /**
+     * 完成一次页面切换：
+     * 隐藏加载层、移除过渡类、解锁翻页。
+     */
+    function finalizeSlideChange() {
+      clearTimeout(loadFallbackTimer);
+      loadFallbackTimer = null;
+
+      loading.classList.add("hidden");
+      frame.classList.remove("is-loading");
+
+      frame.classList.remove(
+        "changing-prev",
+        "changing-next"
+      );
+
+      changing = false;
     }
 
     /**
@@ -752,8 +805,6 @@
       pageNumber.innerHTML =
         `<strong>${String(currentPage).padStart(2, "0")}</strong>` +
         ` / ${String(totalPage).padStart(2, "0")}`;
-
-      slideName.textContent = slides[currentIndex].title;
 
       progressBar.style.width =
         `${(currentPage / totalPage) * 100}%`;
@@ -836,27 +887,138 @@
           : !helpPanel.classList.contains("visible");
 
       helpPanel.classList.toggle("visible", shouldShow);
+
+      helpOpen = shouldShow;
+
+      if (shouldShow) {
+        showControls();
+      } else {
+        scheduleHideControls();
+      }
     }
 
     /**
      * iframe 加载完成。
      */
-    frame.addEventListener("load", () => {
-      loading.classList.add("hidden");
+    let frameListenersAttached = false;
+
+    /**
+     * iframe 加载完成。
+     */
+    function handleFrameLoad() {
+      if (!changing) {
+        /*
+         * 非本层发起的加载（例如 R 刷新），
+         * 只隐藏加载层，不触碰切换状态。
+         */
+        loading.classList.add("hidden");
+      } else {
+        finalizeSlideChange();
+      }
 
       /*
        * 让 iframe 内部也能响应翻页键。
        * 只有同源文件才可以访问 contentWindow。
+       * 每个 contentWindow 只绑定一次。
        */
       try {
-        frame.contentWindow.addEventListener(
-          "keydown",
-          handleKeydown
-        );
+        const innerWindow = frame.contentWindow;
+
+        if (
+          innerWindow &&
+          boundKeydownWindow !== innerWindow
+        ) {
+          innerWindow.addEventListener(
+            "keydown",
+            handleKeydown
+          );
+
+          /*
+           * 页面内容由 iframe 承载，
+           * 因此鼠标移动也要在 iframe 内监听。
+           */
+          innerWindow.addEventListener(
+            "mousemove",
+            handlePointerMove
+          );
+
+          innerWindow.addEventListener(
+            "mouseleave",
+            handlePointerLeave
+          );
+
+          boundKeydownWindow = innerWindow;
+        }
       } catch (error) {
         console.warn("无法绑定 iframe 键盘事件：", error);
       }
-    });
+    }
+
+    function attachFrameListeners() {
+      if (frameListenersAttached) {
+        return;
+      }
+
+      frame.addEventListener("load", handleFrameLoad);
+      frameListenersAttached = true;
+    }
+
+    /**
+     * 控制栏自动隐藏。
+     */
+    function showControls() {
+      const presentation =
+        document.getElementById("presentation");
+
+      presentation.classList.add("controls-visible");
+
+      clearTimeout(controlsTimer);
+      controlsTimer = null;
+    }
+
+    function scheduleHideControls() {
+      const presentation =
+        document.getElementById("presentation");
+
+      clearTimeout(controlsTimer);
+
+      controlsTimer = window.setTimeout(() => {
+        controlsTimer = null;
+
+        /*
+         * 仅在底部热区、控制栏自身或帮助面板
+         * 打开时保持显示。
+         */
+        const keepVisible =
+          pointerInRevealZone ||
+          controlsEl.matches(":hover") ||
+          presentation.classList.contains("controls-pinned") ||
+          controlsEl.contains(document.activeElement) ||
+          helpOpen;
+
+        if (keepVisible) {
+          return;
+        }
+
+        presentation.classList.remove("controls-visible");
+      }, CONTROLS_HIDE_DELAY);
+    }
+
+    function pinControls() {
+      const presentation =
+        document.getElementById("presentation");
+
+      presentation.classList.add("controls-pinned");
+    }
+
+    function unpinControls() {
+      const presentation =
+        document.getElementById("presentation");
+
+      presentation.classList.remove("controls-pinned");
+
+      scheduleHideControls();
+    }
 
     /**
      * 键盘操作。
@@ -943,6 +1105,51 @@
       }
     }
 
+    /*
+     * 鼠标进入窗口底部热区或移动时，
+     * 短暂显示控制栏。
+     */
+    function handlePointerMove(event) {
+      pointerInRevealZone =
+        event.clientY >=
+        window.innerHeight - CONTROLS_REVEAL_ZONE;
+
+      if (changing) {
+        return;
+      }
+
+      showControls();
+      scheduleHideControls();
+    }
+
+    function handlePointerLeave() {
+      pointerInRevealZone = false;
+    }
+
+    document.addEventListener("mousemove", handlePointerMove);
+
+    document.addEventListener("mouseleave", handlePointerLeave);
+
+    controlsEl.addEventListener(
+      "mouseenter",
+      pinControls
+    );
+
+    controlsEl.addEventListener(
+      "mouseleave",
+      unpinControls
+    );
+
+    controlsEl.addEventListener("focusin", showControls);
+
+    controlsEl.addEventListener(
+      "focusout",
+      scheduleHideControls
+    );
+
+    /*
+     * 键盘方向导航。
+     */
     document.addEventListener("keydown", handleKeydown);
 
     prevZone.addEventListener("click", prevSlide);
@@ -1016,8 +1223,37 @@
     );
 
     /*
+     * 首次创建 iframe，并绑定加载监听。
+     */
+    function initializeFrame() {
+      frame = document.createElement("iframe");
+      frame.id = "slide-frame";
+      frame.className = "is-loading";
+      frame.title = "演示文稿页面";
+      frame.setAttribute("allowfullscreen", "");
+
+      frame.addEventListener("click", () => {
+        try {
+          frame.contentWindow.focus();
+        } catch (error) {
+          /* 跨源时忽略 */
+        }
+      });
+
+      document
+        .getElementById("presentation")
+        .insertBefore(
+          frame,
+          document.getElementById("loading").nextSibling
+        );
+
+      attachFrameListeners();
+    }
+
+    /*
      * 初始化。
      */
+    initializeFrame();
     updateInterface();
     showSlide(currentIndex, "next", true);
   </script>
