@@ -266,3 +266,75 @@
 - 三张功能图宽度比容器略窄（图片 1.13 vs 容器 1.38），左右有细窄深色带，同样由容器背景承接，未影响可读性。
 - 报告未对其他 14 页做任何修改（回归中未发现需修改的越界问题）。
 - 本报告为 Batch 06 追加记录；未重复执行已记录的 Batch 01–05。
+
+---
+
+## Batch 07 — 修复 iframe 内触屏翻页并完成最终集成验收
+
+- **Batch 编号**：07
+- **基线 Commit**：`b2207cd2322bda50a53573370e8f3fded75f7759`
+- **完成 Commit**：见下方 Push 记录（提交信息 `fix(presentation): enable swipe navigation inside iframe`）
+- **分支**：main
+
+### 根因
+
+演示主体为全屏同源 iframe。父文档 `document` 上的 `touchstart`/`touchend` 无法接收 iframe 内部的触摸事件（触摸事件不跨文档冒泡），因此 iframe 中央区域的滑动翻页失效。
+
+补充发现的实现细节：iframe 同源导航后，`contentWindow` 的 JS 包装对象标识保持不变，但底层 window 被替换、先前绑定到 `contentWindow` 的监听随之丢失。因此触摸监听若按 `contentWindow` 去重，只会绑定一次，后续页面将不再响应滑动。
+
+### 修改方案
+
+仅修改 `index.html`：
+
+1. 将匿名触摸逻辑抽取为可复用命名函数 `handleTouchStart(event)` / `handleTouchEnd(event)`，保留 60px 阈值与“横向位移需明显大于纵向”的规则；对缺失触点做安全判断；监听器均使用 `{ passive: true }`，不调用 `preventDefault()`。
+2. 新增 `isInteractiveTarget(target)`：使用 `closest()` 匹配 `a, button, input, textarea, select, [contenteditable="true"], [data-no-swipe]`，并对 SVG 节点 / 非 Element 目标做兼容；触摸起点位于交互元素内时不翻页。
+3. 父文档继续在 `document` 上绑定同一组触摸监听。
+4. `handleFrameLoad` 中，对同源 iframe 的 `contentDocument` 绑定同一组触摸监听，与键盘 / 鼠标绑定逻辑一并管理。
+
+### 监听去重方式
+
+- 新增模块级变量 `boundTouchDocument`。
+- 每次 iframe `load` 时比较 `frame.contentDocument` 与 `boundTouchDocument`：仅当为**新文档**时才绑定，并更新该变量。
+- 采用 `contentDocument`（而非 `contentWindow`）作为去重标识：因为同源导航后 `contentDocument` 一定变化，保证新页面重新绑定；同时同一文档只绑定一次，避免一次滑动跳两页。
+- 跨源访问失败时仅 `console.warn`，不阻断演示（当前正式部署为同源）。
+
+### 触屏用例结果（本地 HTTP + 移动触屏 viewport 390×844）
+
+| 用例 | 结果 |
+| --- | --- |
+| iframe 中央右→左滑动（>60px） | 前进一页（1→2→3 逐页） |
+| iframe 中央左→右滑动 | 后退一页（3→2） |
+| 纵向滑动（0,150） | 不翻页 |
+| 位移 <60px（-40） | 不翻页 |
+| 在 `<button>` 上滑动 | 不翻页 |
+| 在 `<a>` 链接上滑动 | 不翻页 |
+| 在普通 div 上滑动 | 正常翻页 |
+| 父文档区域滑动 | 正常翻页 |
+| 连续 10 次左右交替滑动 | 每次仅一页，页码与 iframe src 始终一致，无一次跳两页 |
+| 连续 3 次 R 刷新后再滑动 | 仅前进一页（无监听叠加） |
+| 用例结束后状态 | `changing=false`（loading 隐藏、无 is-loading） |
+| 控制台错误 | 0 |
+
+### 最终 16 页集成验收
+
+- 桌面尺寸 1920×1080 / 1600×900 / 1366×768，共 16×3 = 48 次页面加载：
+  - 无滚动条；无裁切；
+  - 控制台错误 0；本地资源 404 0；
+  - 无 `肖莹莹`（全篇姓名均为 `肖苹苹`）；
+  - 页面仅整体等比缩放（1.2 / 1.0 / 0.8533），无内容重排与画布跳变。
+- 入口行为：第 1 页上一页不可用（`prevDisabled: true`）；第 16 页（End）不能继续向后；页码指示 `01 / 16 … 16 / 16` 与 hash `#1 … #16` 一致。
+- 保留功能：键盘翻页、鼠标边缘翻页、父文档触屏、iframe 中央触屏、Home/End、F/R/H/?/Esc、控制栏自动隐藏、URL 页码、iframe 加载超时兜底、16 页标题与顺序。
+
+### 当前正式 Commit
+
+`见 CODEX_REPORT.md 顶部 Push 记录`（本批 `b2207cd` → 新提交）。
+
+### 已知但不阻塞的问题
+
+- 键盘 / 鼠标监听仍沿用 `contentWindow` 去重（与触摸相同的历史写法）。父文档已绑定键盘与鼠标事件，日常操作可用；本批按最小改动原则只修正触摸路径，未改动键盘/鼠标绑定逻辑以避免引入回归。
+- 若未来需要“iframe 内键盘完全跟随导航”，可后续将键盘/鼠标也改为按 `contentDocument` 去重。
+
+### 备注
+
+- 本报告为 Batch 07 追加记录；未重复执行已记录的 Batch 01–06。
+- 按任务要求，完成 Batch 07 后停止自动迭代，等待用户最终视觉验收。

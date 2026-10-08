@@ -669,6 +669,7 @@
     let navigationToken = 0;
     let loadFallbackTimer = null;
     let boundKeydownWindow = null;
+    let boundTouchDocument = null;
     let controlsTimer = null;
     let helpOpen = false;
     let pointerInRevealZone = false;
@@ -949,6 +950,34 @@
 
           boundKeydownWindow = innerWindow;
         }
+
+        /*
+         * 同源 iframe 内部同样支持触屏滑动翻页。
+         * 绑定到 contentDocument：每次导航后
+         * 文档对象会更新，因而必须重新绑定；
+         * 对同一文档只绑定一次，
+         * 防止重复监听导致一次滑动跳两页。
+         */
+        const innerDocument = frame.contentDocument;
+
+        if (
+          innerDocument &&
+          boundTouchDocument !== innerDocument
+        ) {
+          innerDocument.addEventListener(
+            "touchstart",
+            handleTouchStart,
+            { passive: true }
+          );
+
+          innerDocument.addEventListener(
+            "touchend",
+            handleTouchEnd,
+            { passive: true }
+          );
+
+          boundTouchDocument = innerDocument;
+        }
       } catch (error) {
         console.warn("无法绑定 iframe 键盘事件：", error);
       }
@@ -1181,44 +1210,83 @@
 
     /*
      * 触屏滑动翻页。
+     * 父文档与同源 iframe 内部共用同一组处理函数，
+     * 避免一次滑动被重复监听而跳两页。
      */
     let touchStartX = 0;
     let touchStartY = 0;
 
+    /* 不触发滑动翻页的交互元素选择器 */
+    const SWIPE_IGNORE_SELECTOR =
+      'a, button, input, textarea, select, ' +
+      '[contenteditable="true"], [data-no-swipe]';
+
+    /**
+     * 判断触摸起点是否位于不应触发翻页的交互元素内。
+     * 兼容 SVG 节点与非 Element 目标。
+     */
+    function isInteractiveTarget(target) {
+      if (!target || typeof target.closest !== "function") {
+        return false;
+      }
+
+      return Boolean(target.closest(SWIPE_IGNORE_SELECTOR));
+    }
+
+    function handleTouchStart(event) {
+      const touch = event.changedTouches && event.changedTouches[0];
+
+      if (!touch) {
+        return;
+      }
+
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    }
+
+    function handleTouchEnd(event) {
+      const touch = event.changedTouches && event.changedTouches[0];
+
+      if (!touch) {
+        return;
+      }
+
+      /*
+       * 触摸起点位于可交互元素内（链接、按钮、
+       * 输入框、可编辑区域等）时不翻页。
+       */
+      if (isInteractiveTarget(event.target)) {
+        return;
+      }
+
+      const distanceX = touch.clientX - touchStartX;
+      const distanceY = touch.clientY - touchStartY;
+
+      /*
+       * 横向移动超过 60px，
+       * 且明显大于纵向移动时才触发翻页。
+       */
+      if (
+        Math.abs(distanceX) > 60 &&
+        Math.abs(distanceX) > Math.abs(distanceY)
+      ) {
+        if (distanceX < 0) {
+          nextSlide();
+        } else {
+          prevSlide();
+        }
+      }
+    }
+
     document.addEventListener(
       "touchstart",
-      event => {
-        const touch = event.changedTouches[0];
-
-        touchStartX = touch.clientX;
-        touchStartY = touch.clientY;
-      },
+      handleTouchStart,
       { passive: true }
     );
 
     document.addEventListener(
       "touchend",
-      event => {
-        const touch = event.changedTouches[0];
-
-        const distanceX = touch.clientX - touchStartX;
-        const distanceY = touch.clientY - touchStartY;
-
-        /*
-         * 横向移动超过 60px，
-         * 且明显大于纵向移动时才触发翻页。
-         */
-        if (
-          Math.abs(distanceX) > 60 &&
-          Math.abs(distanceX) > Math.abs(distanceY)
-        ) {
-          if (distanceX < 0) {
-            nextSlide();
-          } else {
-            prevSlide();
-          }
-        }
-      },
+      handleTouchEnd,
       { passive: true }
     );
 
