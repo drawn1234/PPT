@@ -360,52 +360,11 @@
       width: 100%;
       height: 100%;
       display: block;
-      object-fit: contain;
+      object-fit: cover;
+      object-position: center top;
     }
 
-    .image-placeholder {
-      position: absolute;
-      inset: 0;
-
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-
-      color: #656a79;
-    }
-
-    .placeholder-icon {
-      width: 58px;
-      height: 44px;
-      margin-bottom: 12px;
-
-      border: 1px solid #4d4778;
-      border-radius: 9px;
-
-      background:
-        linear-gradient(
-          135deg,
-          transparent 48%,
-          rgba(139, 124, 255, 0.35) 49%,
-          rgba(139, 124, 255, 0.35) 58%,
-          transparent 59%
-        );
-    }
-
-    .placeholder-title {
-      color: #a5a8b4;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .placeholder-file {
-      margin-top: 6px;
-      color: #656a79;
-      font-size: 10px;
-    }
-
-    .scene-footer {
+.scene-footer {
       display: flex;
       align-items: center;
       gap: 10px;
@@ -513,23 +472,11 @@
       width: 100%;
       height: 100%;
       display: block;
-      object-fit: contain;
+      object-fit: cover;
+      object-position: center top;
     }
 
-    .feature-placeholder {
-      position: absolute;
-      inset: 0;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      color: #626777;
-      font-size: 10px;
-      text-align: center;
-    }
-
-    .feature-content {
+.feature-content {
       min-width: 0;
       padding: 7px 4px 5px 0;
 
@@ -723,14 +670,8 @@
             </div>
 
             <div class="image-frame">
-              <div class="image-placeholder">
-                <div class="placeholder-icon"></div>
-                <div class="placeholder-title">会员进场效果截图</div>
-                <div class="placeholder-file">member-overview.png</div>
-              </div>
-
               <img
-                src="member-overview.png"
+                src="source-9-1.png"
                 alt="会员进场效果"
                 onerror="this.style.display='none';"
               />
@@ -751,12 +692,8 @@
 
             <article class="feature-card">
               <div class="feature-image">
-                <div class="feature-placeholder">
-                  member-card.png
-                </div>
-
                 <img
-                  src="member-card.png"
+                  src="source-9-2.png"
                   alt="会员信息卡片"
                   onerror="this.style.display='none';"
                 />
@@ -778,12 +715,8 @@
 
             <article class="feature-card">
               <div class="feature-image">
-                <div class="feature-placeholder">
-                  badge-entry.png
-                </div>
-
                 <img
-                  src="badge-entry.png"
+                  src="source-9-3.png"
                   alt="会员勋章入口"
                   onerror="this.style.display='none';"
                 />
@@ -805,12 +738,8 @@
 
             <article class="feature-card">
               <div class="feature-image">
-                <div class="feature-placeholder">
-                  identity-mark.png
-                </div>
-
                 <img
-                  src="identity-mark.png"
+                  src="source-9-4.png"
                   alt="发言身份标识"
                   onerror="this.style.display='none';"
                 />
