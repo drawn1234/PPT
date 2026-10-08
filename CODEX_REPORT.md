@@ -338,3 +338,66 @@
 
 - 本报告为 Batch 07 追加记录；未重复执行已记录的 Batch 01–06。
 - 按任务要求，完成 Batch 07 后停止自动迭代，等待用户最终视觉验收。
+
+---
+
+## Batch 07-R1 — 修复 iframe 导航后的监听生命周期及触摸起点判断
+
+- **Batch 编号**：07-R1
+- **基线 Commit**：`b047cc4db2f11e823bd55cebc30b1bf579184c1c`
+- **完成 Commit**：见下方 Push 记录（提交信息 `fix(presentation): rebind iframe interactions after navigation`）
+- **分支**：main
+
+### 返修原因（来自审查）
+
+1. `iframe` 导航后 `contentWindow` 的代理标识保持不变，而旧文档上的键盘、鼠标监听随之丢失；`boundKeydownWindow` 去重会导致第 2 页以后 iframe 内键盘与鼠标监听不再重新绑定。
+2. 交互元素判断原本发生在 `touchend`，未记录 `touchstart` 起点；从按钮开始、在按钮外结束的滑动仍可能误翻页。
+
+### 修改方案（仅 index.html）
+
+1. **统一按 contentDocument 管理 iframe 监听**
+   - 删除 `boundKeydownWindow` 与 `boundTouchDocument`，改用单一变量 `boundFrameDocument`。
+   - 每次 `handleFrameLoad` 获取新的 `frame.contentDocument`，以该文档为绑定标识。
+   - 在新文档上绑定：`keydown`、`mousemove`、`mouseleave`、`touchstart`、`touchend`。
+   - 同一文档只绑定一次；iframe 导航或按 R 刷新后，新文档必定重新绑定。
+   - 处理函数均为具名函数。
+   - 跨源失败仅 `console.warn("无法绑定 iframe 交互事件：", error)`，不阻塞页面。
+
+2. **准确记录触摸起点**
+   - 新增状态 `let touchStartedOnInteractive = false;`。
+   - `handleTouchStart`：记录坐标，并根据 `event.target` 用 `isInteractiveTarget()` 判断起点是否在交互元素内，保存结果。
+   - `handleTouchEnd`：先取出并**立即重置** `touchStartedOnInteractive`（所有退出路径安全重置），若起点在交互元素内则不翻页；缺失触点、位移不足、纵向滑动等均安全退出。
+
+### 回归测试结果（本地 HTTP + 浏览器自动化）
+
+| 用例 | 结果 |
+| --- | --- |
+| 第 1 页 iframe 内连续按右方向键 4 次 | 2 → 3 → 4 → 5，每次仅前进一页 |
+| 第 5 页 iframe 内按左方向键 2 次 | 4 → 3 |
+| 连续切换后 iframe 内移动鼠标（底部） | 控制栏唤出 |
+| 静止约 2.5s | 控制栏自动隐藏 |
+| 再次移动到底部热区 | 控制栏再次唤出 |
+| 按 R 刷新当前 iframe 三次后按键 | 仅前进一页 |
+| 从 button 开始、在按钮外结束的滑动 | 不翻页 |
+| 从普通区域开始的滑动 | 正常翻页 |
+| 连续 10 次左右交替滑动 | 页码 / hash / iframe src 始终一致，无一次跳两页 |
+| 用例结束状态 | `changing=false`（loading 隐藏、无 is-loading） |
+
+### 最终集成验收
+
+- 桌面尺寸 1920×1080 / 1600×900 / 1366×768，共 16×3 = 48 次页面加载：无滚动条、无裁切、控制台错误 0、资源 404 0、无 `肖莹莹`。
+- 入口 1→16：页码指示 `01 / 16 … 16 / 16`、hash `#1 … #16`、iframe src 三者一致；`pageerror` 0。
+- 保留功能：键盘翻页（父文档 + iframe 内）、鼠标边缘翻页、父文档触屏、iframe 中央触屏、Home/End、F/R/H/?/Esc、控制栏自动隐藏、URL 页码、iframe 加载超时兜底、16 页标题与顺序。
+
+### 当前正式 Commit
+
+见 Push 记录（本批 `b047cc4` → 新提交）。
+
+### 已知但不阻塞的问题
+
+- 无。键盘/鼠标/触摸监听现统一按 `contentDocument` 生命周期绑定，导航与刷新后均重新生效。
+
+### 备注
+
+- 本报告为 Batch 07-R1 追加记录；未重复执行已记录的 Batch 01–07。
+- 按任务要求，完成 07-R1 后停止自动迭代，等待用户最终视觉验收。

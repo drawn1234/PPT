@@ -668,8 +668,7 @@
     let changing = false;
     let navigationToken = 0;
     let loadFallbackTimer = null;
-    let boundKeydownWindow = null;
-    let boundTouchDocument = null;
+    let boundFrameDocument = null;
     let controlsTimer = null;
     let helpOpen = false;
     let pointerInRevealZone = false;
@@ -918,18 +917,21 @@
       }
 
       /*
-       * 让 iframe 内部也能响应翻页键。
-       * 只有同源文件才可以访问 contentWindow。
-       * 每个 contentWindow 只绑定一次。
+       * 同源 iframe 内部同样需要支持翻页（键盘、
+       * 鼠标、触屏）。统一按 contentDocument 管理：
+       * 同源导航后文档对象必定更新，因此每个
+       * 新文档都会重新绑定；而同一文档只绑定一次，
+       * 避免重复监听导致一次操作跳两页。
        */
       try {
-        const innerWindow = frame.contentWindow;
+        const innerDocument = frame.contentDocument;
 
         if (
-          innerWindow &&
-          boundKeydownWindow !== innerWindow
+          innerDocument &&
+          boundFrameDocument !== innerDocument
         ) {
-          innerWindow.addEventListener(
+          /* 键盘翻页 */
+          innerDocument.addEventListener(
             "keydown",
             handleKeydown
           );
@@ -938,32 +940,17 @@
            * 页面内容由 iframe 承载，
            * 因此鼠标移动也要在 iframe 内监听。
            */
-          innerWindow.addEventListener(
+          innerDocument.addEventListener(
             "mousemove",
             handlePointerMove
           );
 
-          innerWindow.addEventListener(
+          innerDocument.addEventListener(
             "mouseleave",
             handlePointerLeave
           );
 
-          boundKeydownWindow = innerWindow;
-        }
-
-        /*
-         * 同源 iframe 内部同样支持触屏滑动翻页。
-         * 绑定到 contentDocument：每次导航后
-         * 文档对象会更新，因而必须重新绑定；
-         * 对同一文档只绑定一次，
-         * 防止重复监听导致一次滑动跳两页。
-         */
-        const innerDocument = frame.contentDocument;
-
-        if (
-          innerDocument &&
-          boundTouchDocument !== innerDocument
-        ) {
+          /* 触屏滑动翻页 */
           innerDocument.addEventListener(
             "touchstart",
             handleTouchStart,
@@ -976,10 +963,10 @@
             { passive: true }
           );
 
-          boundTouchDocument = innerDocument;
+          boundFrameDocument = innerDocument;
         }
       } catch (error) {
-        console.warn("无法绑定 iframe 键盘事件：", error);
+        console.warn("无法绑定 iframe 交互事件：", error);
       }
     }
 
@@ -1215,6 +1202,7 @@
      */
     let touchStartX = 0;
     let touchStartY = 0;
+    let touchStartedOnInteractive = false;
 
     /* 不触发滑动翻页的交互元素选择器 */
     const SWIPE_IGNORE_SELECTOR =
@@ -1242,9 +1230,23 @@
 
       touchStartX = touch.clientX;
       touchStartY = touch.clientY;
+
+      /*
+       * 记录触摸起点是否位于交互元素内（链接、
+       * 按钮、输入框、可编辑区域等）。
+       * 即使在元素外结束，只要起点在交互元素内，也不翻页。
+       */
+      touchStartedOnInteractive = isInteractiveTarget(event.target);
     }
 
     function handleTouchEnd(event) {
+      /*
+       * 先取出起点状态并在任何退出路径前重置，
+       * 避免下一次手势沿用旧值。
+       */
+      const startedOnInteractive = touchStartedOnInteractive;
+      touchStartedOnInteractive = false;
+
       const touch = event.changedTouches && event.changedTouches[0];
 
       if (!touch) {
@@ -1255,7 +1257,7 @@
        * 触摸起点位于可交互元素内（链接、按钮、
        * 输入框、可编辑区域等）时不翻页。
        */
-      if (isInteractiveTarget(event.target)) {
+      if (startedOnInteractive) {
         return;
       }
 
