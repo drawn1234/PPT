@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>从“要答案”到“放大判断”</title>
+
+  <style>
+    :root {
+      --bg: #080910;
+      --panel: #121421;
+      --panel-light: #171929;
+      --line: rgba(255, 255, 255, 0.11);
+
+      --text: #f7f7fb;
+      --sub: #b8bdcd;
+      --muted: #777d91;
+
+      --purple: #927cff;
+      --purple-light: #c1b6ff;
+      --purple-soft: rgba(146, 124, 255, 0.11);
+
+      --yellow: #ffc547;
+      --yellow-soft: rgba(255, 197, 71, 0.1);
+
+      --green: #43ddb8;
+      --green-soft: rgba(67, 221, 184, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    body {
+      color: var(--text);
+      font-family:
+        Inter,
+        "PingFang SC",
+        "Microsoft YaHei",
+        "Noto Sans SC",
+        Arial,
+        sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .slide {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+      gap: clamp(10px, 1.35vh, 18px);
+
+      width: 100vw;
+      height: 100vh;
+      padding:
+        clamp(20px, 3vh, 40px)
+        clamp(32px, 4vw, 76px)
+        clamp(14px, 2vh, 26px);
+
+      overflow: hidden;
+
+      background:
+        radial-gradient(
+          circle at 96% 0%,
+          rgba(111, 82, 216, 0.2),
+          transparent 30%
+        ),
+        radial-gradient(
+          circle at 0% 100%,
+          rgba(255, 197, 71, 0.05),
+          transparent 24%
+        ),
+        linear-gradient(135deg, #080910 0%, #0c0d18 100%);
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.11;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 50px 50px;
+      mask-image: linear-gradient(to bottom, transparent, #000 28%, #000);
+    }
+
+    .header,
+    .role-change,
+    .changes,
+    .workflow,
+    .footer {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 标题区 */
+
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 32px;
+      padding-bottom: clamp(11px, 1.5vh, 18px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .page-number {
+      display: grid;
+      flex: 0 0 auto;
+      width: 48px;
+      height: 28px;
+      place-items: center;
+
+      border: 1px solid rgba(255, 197, 71, 0.65);
+      border-radius: 999px;
+
+      color: var(--yellow);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(29px, 2.35vw, 45px);
+      line-height: 1.12;
+      letter-spacing: -0.04em;
+    }
+
+    h1 em {
+      color: var(--yellow);
+      font-style: normal;
+    }
+
+    .subtitle {
+      margin: 7px 0 0 63px;
+      color: var(--sub);
+      font-size: clamp(14px, 1vw, 18px);
+      line-height: 1.45;
+    }
+
+    .subtitle strong {
+      color: var(--text);
+      font-weight: 750;
+    }
+
+    .page-mark {
+      padding-top: 9px;
+      color: rgba(177, 161, 255, 0.82);
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: 0.27em;
+      white-space: nowrap;
+    }
+
+    /* 角色转变 */
+
+    .role-change {
+      display: grid;
+      grid-template-columns:
+        minmax(250px, 0.9fr)
+        minmax(140px, 0.36fr)
+        minmax(370px, 1.35fr);
+      align-items: stretch;
+
+      min-height: clamp(105px, 14vh, 148px);
+      overflow: hidden;
+
+      border: 1px solid rgba(146, 124, 255, 0.3);
+      border-radius: 15px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(255,255,255,.018),
+          rgba(146,124,255,.08)
+        ),
+        rgba(18, 20, 33, 0.92);
+    }
+
+    .role {
+      display: flex;
+      align-items: center;
+      gap: clamp(14px, 1.5vw, 24px);
+      padding: clamp(15px, 1.8vw, 28px);
+      min-width: 0;
+    }
+
+    .role-icon {
+      display: grid;
+      flex: 0 0 auto;
+      width: clamp(46px, 3.4vw, 62px);
+      height: clamp(46px, 3.4vw, 62px);
+      place-items: center;
+
+      border-radius: 15px;
+      font-size: clamp(20px, 1.5vw, 28px);
+      font-weight: 850;
+    }
+
+    .past .role-icon {
+      color: #989daf;
+      border: 1px solid rgba(160, 165, 181, 0.3);
+      background: rgba(160, 165, 181, 0.07);
+    }
+
+    .present .role-icon {
+      color: var(--yellow);
+      border: 1px solid rgba(255, 197, 71, 0.42);
+      background: var(--yellow-soft);
+      box-shadow: 0 0 30px rgba(255, 197, 71, 0.06);
+    }
+
+    .role-kicker {
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: 0.1em;
+    }
+
+    .role-title {
+      color: #b0b4c1;
+      font-size: clamp(21px, 1.65vw, 31px);
+      line-height: 1.15;
+      font-weight: 850;
+    }
+
+    .present .role-title {
+      color: var(--text);
+    }
+
+    .present .role-title strong {
+      color: var(--yellow);
+    }
+
+    .role-copy {
+      margin-top: 7px;
+      color: var(--sub);
+      font-size: clamp(13px, 0.9vw, 16px);
+      line-height: 1.45;
+    }
+
+    .role-arrow {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    .role-arrow::before {
+      content: "";
+      width: 64%;
+      height: 1px;
+      background: linear-gradient(90deg, #555a6c, var(--purple));
+    }
+
+    .role-arrow::after {
+      content: "";
+      position: absolute;
+      right: 17%;
+      width: 9px;
+      height: 9px;
+      border-top: 2px solid var(--purple);
+      border-right: 2px solid var(--purple);
+      transform: rotate(45deg);
+    }
+
+    .arrow-label {
+      position: absolute;
+      top: calc(50% + 13px);
+      color: var(--purple-light);
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+    }
+
+    /* 三个行动卡片 */
+
+    .changes {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(12px, 1.3vw, 20px);
+      min-height: 0;
+    }
+
+    .change-card {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr) auto;
+      min-width: 0;
+      min-height: 0;
+      padding: clamp(16px, 1.55vw, 25px);
+
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(146, 124, 255, 0.07),
+          transparent 55%
+        ),
+        rgba(18, 20, 33, 0.92);
+    }
+
+    .change-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 3px;
+      background: linear-gradient(90deg, var(--purple), transparent);
+    }
+
+    .change-card:nth-child(3)::before {
+      background: linear-gradient(90deg, var(--green), transparent);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .card-number {
+      display: grid;
+      width: 29px;
+      height: 29px;
+      place-items: center;
+
+      border-radius: 8px;
+      color: var(--purple-light);
+      background: var(--purple-soft);
+
+      font-size: 10px;
+      font-weight: 850;
+    }
+
+    .change-card:nth-child(3) .card-number {
+      color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .card-head h2 {
+      margin: 0;
+      font-size: clamp(17px, 1.2vw, 22px);
+      line-height: 1.2;
+    }
+
+    .change-line {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr);
+      align-items: center;
+      gap: 6px;
+      margin: clamp(13px, 1.6vh, 20px) 0;
+    }
+
+    .change-from,
+    .change-to {
+      display: flex;
+      align-items: center;
+      min-height: clamp(48px, 6.2vh, 64px);
+      padding: 10px 13px;
+      border-radius: 10px;
+
+      font-size: clamp(15px, 1.1vw, 20px);
+      line-height: 1.25;
+      font-weight: 850;
+    }
+
+    .change-from {
+      color: #969bad;
+      border: 1px solid rgba(160, 165, 181, 0.18);
+      background: rgba(160, 165, 181, 0.045);
+    }
+
+    .change-to {
+      color: #d3cbff;
+      border: 1px solid rgba(146, 124, 255, 0.34);
+      background: var(--purple-soft);
+    }
+
+    .change-card:nth-child(3) .change-to {
+      color: var(--green);
+      border-color: rgba(67, 221, 184, 0.34);
+      background: var(--green-soft);
+    }
+
+    .small-arrow {
+      position: relative;
+      width: 24px;
+      height: 1px;
+      justify-self: center;
+      background: #575c6d;
+    }
+
+    .small-arrow::after {
+      content: "";
+      position: absolute;
+      top: -3px;
+      right: 0;
+      width: 7px;
+      height: 7px;
+      border-top: 1px solid var(--purple);
+      border-right: 1px solid var(--purple);
+      transform: rotate(45deg);
+    }
+
+    .change-card:nth-child(3) .small-arrow::after {
+      border-color: var(--green);
+    }
+
+    .card-copy {
+      margin: 0;
+      align-self: start;
+      color: var(--sub);
+      font-size: clamp(13px, 0.9vw, 16px);
+      line-height: 1.55;
+    }
+
+    .card-copy strong {
+      color: var(--text);
+      font-weight: 750;
+    }
+
+    .tags {
+      display: flex;
+      gap: 7px;
+      margin-top: clamp(10px, 1.3vh, 16px);
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      padding: 5px 9px;
+      border: 1px solid rgba(146, 124, 255, 0.26);
+      border-radius: 6px;
+      color: #bbb0f8;
+      background: rgba(146, 124, 255, 0.065);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .change-card:nth-child(3) .tag {
+      color: #83e8d0;
+      border-color: rgba(67, 221, 184, 0.25);
+      background: rgba(67, 221, 184, 0.06);
+    }
+
+    /* 工作流程 */
+
+    .workflow {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: clamp(15px, 1.5vw, 24px);
+
+      min-height: clamp(76px, 9.5vh, 98px);
+      padding: clamp(12px, 1.4vh, 18px) clamp(17px, 1.5vw, 24px);
+
+      border: 1px solid rgba(255, 197, 71, 0.25);
+      border-left: 4px solid var(--yellow);
+      border-radius: 13px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(255, 197, 71, 0.075),
+          rgba(146, 124, 255, 0.03),
+          transparent
+        ),
+        rgba(18, 20, 33, 0.93);
+    }
+
+    .workflow-title {
+      min-width: 84px;
+    }
+
+    .workflow-title span {
+      display: block;
+      color: var(--yellow);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+    }
+
+    .workflow-title strong {
+      display: block;
+      margin-top: 5px;
+      font-size: clamp(16px, 1.1vw, 20px);
+    }
+
+    .workflow-steps {
+      display: grid;
+      grid-template-columns:
+        minmax(110px, 1fr)
+        30px
+        minmax(110px, 1fr)
+        30px
+        minmax(110px, 1fr)
+        30px
+        minmax(110px, 1fr);
+      align-items: center;
+      min-width: 0;
+    }
+
+    .workflow-step {
+      min-width: 0;
+      padding: 7px 10px;
+      text-align: center;
+    }
+
+    .workflow-step-name {
+      color: var(--text);
+      font-size: clamp(13px, 0.92vw, 16px);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .workflow-step-value {
+      margin-top: 4px;
+      color: var(--sub);
+      font-size: clamp(11px, 0.75vw, 13px);
+      white-space: nowrap;
+    }
+
+    .workflow-step.human {
+      border: 1px solid rgba(255, 197, 71, 0.38);
+      border-radius: 9px;
+      background: var(--yellow-soft);
+    }
+
+    .workflow-step.human .workflow-step-name,
+    .workflow-step.human .workflow-step-value {
+      color: var(--yellow);
+    }
+
+    .workflow-arrow {
+      position: relative;
+      width: 21px;
+      height: 1px;
+      justify-self: center;
+      background: #575c6d;
+    }
+
+    .workflow-arrow::after {
+      content: "";
+      position: absolute;
+      top: -3px;
+      right: 0;
+      width: 7px;
+      height: 7px;
+      border-top: 1px solid #74798d;
+      border-right: 1px solid #74798d;
+      transform: rotate(45deg);
+    }
+
+    .boundary {
+      max-width: 320px;
+      color: var(--sub);
+      font-size: clamp(12px, 0.8vw, 14px);
+      line-height: 1.45;
+      text-align: right;
+    }
+
+    .boundary strong {
+      color: var(--yellow);
+      font-weight: 800;
+    }
+
+    /* 页脚 */
+
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 650;
+      letter-spacing: 0.1em;
+    }
+
+    .footer strong {
+      color: #a596ee;
+    }
+
+    /* 高度较小时自动压缩 */
+
+    @media (max-height: 760px) {
+      .slide {
+        gap: 8px;
+        padding-top: 16px;
+        padding-bottom: 10px;
+      }
+
+      .header {
+        padding-bottom: 8px;
+      }
+
+      .subtitle {
+        margin-top: 4px;
+      }
+
+      .role-change {
+        min-height: 92px;
+      }
+
+      .role {
+        padding-top: 11px;
+        padding-bottom: 11px;
+      }
+
+      .role-copy {
+        margin-top: 4px;
+      }
+
+      .change-card {
+        padding-top: 13px;
+        padding-bottom: 13px;
+      }
+
+      .change-line {
+        margin-top: 9px;
+        margin-bottom: 9px;
+      }
+
+      .change-from,
+      .change-to {
+        min-height: 42px;
+      }
+
+      .tags {
+        margin-top: 8px;
+      }
+
+      .workflow {
+        min-height: 68px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+      }
+    }
+
+    @media (max-width: 1120px) {
+      .slide {
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+
+      .page-mark,
+      .boundary {
+        display: none;
+      }
+
+      .workflow {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+
+      .role-change {
+        grid-template-columns: 1fr 100px 1.3fr;
+      }
+
+      .change-line {
+        grid-template-columns: 1fr 26px 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="slide">
+    <!-- 标题 -->
+    <header class="header">
+      <div>
+        <div class="title-row">
+          <span class="page-number">04</span>
+          <h1>从“要答案”到<em>“放大判断”</em></h1>
+        </div>
+
+        <p class="subtitle">
+          AI 不替我做决定，而是帮助我
+          <strong>扩展选择、加速验证与沉淀</strong>。
+        </p>
+      </div>
+
+      <div class="page-mark">GROWTH · NEXT STEP</div>
+    </header>
+
+    <!-- 核心角色转变 -->
+    <section class="role-change">
+      <div class="role past">
+        <div class="role-icon">?</div>
+
+        <div>
+          <div class="role-kicker">过去的定位</div>
+          <div class="role-title">答案工具</div>
+          <div class="role-copy">“直接告诉我应该怎么做”</div>
+        </div>
+      </div>
+
+      <div class="role-arrow">
+        <span class="arrow-label">角色转变</span>
+      </div>
+
+      <div class="role present">
+        <div class="role-icon">×</div>
+
+        <div>
+          <div class="role-kicker">现在的定位</div>
+          <div class="role-title"><strong>判断力</strong>的杠杆</div>
+          <div class="role-copy">
+            “帮我看清有哪些选择，以及每种选择的代价”
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 三个行为变化 -->
+    <section class="changes">
+      <!-- 01 -->
+      <article class="change-card">
+        <header class="card-head">
+          <span class="card-number">01</span>
+          <h2>先比较</h2>
+        </header>
+
+        <div class="change-line">
+          <div class="change-from">要答案</div>
+          <span class="small-arrow"></span>
+          <div class="change-to">要选项</div>
+        </div>
+
+        <p class="card-copy">
+          不只问“怎么做”，要求 AI 给出
+          <strong>多个方案</strong>，并比较收益、代价与风险。
+        </p>
+
+        <div class="tags">
+          <span class="tag">多方案</span>
+          <span class="tag">Trade-off</span>
+          <span class="tag">风险</span>
+        </div>
+      </article>
+
+      <!-- 02 -->
+      <article class="change-card">
+        <header class="card-head">
+          <span class="card-number">02</span>
+          <h2>先对齐</h2>
+        </header>
+
+        <div class="change-line">
+          <div class="change-from">直接修改</div>
+          <span class="small-arrow"></span>
+          <div class="change-to">先确认理解</div>
+        </div>
+
+        <p class="card-copy">
+          先让 AI 复述问题、输出计划；
+          <strong>确认后再动手</strong>，并保持小范围修改。
+        </p>
+
+        <div class="tags">
+          <span class="tag">理解</span>
+          <span class="tag">计划</span>
+          <span class="tag">确认</span>
+          <span class="tag">小步修改</span>
+        </div>
+      </article>
+
+      <!-- 03 -->
+      <article class="change-card">
+        <header class="card-head">
+          <span class="card-number">03</span>
+          <h2>再沉淀</h2>
+        </header>
+
+        <div class="change-line">
+          <div class="change-from">用完即弃</div>
+          <span class="small-arrow"></span>
+          <div class="change-to">形成资产</div>
+        </div>
+
+        <p class="card-copy">
+          将有效的提示词、分析方法与流程
+          <strong>标准化沉淀</strong>，让一次投入持续复用。
+        </p>
+
+        <div class="tags">
+          <span class="tag">Skills</span>
+          <span class="tag">笔记</span>
+          <span class="tag">知识库</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- 下一步工作方式 -->
+    <section class="workflow">
+      <div class="workflow-title">
+        <span>NEXT STEP</span>
+        <strong>工作闭环</strong>
+      </div>
+
+      <div class="workflow-steps">
+        <div class="workflow-step">
+          <div class="workflow-step-name">方案探索</div>
+          <div class="workflow-step-value">AI 扩展选项</div>
+        </div>
+
+        <span class="workflow-arrow"></span>
+
+        <div class="workflow-step">
+          <div class="workflow-step-name">协作执行</div>
+          <div class="workflow-step-value">AI 辅助实施</div>
+        </div>
+
+        <span class="workflow-arrow"></span>
+
+        <div class="workflow-step human">
+          <div class="workflow-step-name">核心判断</div>
+          <div class="workflow-step-value">人负责取舍</div>
+        </div>
+
+        <span class="workflow-arrow"></span>
+
+        <div class="workflow-step">
+          <div class="workflow-step-name">知识沉淀</div>
+          <div class="workflow-step-value">AI 协助复用</div>
+        </div>
+      </div>
+
+      <div class="boundary">
+        AI 负责扩展可能与提升效率；<br />
+        <strong>人负责判断取舍与承担结果。</strong>
+      </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+      <span><strong>AI 应用实践</strong> · 角色转变 · 后续行动</span>
+      <span>04 / GROWTH</span>
+    </footer>
+  </main>
+</body>
+</html>

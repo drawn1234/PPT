@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>个人简介</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #080910;
+      --panel: #141621;
+      --panel-light: #191b28;
+      --line: #2e3140;
+
+      --white: #f6f6f8;
+      --text: #c5c7d1;
+      --muted: #818695;
+      --dim: #565b6a;
+
+      --purple: #8b7cff;
+      --purple-light: #bcb4ff;
+      --purple-dark: #211d39;
+
+      --yellow: #f2b93b;
+      --yellow-light: #ffd466;
+      --yellow-dark: #302713;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #05060a;
+      font-family:
+        "Microsoft YaHei",
+        "PingFang SC",
+        "Noto Sans CJK SC",
+        Arial,
+        sans-serif;
+    }
+
+    body {
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    #viewport {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #05060a;
+    }
+
+    #slide {
+      position: relative;
+      width: 1600px;
+      height: 900px;
+      flex: 0 0 auto;
+      overflow: hidden;
+      color: var(--white);
+      transform-origin: center center;
+
+      background:
+        radial-gradient(
+          circle at 92% 8%,
+          rgba(139, 124, 255, 0.17),
+          transparent 28%
+        ),
+        radial-gradient(
+          circle at 4% 95%,
+          rgba(242, 185, 59, 0.05),
+          transparent 25%
+        ),
+        linear-gradient(
+          135deg,
+          #080910 0%,
+          #0a0b12 64%,
+          #161229 100%
+        );
+    }
+
+    #slide::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 650px;
+      height: 4px;
+      background: linear-gradient(
+        90deg,
+        var(--yellow),
+        var(--purple),
+        transparent
+      );
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+      padding: 42px 76px 28px;
+      display: grid;
+      grid-template-rows: 132px 462px 152px 34px;
+      gap: 16px;
+    }
+
+    /* ==================== 页头 ==================== */
+
+    .header {
+      position: relative;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin-bottom: 13px;
+      color: #9a90e3;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+
+    .title {
+      margin: 0;
+      color: var(--white);
+      font-size: 40px;
+      line-height: 1.15;
+      font-weight: 750;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      margin-top: 12px;
+      color: #a6aab8;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .subtitle strong {
+      color: var(--purple-light);
+      font-weight: 650;
+    }
+
+    .header-right {
+      position: absolute;
+      top: 5px;
+      right: 0;
+      color: #8178bc;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+
+    /* ==================== 主体名片 ==================== */
+
+    .profile-card {
+      position: relative;
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      min-height: 0;
+      overflow: hidden;
+      border: 1px solid #343748;
+      border-radius: 20px;
+      background:
+        linear-gradient(
+          115deg,
+          rgba(139, 124, 255, 0.07),
+          transparent 42%
+        ),
+        rgba(20, 22, 33, 0.97);
+      box-shadow: 0 18px 55px rgba(0, 0, 0, 0.24);
+    }
+
+    .profile-card::before {
+      content: "";
+      position: absolute;
+      z-index: 3;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background: linear-gradient(
+        180deg,
+        var(--purple),
+        #6659c5
+      );
+    }
+
+    /* ==================== 照片区 ==================== */
+
+    .photo-section {
+      position: relative;
+      padding: 26px 30px 26px 34px;
+      border-right: 1px solid #2d303d;
+    }
+
+    .photo-frame {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border: 1px solid #424559;
+      border-radius: 16px;
+      background:
+        radial-gradient(
+          circle at 50% 33%,
+          rgba(139, 124, 255, 0.19),
+          transparent 43%
+        ),
+        linear-gradient(145deg, #26283a, #171925);
+    }
+
+    .photo-frame::after {
+      content: "";
+      position: absolute;
+      z-index: 3;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(
+          180deg,
+          transparent 60%,
+          rgba(8, 9, 16, 0.42) 100%
+        );
+    }
+
+    .photo-frame img {
+      position: absolute;
+      z-index: 2;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 22%;
+    }
+
+    .photo-placeholder {
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+    }
+
+    .avatar-icon {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      margin-bottom: 20px;
+      border: 1px solid #6258a0;
+      border-radius: 50%;
+      background: rgba(33, 29, 57, 0.82);
+    }
+
+    .avatar-icon::before {
+      content: "";
+      position: absolute;
+      top: 19px;
+      left: 30px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #8172e3;
+    }
+
+    .avatar-icon::after {
+      content: "";
+      position: absolute;
+      left: 19px;
+      bottom: 15px;
+      width: 52px;
+      height: 27px;
+      border-radius: 28px 28px 14px 14px;
+      background: #8172e3;
+    }
+
+    .placeholder-title {
+      color: #b6b9c6;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .placeholder-note {
+      margin-top: 8px;
+      color: #6e7382;
+      font-size: 11px;
+    }
+
+    .photo-label {
+      position: absolute;
+      z-index: 4;
+      left: 20px;
+      bottom: 18px;
+      padding: 7px 14px;
+      border: 1px solid rgba(139, 124, 255, 0.48);
+      border-radius: 16px;
+      color: #d0caff;
+      background: rgba(17, 17, 29, 0.82);
+      backdrop-filter: blur(8px);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+    }
+
+    /* ==================== 右侧信息 ==================== */
+
+    .profile-content {
+      position: relative;
+      padding: 40px 52px 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .profile-mark {
+      position: absolute;
+      top: 27px;
+      right: 32px;
+      color: #5c6170;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .identity {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding-right: 112px;
+    }
+
+    .name {
+      margin: 0;
+      color: var(--white);
+      font-size: 42px;
+      line-height: 1.12;
+      font-weight: 750;
+      letter-spacing: 1px;
+    }
+
+    .job {
+      margin-top: 9px;
+      color: var(--purple-light);
+      font-size: 19px;
+      font-weight: 650;
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .meta-tag {
+      display: inline-flex;
+      align-items: center;
+      height: 32px;
+      padding: 0 14px;
+      border: 1px solid #3b3e4f;
+      border-radius: 16px;
+      color: #b8bbc7;
+      background: #1a1c28;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .meta-tag.highlight {
+      border-color: #73591a;
+      color: var(--yellow-light);
+      background: var(--yellow-dark);
+    }
+
+    /* 职责陈述 */
+    .responsibility {
+      position: relative;
+      margin-top: 27px;
+      padding: 18px 22px 19px 25px;
+      border: 1px solid #343747;
+      border-radius: 14px;
+      background:
+        linear-gradient(
+          100deg,
+          rgba(242, 185, 59, 0.045),
+          transparent 55%
+        ),
+        #191b27;
+    }
+
+    .responsibility::before {
+      content: "";
+      position: absolute;
+      top: 17px;
+      bottom: 17px;
+      left: 0;
+      width: 3px;
+      border-radius: 2px;
+      background: var(--yellow);
+    }
+
+    .responsibility-label {
+      margin-bottom: 9px;
+      color: var(--yellow-light);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .responsibility-text {
+      max-width: 900px;
+      color: #d5d7df;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .responsibility-text strong {
+      color: var(--white);
+      font-weight: 700;
+    }
+
+    /* 职责模块 */
+    .focus-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .focus-card {
+      position: relative;
+      min-width: 0;
+      padding: 14px 16px 13px;
+      border: 1px solid #303342;
+      border-radius: 12px;
+      background: #181a26;
+    }
+
+    .focus-card::before {
+      content: "";
+      position: absolute;
+      top: 16px;
+      left: 0;
+      width: 3px;
+      height: 20px;
+      border-radius: 2px;
+      background: var(--purple);
+    }
+
+    .focus-index {
+      color: #7770aa;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .focus-title {
+      margin-top: 7px;
+      color: #eeeeF2;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .focus-desc {
+      margin-top: 6px;
+      color: #7f8493;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    /* ==================== 成长路径 ==================== */
+
+    .journey {
+      position: relative;
+      padding: 18px 26px;
+      overflow: hidden;
+      border: 1px solid #303341;
+      border-radius: 16px;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(139, 124, 255, 0.075),
+          rgba(21, 23, 34, 0.97) 43%,
+          rgba(242, 185, 59, 0.05)
+        );
+    }
+
+    .journey-heading {
+      position: absolute;
+      top: 18px;
+      left: 26px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--white);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .journey-heading::before {
+      content: "";
+      width: 4px;
+      height: 18px;
+      border-radius: 2px;
+      background: var(--purple);
+    }
+
+    .journey-en {
+      position: absolute;
+      top: 20px;
+      right: 26px;
+      color: #626777;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .journey-content {
+      height: 100%;
+      padding-top: 29px;
+      display: grid;
+      grid-template-columns: 330px 1fr 380px;
+      align-items: center;
+    }
+
+    .stage-date {
+      margin-bottom: 7px;
+      color: #898e9d;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.7px;
+    }
+
+    .stage-title {
+      color: var(--white);
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .stage-title .purple {
+      color: var(--purple-light);
+    }
+
+    .stage-title .yellow {
+      color: var(--yellow-light);
+    }
+
+    .stage-desc {
+      margin-top: 7px;
+      color: #858a99;
+      font-size: 11px;
+    }
+
+    .journey-track {
+      position: relative;
+      height: 76px;
+      margin: 0 28px;
+    }
+
+    .upgrade {
+      position: absolute;
+      z-index: 2;
+      top: 2px;
+      left: 50%;
+      padding: 6px 15px;
+      transform: translateX(-50%);
+      border: 1px solid #4a4758;
+      border-radius: 15px;
+      color: #cbc7dd;
+      background: #1c1d29;
+      font-size: 10px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .track-line {
+      position: absolute;
+      top: 39px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(
+        90deg,
+        var(--purple),
+        #5a5666 48%,
+        var(--yellow)
+      );
+    }
+
+    .track-line::after {
+      content: "";
+      position: absolute;
+      top: -4px;
+      right: -1px;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 9px solid var(--yellow);
+    }
+
+    .track-start,
+    .track-end {
+      position: absolute;
+      top: 33px;
+      width: 14px;
+      height: 14px;
+      border: 3px solid #171823;
+      border-radius: 50%;
+    }
+
+    .track-start {
+      left: 0;
+      background: var(--purple);
+    }
+
+    .track-end {
+      right: 0;
+      background: var(--yellow);
+    }
+
+    .track-label {
+      position: absolute;
+      top: 57px;
+      color: #666b79;
+      font-size: 10px;
+    }
+
+    .track-label.left {
+      left: 0;
+    }
+
+    .track-label.right {
+      right: 0;
+    }
+
+    /* ==================== 页脚 ==================== */
+
+    .footer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      color: #505563;
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+
+    .footer strong {
+      color: #8178b5;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="viewport">
+    <main id="slide">
+      <div class="page">
+
+        <!-- 页头 -->
+        <header class="header">
+          <div class="eyebrow">01 / ABOUT ME</div>
+
+          <h1 class="title">个人简介</h1>
+
+          <div class="subtitle">
+            从<strong>新框架基础建设</strong>，到<strong>公屏与弹幕核心模块优化</strong>
+          </div>
+
+          <div class="header-right">PERSONAL PROFILE</div>
+        </header>
+
+        <!-- 个人信息 -->
+        <section class="profile-card">
+
+          <!-- 照片 -->
+          <div class="photo-section">
+            <div class="photo-frame">
+              <div class="photo-placeholder">
+                <div class="avatar-icon"></div>
+                <div class="placeholder-title">个人照片</div>
+                <div class="placeholder-note">
+                  请将照片命名为 portrait.jpg
+                </div>
+              </div>
+
+              <img
+                src="portrait.jpg"
+                alt="肖苹苹个人照片"
+                onerror="this.style.display='none';"
+              />
+
+              <div class="photo-label">C++ CLIENT DEVELOPER</div>
+            </div>
+          </div>
+
+          <!-- 个人与职责信息 -->
+          <div class="profile-content">
+            <div class="profile-mark">PROFILE / 01</div>
+
+            <div class="identity">
+              <div>
+                <h2 class="name">肖苹苹</h2>
+                <div class="job">C++ 客户端开发工程师</div>
+              </div>
+            </div>
+
+            <div class="meta">
+              <span class="meta-tag">
+                虎牙直播研发部 · PC业务组
+              </span>
+
+              <span class="meta-tag highlight">
+                2026.07 正式入职
+              </span>
+            </div>
+
+            <div class="responsibility">
+              <div class="responsibility-label">职责介绍</div>
+
+              <div class="responsibility-text">
+                负责<strong>虎牙直播 PC 客户端新框架</strong>的研发与维护，
+                聚焦<strong>公屏消息、弹幕渲染与发言控制</strong>等直播互动模块。
+              </div>
+            </div>
+
+            <div class="focus-grid">
+              <article class="focus-card">
+                <div class="focus-index">01 / FRAMEWORK</div>
+                <div class="focus-title">新框架建设</div>
+                <div class="focus-desc">
+                  基础能力迁移与功能维护
+                </div>
+              </article>
+
+              <article class="focus-card">
+                <div class="focus-index">02 / DANMAKU</div>
+                <div class="focus-title">弹幕渲染</div>
+                <div class="focus-desc">
+                  显示链路与渲染体验优化
+                </div>
+              </article>
+
+              <article class="focus-card">
+                <div class="focus-index">03 / PUBLIC CHAT</div>
+                <div class="focus-title">公屏与发言控制</div>
+                <div class="focus-desc">
+                  消息展示与配置能力完善
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- 成长路径 -->
+        <section class="journey">
+          <div class="journey-heading">成长路径</div>
+          <div class="journey-en">CAREER JOURNEY</div>
+
+          <div class="journey-content">
+            <div class="stage">
+              <div class="stage-date">2025.12—2026.02</div>
+
+              <div class="stage-title">
+                <span class="purple">实习</span>｜参与新框架建设
+              </div>
+
+              <div class="stage-desc">
+                独立承接基础需求，参与新框架前期建设
+              </div>
+            </div>
+
+            <div class="journey-track">
+              <div class="upgrade">
+                职责升级：基础建设 → 核心模块优化
+              </div>
+
+              <div class="track-line"></div>
+              <div class="track-start"></div>
+              <div class="track-end"></div>
+
+              <div class="track-label left">基础能力</div>
+              <div class="track-label right">核心体验</div>
+            </div>
+
+            <div class="stage">
+              <div class="stage-date">2026.07—至今</div>
+
+              <div class="stage-title">
+                <span class="yellow">正式</span>｜负责核心模块优化
+              </div>
+
+              <div class="stage-desc">
+                推进公屏、弹幕功能完善与性能优化
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+          <span>
+            <strong>专注直播互动体验与客户端核心能力建设</strong>
+          </span>
+
+          <span>01 / 04</span>
+        </footer>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function resizeSlide() {
+      const slide = document.getElementById("slide");
+
+      const scale = Math.min(
+        window.innerWidth / 1600,
+        window.innerHeight / 900
+      );
+
+      slide.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener("load", resizeSlide);
+    window.addEventListener("resize", resizeSlide);
+  </script>
+</body>
+</html>

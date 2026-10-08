@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>工作挑战① · 排查行动与结果</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #080910;
+      --panel: #151722;
+      --panel-light: #191b28;
+      --line: #303342;
+
+      --white: #f6f6f8;
+      --text: #c2c5cf;
+      --muted: #7e8392;
+      --dim: #555a68;
+
+      --purple: #8b7cff;
+      --purple-light: #c1b9ff;
+      --purple-dark: #211d39;
+
+      --yellow: #f2b93b;
+      --yellow-light: #ffd466;
+      --yellow-dark: #302713;
+
+      --cyan: #45d8c4;
+      --cyan-light: #86eadc;
+      --cyan-dark: #102c2b;
+
+      --red: #ff7285;
+      --red-dark: #321820;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #05060a;
+      font-family:
+        "Microsoft YaHei",
+        "PingFang SC",
+        "Noto Sans CJK SC",
+        Arial,
+        sans-serif;
+    }
+
+    body {
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    #viewport {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #05060a;
+    }
+
+    #slide {
+      position: relative;
+      width: 1600px;
+      height: 900px;
+      flex: 0 0 auto;
+      overflow: hidden;
+      transform-origin: center center;
+      color: var(--white);
+
+      background:
+        radial-gradient(
+          circle at 93% 5%,
+          rgba(139, 124, 255, 0.17),
+          transparent 28%
+        ),
+        radial-gradient(
+          circle at 3% 96%,
+          rgba(242, 185, 59, 0.045),
+          transparent 25%
+        ),
+        linear-gradient(
+          135deg,
+          #080910 0%,
+          #0a0b13 65%,
+          #161229 100%
+        );
+    }
+
+    #slide::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 680px;
+      height: 4px;
+      background: linear-gradient(
+        90deg,
+        var(--yellow),
+        var(--purple),
+        transparent
+      );
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+      padding: 42px 68px 25px;
+
+      display: grid;
+      grid-template-rows: 112px 90px 346px 235px 18px;
+      gap: 13px;
+    }
+
+    /* ==================== 页头 ==================== */
+
+    .header {
+      position: relative;
+      border-bottom: 1px solid #2b2e3b;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 17px;
+    }
+
+    .chapter-tag {
+      height: 29px;
+      padding: 0 14px;
+
+      display: inline-flex;
+      align-items: center;
+
+      border: 1px solid #775b18;
+      border-radius: 15px;
+
+      color: var(--yellow-light);
+      background: rgba(48, 39, 19, 0.48);
+
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+
+    .title {
+      margin: 0;
+      color: var(--white);
+      font-size: 32px;
+      line-height: 1.2;
+      font-weight: 750;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      margin-top: 13px;
+      color: #8f94a3;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .subtitle strong {
+      color: #e8e8ed;
+      font-weight: 700;
+    }
+
+    .header-en {
+      position: absolute;
+      top: 6px;
+      right: 0;
+
+      color: #8178bd;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+
+    /* ==================== 挑战结论 ==================== */
+
+    .challenge-bar {
+      position: relative;
+      display: grid;
+      grid-template-columns: 120px 1fr 360px;
+      align-items: center;
+      gap: 20px;
+
+      padding: 15px 22px;
+
+      border: 1px solid #343747;
+      border-radius: 14px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(139, 124, 255, 0.07),
+          rgba(21, 23, 34, 0.97) 56%,
+          rgba(69, 216, 196, 0.05)
+        );
+    }
+
+    .challenge-label {
+      color: var(--purple-light);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .challenge-text {
+      color: #d8dae2;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .challenge-text strong {
+      color: var(--white);
+    }
+
+    .method {
+      padding-left: 21px;
+      border-left: 1px solid #353846;
+      color: #979baa;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .method strong {
+      color: var(--cyan-light);
+      font-weight: 700;
+    }
+
+    /* ==================== 中部 ==================== */
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 0.96fr 1.04fr;
+      gap: 14px;
+      min-height: 0;
+    }
+
+    .panel {
+      min-width: 0;
+      min-height: 0;
+      padding: 20px 22px;
+
+      border: 1px solid #303342;
+      border-radius: 16px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.022),
+          transparent 62%
+        ),
+        rgba(21, 23, 34, 0.97);
+    }
+
+    .panel-header {
+      height: 35px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      border-bottom: 1px solid #292c38;
+    }
+
+    .panel-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-line {
+      width: 4px;
+      height: 18px;
+      border-radius: 2px;
+      background: var(--purple);
+    }
+
+    .panel-line.cyan {
+      background: var(--cyan);
+    }
+
+    .panel-title {
+      color: var(--white);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .panel-note {
+      color: #626777;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+
+    /* ==================== 排查路径 ==================== */
+
+    .process {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding-top: 19px;
+    }
+
+    .process::before {
+      content: "";
+      position: absolute;
+      top: 38px;
+      left: 37px;
+      right: 37px;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        var(--purple),
+        var(--yellow),
+        var(--red),
+        var(--cyan)
+      );
+      opacity: 0.55;
+    }
+
+    .step {
+      --accent: var(--purple);
+      --accent-light: var(--purple-light);
+      --accent-bg: rgba(139, 124, 255, 0.08);
+
+      position: relative;
+      z-index: 2;
+      min-width: 0;
+      padding: 0 7px;
+    }
+
+    .step:nth-child(2) {
+      --accent: var(--yellow);
+      --accent-light: var(--yellow-light);
+      --accent-bg: rgba(242, 185, 59, 0.08);
+    }
+
+    .step:nth-child(3) {
+      --accent: var(--red);
+      --accent-light: #ff9aaa;
+      --accent-bg: rgba(255, 114, 133, 0.08);
+    }
+
+    .step:nth-child(4) {
+      --accent: var(--cyan);
+      --accent-light: var(--cyan-light);
+      --accent-bg: rgba(69, 216, 196, 0.08);
+    }
+
+    .step-number {
+      width: 39px;
+      height: 39px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+
+      color: var(--accent-light);
+      background: #171823;
+
+      font-size: 11px;
+      font-weight: 700;
+
+      box-shadow: 0 0 0 6px #151722;
+    }
+
+    .step-card {
+      height: 206px;
+      margin-top: 15px;
+      padding: 15px 14px;
+
+      border: 1px solid #303342;
+      border-radius: 12px;
+      background: var(--accent-bg);
+    }
+
+    .step-title {
+      color: var(--accent-light);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .step-summary {
+      margin-top: 8px;
+      color: #e1e2e8;
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .step-desc {
+      margin-top: 10px;
+      color: #8c91a0;
+      font-size: 11px;
+      line-height: 1.65;
+    }
+
+    .step-result {
+      margin-top: 13px;
+      padding-top: 11px;
+      border-top: 1px solid #303342;
+
+      color: var(--accent-light);
+      font-size: 10px;
+      line-height: 1.45;
+      font-weight: 600;
+    }
+
+    /* ==================== 根因与修复 ==================== */
+
+    .diagnosis {
+      display: grid;
+      grid-template-rows: 94px 1fr;
+      gap: 12px;
+      padding-top: 14px;
+    }
+
+    .cause-row {
+      display: grid;
+      grid-template-columns: 1fr 38px 1fr;
+      align-items: stretch;
+      gap: 9px;
+    }
+
+    .cause-card {
+      position: relative;
+      padding: 15px 17px;
+      border: 1px solid #42303a;
+      border-radius: 12px;
+      background: rgba(50, 24, 32, 0.45);
+    }
+
+    .cause-card.fix {
+      border-color: #24534e;
+      background: rgba(16, 44, 43, 0.58);
+    }
+
+    .cause-label {
+      color: #ff91a1;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+
+    .cause-card.fix .cause-label {
+      color: var(--cyan-light);
+    }
+
+    .cause-title {
+      margin-top: 8px;
+      color: #f0f0f3;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .cause-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666b7a;
+      font-size: 18px;
+    }
+
+    .code-box {
+      padding: 15px 17px;
+      overflow: hidden;
+
+      border: 1px solid #303342;
+      border-radius: 12px;
+
+      background: #0e0f1b;
+      font-family:
+        "JetBrains Mono",
+        "Cascadia Code",
+        Consolas,
+        monospace;
+    }
+
+    .code-title {
+      margin-bottom: 11px;
+      color: #767b8b;
+      font-size: 10px;
+    }
+
+    .code-line {
+      margin: 6px 0;
+      color: #aeb2c0;
+      font-size: 11px;
+      line-height: 1.5;
+      white-space: nowrap;
+    }
+
+    .code-line.remove {
+      color: #ff7c91;
+    }
+
+    .code-line.add {
+      color: #57e0cd;
+    }
+
+    .code-line.comment {
+      color: #717687;
+    }
+
+    .code-key {
+      color: #c1b9ff;
+    }
+
+    /* ==================== 结果区 ==================== */
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 0.88fr 1.12fr;
+      gap: 14px;
+      min-height: 0;
+    }
+
+    .result-summary {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr 0.75fr;
+      gap: 11px;
+    }
+
+    .result-card {
+      position: relative;
+      min-width: 0;
+      padding: 20px;
+
+      border: 1px solid #303342;
+      border-radius: 15px;
+      background: rgba(21, 23, 34, 0.97);
+    }
+
+    .result-card.primary {
+      border-color: #225a54;
+      background:
+        radial-gradient(
+          circle at 91% 14%,
+          rgba(69, 216, 196, 0.12),
+          transparent 44%
+        ),
+        rgba(16, 38, 39, 0.78);
+    }
+
+    .result-index {
+      color: #646979;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.3px;
+    }
+
+    .result-value {
+      margin-top: 23px;
+      color: var(--white);
+      font-size: 36px;
+      line-height: 1;
+      font-weight: 760;
+      letter-spacing: -1px;
+    }
+
+    .primary .result-value {
+      color: var(--cyan);
+      font-size: 48px;
+    }
+
+    .result-value small {
+      margin-left: 3px;
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .result-label {
+      margin-top: 12px;
+      color: #e5e6eb;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .result-desc {
+      margin-top: 7px;
+      color: #7d8291;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    /* ==================== 耗时图 ==================== */
+
+    .timing-panel {
+      padding: 18px 21px;
+    }
+
+    .timing-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .timing-title {
+      color: var(--white);
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .timing-subtitle {
+      margin-top: 5px;
+      color: #747989;
+      font-size: 10px;
+    }
+
+    .timing-result {
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .timeline-wrap {
+      position: relative;
+      margin-top: 42px;
+      padding: 0 8px;
+    }
+
+    .timeline-labels {
+      display: grid;
+      grid-template-columns: 90fr 105fr 190fr 115fr;
+      margin-bottom: 9px;
+    }
+
+    .time-label {
+      color: #e7e7ec;
+      font-size: 10px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .timeline {
+      display: flex;
+      height: 10px;
+      overflow: hidden;
+      border-radius: 6px;
+      background: #252837;
+    }
+
+    .segment {
+      position: relative;
+      height: 100%;
+    }
+
+    .segment.one {
+      width: 18%;
+      background: var(--purple);
+    }
+
+    .segment.two {
+      width: 21%;
+      background: var(--yellow);
+    }
+
+    .segment.three {
+      width: 38%;
+      background: var(--cyan);
+    }
+
+    .segment.four {
+      width: 23%;
+      background: #292c39;
+    }
+
+    .timeline-axis {
+      position: relative;
+      height: 28px;
+      margin-top: 8px;
+      color: #6d7281;
+      font-size: 9px;
+    }
+
+    .axis-item {
+      position: absolute;
+      transform: translateX(-50%);
+    }
+
+    .axis-item.first {
+      left: 0;
+      transform: none;
+    }
+
+    .axis-item.a125 {
+      left: 25%;
+    }
+
+    .axis-item.a250 {
+      left: 50%;
+    }
+
+    .axis-item.a375 {
+      left: 75%;
+    }
+
+    .axis-item.last {
+      right: 0;
+      transform: none;
+    }
+
+    .deadline {
+      position: absolute;
+      top: -32px;
+      right: 0;
+      height: 50px;
+      border-right: 2px dashed var(--cyan);
+    }
+
+    .deadline span {
+      position: absolute;
+      right: 7px;
+      bottom: -2px;
+      color: var(--cyan);
+      font-size: 9px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .legend {
+      margin-top: 22px;
+      padding-top: 12px;
+      display: flex;
+      align-items: center;
+      gap: 17px;
+      border-top: 1px solid #292c38;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #858a99;
+      font-size: 9px;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      background: var(--purple);
+    }
+
+    .legend-dot.yellow {
+      background: var(--yellow);
+    }
+
+    .legend-dot.cyan {
+      background: var(--cyan);
+    }
+
+    /* ==================== 页脚 ==================== */
+
+    .footer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      color: #4f5462;
+      font-size: 9px;
+      letter-spacing: 1px;
+    }
+
+    .footer strong {
+      color: #8178b5;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="viewport">
+    <main id="slide">
+      <div class="page">
+
+        <!-- 页头 -->
+        <header class="header">
+          <div class="title-row">
+            <div class="chapter-tag">02①–3</div>
+            <h1 class="title">工作挑战 ① · 排查行动与结果</h1>
+          </div>
+
+          <div class="subtitle">
+            本人弹幕偶发丢失：从<strong>现象确认</strong>到<strong>根因定位</strong>，完成最小范围修复
+          </div>
+
+          <div class="header-en">ACTION · ROOT CAUSE · RESULT</div>
+        </header>
+
+        <!-- 挑战与方法 -->
+        <section class="challenge-bar">
+          <div class="challenge-label">核心挑战</div>
+
+          <div class="challenge-text">
+            如何在复杂异步链路中，定位<strong>本人弹幕偶发丢失</strong>的真实原因？
+          </div>
+
+          <div class="method">
+            排查原则：<strong>先埋点证伪 → 再收敛范围 → 最后最小修复</strong>
+          </div>
+        </section>
+
+        <!-- 中部 -->
+        <section class="main-grid">
+
+          <!-- 排查路径 -->
+          <article class="panel">
+            <div class="panel-header">
+              <div class="panel-title-wrap">
+                <span class="panel-line"></span>
+                <span class="panel-title">排查路径</span>
+              </div>
+
+              <span class="panel-note">INVESTIGATION FLOW</span>
+            </div>
+
+            <div class="process">
+
+              <div class="step">
+                <div class="step-number">01</div>
+
+                <div class="step-card">
+                  <div class="step-title">埋点</div>
+                  <div class="step-summary">确认是否真实入队</div>
+
+                  <div class="step-desc">
+                    在消息入口与队列插入点补充全链路日志。
+                  </div>
+
+                  <div class="step-result">
+                    结论：消息已成功进入队列
+                  </div>
+                </div>
+              </div>
+
+              <div class="step">
+                <div class="step-number">02</div>
+
+                <div class="step-card">
+                  <div class="step-title">证伪</div>
+                  <div class="step-summary">排除两个初始假设</div>
+
+                  <div class="step-desc">
+                    排除“消息被屏蔽”和“消息重复消费”。
+                  </div>
+
+                  <div class="step-result">
+                    结论：问题转向渲染层
+                  </div>
+                </div>
+              </div>
+
+              <div class="step">
+                <div class="step-number">03</div>
+
+                <div class="step-card">
+                  <div class="step-title">收敛</div>
+                  <div class="step-summary">锁定消息提前删除</div>
+
+                  <div class="step-desc">
+                    无可用轨道时引用被删除，消息无法重试。
+                  </div>
+
+                  <div class="step-result">
+                    根因：出队后永久丢失
+                  </div>
+                </div>
+              </div>
+
+              <div class="step">
+                <div class="step-number">04</div>
+
+                <div class="step-card">
+                  <div class="step-title">修复</div>
+                  <div class="step-summary">仅调整本人弹幕</div>
+
+                  <div class="step-desc">
+                    无轨道时重新入队，保留后续重试资格。
+                  </div>
+
+                  <div class="step-result">
+                    方案：不改整体渲染架构
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </article>
+
+          <!-- 根因与代码 -->
+          <article class="panel">
+            <div class="panel-header">
+              <div class="panel-title-wrap">
+                <span class="panel-line cyan"></span>
+                <span class="panel-title">根因与最小修复</span>
+              </div>
+
+              <span class="panel-note">ROOT CAUSE / MINIMAL FIX</span>
+            </div>
+
+            <div class="diagnosis">
+              <div class="cause-row">
+                <div class="cause-card">
+                  <div class="cause-label">ROOT CAUSE</div>
+                  <div class="cause-title">
+                    无可用轨道时，消息引用被直接删除
+                  </div>
+                </div>
+
+                <div class="cause-arrow">→</div>
+
+                <div class="cause-card fix">
+                  <div class="cause-label">MINIMAL FIX</div>
+                  <div class="cause-title">
+                    本人弹幕重新入队，保留重试资格
+                  </div>
+                </div>
+              </div>
+
+              <div class="code-box">
+                <div class="code-title">
+                  DanmakuCanvas.vue · 轨道分配失败处理
+                </div>
+
+                <div class="code-line remove">
+                  - itemRefs.delete(uniqueId)
+                  <span class="code-line comment">
+                    // 无轨道时删除，消息永久丢失
+                  </span>
+                </div>
+
+                <div class="code-line add">
+                  + if (danmu?.lUid === TafHelper.uid)
+                </div>
+
+                <div class="code-line add">
+                  + &nbsp;&nbsp;pendingQueue.value.push(danmu)
+                </div>
+
+                <div class="code-line comment">
+                  // 本人弹幕重新入队，不改动整体渲染逻辑
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- 结果 -->
+        <section class="result-grid">
+
+          <div class="result-summary">
+            <article class="result-card primary">
+              <div class="result-index">CORE RESULT</div>
+              <div class="result-value">&lt;0.5<small>s</small></div>
+              <div class="result-label">本人弹幕稳定上屏</div>
+              <div class="result-desc">
+                从发送到屏幕可见的端到端耗时
+              </div>
+            </article>
+
+            <article class="result-card">
+              <div class="result-index">VISIBILITY</div>
+              <div class="result-value">100<small>%</small></div>
+              <div class="result-label">本人弹幕可见率</div>
+              <div class="result-desc">
+                偶发丢失问题完成闭环
+              </div>
+            </article>
+
+            <article class="result-card">
+              <div class="result-index">CHANGE SCOPE</div>
+              <div class="result-value">0</div>
+              <div class="result-label">渲染架构改动</div>
+              <div class="result-desc">
+                采用最小范围修复
+              </div>
+            </article>
+          </div>
+
+          <!-- 耗时 -->
+          <article class="panel timing-panel">
+            <div class="timing-header">
+              <div>
+                <div class="timing-title">
+                  本人弹幕端到端上屏耗时
+                </div>
+                <div class="timing-subtitle">
+                  发送 → 入队 → 过滤判断 → 轨道分配 → 上屏
+                </div>
+              </div>
+
+              <div class="timing-result">峰值仍在 0.5s 内 ✓</div>
+            </div>
+
+            <div class="timeline-wrap">
+              <div class="timeline-labels">
+                <div class="time-label">约 90ms</div>
+                <div class="time-label">约 105ms</div>
+                <div class="time-label">约 190ms</div>
+                <div></div>
+              </div>
+
+              <div class="timeline">
+                <div class="segment one"></div>
+                <div class="segment two"></div>
+                <div class="segment three"></div>
+                <div class="segment four"></div>
+              </div>
+
+              <div class="deadline">
+                <span>0.5s 达标线</span>
+              </div>
+
+              <div class="timeline-axis">
+                <span class="axis-item first">0</span>
+                <span class="axis-item a125">125ms</span>
+                <span class="axis-item a250">250ms</span>
+                <span class="axis-item a375">375ms</span>
+                <span class="axis-item last">500ms</span>
+              </div>
+            </div>
+
+            <div class="legend">
+              <div class="legend-item">
+                <span class="legend-dot"></span>
+                发送 → 入队
+              </div>
+
+              <div class="legend-item">
+                <span class="legend-dot yellow"></span>
+                过滤判断
+              </div>
+
+              <div class="legend-item">
+                <span class="legend-dot cyan"></span>
+                轨道分配 → 上屏
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+          <span>
+            <strong>排查方法沉淀：埋点证伪 · 范围收敛 · 最小修复</strong>
+          </span>
+
+          <span>02 / ACTION & RESULT</span>
+        </footer>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function resizeSlide() {
+      const slide = document.getElementById("slide");
+
+      const scale = Math.min(
+        window.innerWidth / 1600,
+        window.innerHeight / 900
+      );
+
+      slide.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener("load", resizeSlide);
+    window.addEventListener("resize", resizeSlide);
+  </script>
+</body>
+</html>

@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 能提速，但不能替你负责</title>
+
+  <style>
+    :root {
+      --bg: #090a12;
+      --panel: #11131e;
+      --panel-soft: #151725;
+      --line: rgba(255, 255, 255, 0.1);
+
+      --text: #f5f6fb;
+      --text-secondary: #b8bdcd;
+      --text-muted: #777d91;
+
+      --purple: #937cff;
+      --purple-soft: rgba(147, 124, 255, 0.12);
+
+      --gray: #8b91a5;
+      --gray-soft: rgba(139, 145, 165, 0.1);
+
+      --yellow: #ffc247;
+      --yellow-soft: rgba(255, 194, 71, 0.11);
+
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      color: var(--text);
+      font-family:
+        Inter,
+        "PingFang SC",
+        "Microsoft YaHei",
+        "Noto Sans SC",
+        Arial,
+        sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .slide {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      min-height: 100vh;
+      padding: clamp(30px, 3.2vw, 62px) clamp(32px, 4.2vw, 82px)
+        clamp(24px, 2.4vw, 46px);
+      overflow: hidden;
+      background:
+        radial-gradient(
+          circle at 95% 4%,
+          rgba(111, 87, 211, 0.18),
+          transparent 29%
+        ),
+        radial-gradient(
+          circle at 3% 90%,
+          rgba(255, 194, 71, 0.045),
+          transparent 25%
+        ),
+        linear-gradient(135deg, #080910 0%, #0b0c15 56%, #0d0d19 100%);
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.14;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(to bottom, transparent, #000 25%, #000);
+    }
+
+    .header,
+    .matrix,
+    .conclusion,
+    .footer {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 顶部标题区 */
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 40px;
+      margin-bottom: clamp(24px, 2.4vw, 44px);
+    }
+
+    .title-group {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 15px;
+    }
+
+    .page-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 54px;
+      height: 30px;
+      padding: 0 16px;
+      border: 1px solid rgba(255, 194, 71, 0.65);
+      border-radius: 999px;
+      color: var(--yellow);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .eyebrow-label {
+      color: var(--purple);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 3vw, 58px);
+      line-height: 1.12;
+      letter-spacing: -0.035em;
+      font-weight: 800;
+    }
+
+    .subtitle {
+      margin: 16px 0 0;
+      color: var(--text-secondary);
+      font-size: clamp(16px, 1.15vw, 22px);
+      line-height: 1.7;
+    }
+
+    .subtitle strong {
+      color: var(--text);
+      font-weight: 650;
+    }
+
+    .header-mark {
+      flex: 0 0 auto;
+      padding-top: 11px;
+      color: rgba(176, 159, 255, 0.85);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      white-space: nowrap;
+    }
+
+    /* 对比矩阵 */
+    .matrix {
+      display: grid;
+      flex: 1;
+      grid-template-columns:
+        minmax(145px, 0.72fr)
+        minmax(270px, 1.35fr)
+        minmax(270px, 1.35fr)
+        minmax(270px, 1.35fr);
+      grid-template-rows: auto repeat(4, minmax(108px, 1fr));
+      min-height: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: rgba(17, 19, 30, 0.88);
+      box-shadow:
+        0 24px 70px rgba(0, 0, 0, 0.24),
+        inset 0 1px rgba(255, 255, 255, 0.025);
+    }
+
+    .cell {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      padding: clamp(16px, 1.5vw, 27px) clamp(17px, 1.6vw, 30px);
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .cell:nth-child(4n) {
+      border-right: 0;
+    }
+
+    .cell:nth-last-child(-n + 4) {
+      border-bottom: 0;
+    }
+
+    /* 表头 */
+    .head {
+      min-height: 72px;
+      padding-top: 17px;
+      padding-bottom: 17px;
+      font-size: clamp(16px, 1vw, 19px);
+      font-weight: 750;
+    }
+
+    .head.scene-head {
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.018);
+    }
+
+    .head.ai-head {
+      color: #c7bbff;
+      background: var(--purple-soft);
+    }
+
+    .head.boundary-head {
+      color: #bbc0ce;
+      background: var(--gray-soft);
+    }
+
+    .head.human-head {
+      color: var(--yellow);
+      background: var(--yellow-soft);
+    }
+
+    .head-inner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .head-marker {
+      width: 4px;
+      height: 24px;
+      border-radius: 10px;
+      background: currentColor;
+      box-shadow: 0 0 20px currentColor;
+    }
+
+    .head small {
+      display: block;
+      margin-top: 4px;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    /* 场景列 */
+    .scene {
+      gap: 16px;
+      background:
+        linear-gradient(90deg, rgba(147, 124, 255, 0.06), transparent 75%),
+        rgba(255, 255, 255, 0.012);
+    }
+
+    .scene-icon {
+      display: grid;
+      flex: 0 0 auto;
+      width: 48px;
+      height: 48px;
+      place-items: center;
+      border: 1px solid rgba(147, 124, 255, 0.5);
+      border-radius: 13px;
+      color: #b7a7ff;
+      background: rgba(147, 124, 255, 0.09);
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .scene-name {
+      margin: 0;
+      font-size: clamp(20px, 1.35vw, 26px);
+      line-height: 1.15;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .scene-en {
+      margin-top: 7px;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* 内容 */
+    .content {
+      position: relative;
+      gap: 15px;
+      color: var(--text-secondary);
+      font-size: clamp(15px, 1.05vw, 19px);
+      line-height: 1.55;
+    }
+
+    .content::before {
+      content: "";
+      flex: 0 0 auto;
+      align-self: stretch;
+      width: 3px;
+      min-height: 44px;
+      border-radius: 10px;
+    }
+
+    .ai-content::before {
+      background: var(--purple);
+    }
+
+    .boundary-content::before {
+      background: var(--gray);
+    }
+
+    .human-content::before {
+      background: var(--yellow);
+    }
+
+    .content-lines {
+      display: grid;
+      gap: 6px;
+    }
+
+    .content-line {
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
+    }
+
+    .content-line::before {
+      content: "";
+      flex: 0 0 auto;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      transform: translateY(-2px);
+      background: currentColor;
+      opacity: 0.65;
+    }
+
+    .ai-content {
+      color: #d8d1ff;
+      background: linear-gradient(
+        90deg,
+        rgba(147, 124, 255, 0.035),
+        transparent 55%
+      );
+    }
+
+    .boundary-content {
+      color: #b9becb;
+    }
+
+    .human-content {
+      color: #f0e7d2;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 194, 71, 0.035),
+        transparent 55%
+      );
+    }
+
+    .human-content strong {
+      color: var(--yellow);
+      font-weight: 750;
+    }
+
+    /* 结论条 */
+    .conclusion {
+      display: grid;
+      grid-template-columns: minmax(350px, 1fr) auto;
+      align-items: center;
+      gap: 30px;
+      margin-top: clamp(18px, 1.7vw, 30px);
+      padding: clamp(16px, 1.25vw, 23px) clamp(18px, 1.7vw, 32px);
+      border: 1px solid rgba(255, 194, 71, 0.24);
+      border-left: 4px solid var(--yellow);
+      border-radius: 15px;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(255, 194, 71, 0.08),
+          rgba(147, 124, 255, 0.035) 50%,
+          transparent
+        ),
+        rgba(17, 19, 30, 0.9);
+    }
+
+    .conclusion-text {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+      font-size: clamp(16px, 1.05vw, 20px);
+      line-height: 1.55;
+      color: var(--text-secondary);
+    }
+
+    .conclusion-tag {
+      flex: 0 0 auto;
+      padding: 8px 22px;
+      border-radius: 999px;
+      color: #261b00;
+      background: var(--yellow);
+      font-size: 14px;
+      font-weight: 850;
+    }
+
+    .conclusion-text strong {
+      color: var(--yellow);
+      font-weight: 800;
+    }
+
+    .process {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+    }
+
+    .process-step {
+      min-width: 128px;
+      padding: 11px 18px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.025);
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .process-step:first-child {
+      color: #c9beff;
+      border-color: rgba(147, 124, 255, 0.5);
+      background: rgba(147, 124, 255, 0.1);
+    }
+
+    .process-step:last-child {
+      color: var(--yellow);
+      border-color: rgba(255, 194, 71, 0.65);
+      background: rgba(255, 194, 71, 0.08);
+    }
+
+    .arrow {
+      position: relative;
+      width: 27px;
+      height: 1px;
+      background: #565b6c;
+    }
+
+    .arrow::after {
+      content: "";
+      position: absolute;
+      top: -3px;
+      right: -1px;
+      width: 7px;
+      height: 7px;
+      border-top: 1px solid #6c7284;
+      border-right: 1px solid #6c7284;
+      transform: rotate(45deg);
+    }
+
+    /* 页脚 */
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 18px;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.13em;
+    }
+
+    .footer strong {
+      color: #9f91e7;
+    }
+
+    /* 较窄屏幕 */
+    @media (max-width: 1180px) {
+      .slide {
+        padding: 28px;
+      }
+
+      .header-mark {
+        display: none;
+      }
+
+      .matrix {
+        grid-template-columns:
+          minmax(130px, 0.75fr)
+          repeat(3, minmax(210px, 1.35fr));
+      }
+
+      .cell {
+        padding: 16px;
+      }
+
+      .scene {
+        gap: 10px;
+      }
+
+      .scene-icon {
+        width: 40px;
+        height: 40px;
+      }
+
+      .process-step {
+        min-width: auto;
+        padding: 10px 12px;
+      }
+    }
+
+    /* 移动端改成卡片 */
+    @media (max-width: 760px) {
+      .slide {
+        display: block;
+        padding: 24px 16px;
+        overflow: visible;
+      }
+
+      .header {
+        margin-bottom: 22px;
+      }
+
+      .eyebrow-label {
+        display: none;
+      }
+
+      h1 {
+        font-size: 32px;
+      }
+
+      .matrix {
+        display: block;
+        border: 0;
+        overflow: visible;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      .head {
+        display: none;
+      }
+
+      .cell {
+        border: 0;
+      }
+
+      .scene {
+        margin-top: 16px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 14px 14px 0 0;
+        background: var(--panel-soft);
+      }
+
+      .content {
+        min-height: 86px;
+        padding: 17px 18px;
+        border-right: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        border-left: 1px solid var(--line);
+        font-size: 16px;
+      }
+
+      .ai-content::after,
+      .boundary-content::after,
+      .human-content::after {
+        position: absolute;
+        top: 8px;
+        right: 13px;
+        color: var(--text-muted);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+      }
+
+      .ai-content::after {
+        content: "AI 可以做";
+      }
+
+      .boundary-content::after {
+        content: "AI 做不到";
+      }
+
+      .human-content::after {
+        content: "人必须判断";
+      }
+
+      .human-content {
+        border-radius: 0 0 14px 14px;
+      }
+
+      .conclusion {
+        grid-template-columns: 1fr;
+        margin-top: 22px;
+      }
+
+      .conclusion-text {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .process {
+        width: 100%;
+      }
+
+      .process-step {
+        flex: 1;
+        padding: 10px 6px;
+        font-size: 11px;
+      }
+
+      .footer {
+        gap: 20px;
+        font-size: 9px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="slide">
+    <!-- 标题 -->
+    <header class="header">
+      <div class="title-group">
+        <div class="eyebrow">
+          <span class="page-number">03</span>
+          <span class="eyebrow-label">AI Boundary · Human Judgement</span>
+        </div>
+
+        <h1>AI 能提速，但不能替你负责</h1>
+
+        <p class="subtitle">
+          AI 负责<strong>生成候选、归纳信息</strong>；
+          人负责<strong>验证事实、权衡风险、做最终决策</strong>
+        </p>
+      </div>
+
+      <div class="header-mark">AI BOUNDARY · HUMAN JUDGEMENT</div>
+    </header>
+
+    <!-- 对比矩阵 -->
+    <section class="matrix" aria-label="AI能力边界对比矩阵">
+      <!-- 表头 -->
+      <div class="cell head scene-head">
+        <div class="head-inner">
+          <span>工作场景</span>
+        </div>
+      </div>
+
+      <div class="cell head ai-head">
+        <div class="head-inner">
+          <span class="head-marker"></span>
+          <div>
+            AI 可以做
+            <small>Accelerate</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="cell head boundary-head">
+        <div class="head-inner">
+          <span class="head-marker"></span>
+          <div>
+            AI 做不到
+            <small>Boundary</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="cell head human-head">
+        <div class="head-inner">
+          <span class="head-marker"></span>
+          <div>
+            人必须判断
+            <small>Accountability</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- 开发 -->
+      <div class="cell scene">
+        <div class="scene-icon">&lt;/&gt;</div>
+        <div>
+          <h2 class="scene-name">开发</h2>
+          <div class="scene-en">Development</div>
+        </div>
+      </div>
+
+      <div class="cell content ai-content">
+        <div class="content-lines">
+          <div class="content-line">生成代码骨架</div>
+          <div class="content-line">补齐常见实现</div>
+        </div>
+      </div>
+
+      <div class="cell content boundary-content">
+        <div class="content-lines">
+          <div class="content-line">理解全部业务语义</div>
+          <div class="content-line">掌握历史约束</div>
+        </div>
+      </div>
+
+      <div class="cell content human-content">
+        <div class="content-lines">
+          <div class="content-line"><strong>核验逻辑</strong></div>
+          <div class="content-line">联调与回归</div>
+        </div>
+      </div>
+
+      <!-- 排错 -->
+      <div class="cell scene">
+        <div class="scene-icon">!</div>
+        <div>
+          <h2 class="scene-name">排错</h2>
+          <div class="scene-en">Debugging</div>
+        </div>
+      </div>
+
+      <div class="cell content ai-content">
+        <div class="content-lines">
+          <div class="content-line">解释报错信息</div>
+          <div class="content-line">提供排查路径</div>
+        </div>
+      </div>
+
+      <div class="cell content boundary-content">
+        <div class="content-lines">
+          <div class="content-line">直接看到真实环境</div>
+          <div class="content-line">还原完整调用链路</div>
+        </div>
+      </div>
+
+      <div class="cell content human-content">
+        <div class="content-lines">
+          <div class="content-line"><strong>复现问题</strong></div>
+          <div class="content-line">结合日志缩小范围</div>
+        </div>
+      </div>
+
+      <!-- 设计 -->
+      <div class="cell scene">
+        <div class="scene-icon">◇</div>
+        <div>
+          <h2 class="scene-name">设计</h2>
+          <div class="scene-en">Solution Design</div>
+        </div>
+      </div>
+
+      <div class="cell content ai-content">
+        <div class="content-lines">
+          <div class="content-line">发散多个方案</div>
+          <div class="content-line">整理优缺点</div>
+        </div>
+      </div>
+
+      <div class="cell content boundary-content">
+        <div class="content-lines">
+          <div class="content-line">替你完成方案取舍</div>
+          <div class="content-line">确认隐性边界</div>
+        </div>
+      </div>
+
+      <div class="cell content human-content">
+        <div class="content-lines">
+          <div class="content-line"><strong>明确目标与约束</strong></div>
+          <div class="content-line">验证假设并拍板</div>
+        </div>
+      </div>
+
+      <!-- 测试 -->
+      <div class="cell scene">
+        <div class="scene-icon">✓</div>
+        <div>
+          <h2 class="scene-name">测试</h2>
+          <div class="scene-en">Testing</div>
+        </div>
+      </div>
+
+      <div class="cell content ai-content">
+        <div class="content-lines">
+          <div class="content-line">生成测试用例</div>
+          <div class="content-line">补充边界场景</div>
+        </div>
+      </div>
+
+      <div class="cell content boundary-content">
+        <div class="content-lines">
+          <div class="content-line">保证上线后零风险</div>
+          <div class="content-line">排除全部安全隐患</div>
+        </div>
+      </div>
+
+      <div class="cell content human-content">
+        <div class="content-lines">
+          <div class="content-line"><strong>按标准验收</strong></div>
+          <div class="content-line">复测高风险项</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 核心结论 -->
+    <section class="conclusion">
+      <div class="conclusion-text">
+        <span class="conclusion-tag">总原则</span>
+        <span>
+          AI 扩展候选空间、缩短验证路径；
+          人确认事实、解释差异，并<strong>承担最终决策责任</strong>。
+        </span>
+      </div>
+
+      <div class="process" aria-label="决策流程">
+        <div class="process-step">AI 扩展候选</div>
+        <span class="arrow"></span>
+        <div class="process-step">证据验证</div>
+        <span class="arrow"></span>
+        <div class="process-step">人工决策</div>
+      </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+      <span><strong>AI 应用实践</strong> · 能力有边界 · 判断有依据</span>
+      <span>03 / AI BOUNDARY</span>
+    </footer>
+  </main>
+</body>
+</html>

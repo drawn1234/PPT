@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>谢谢聆听</title>
+
+  <style>
+    :root {
+      --bg: #080910;
+      --text: #f7f7fb;
+      --sub: #b8bdcd;
+      --muted: #73798d;
+      --purple: #9a82ff;
+      --yellow: #ffc547;
+      --line: rgba(255, 255, 255, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    body {
+      color: var(--text);
+      font-family:
+        Inter,
+        "PingFang SC",
+        "Microsoft YaHei",
+        "Noto Sans SC",
+        Arial,
+        sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .slide {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      width: 100vw;
+      height: 100vh;
+      padding:
+        clamp(28px, 4vh, 54px)
+        clamp(36px, 4vw, 76px)
+        clamp(18px, 2.5vh, 32px);
+      overflow: hidden;
+
+      background:
+        radial-gradient(
+          circle at 88% 5%,
+          rgba(118, 86, 225, 0.2),
+          transparent 31%
+        ),
+        radial-gradient(
+          circle at 8% 100%,
+          rgba(255, 197, 71, 0.07),
+          transparent 29%
+        ),
+        linear-gradient(135deg, #080910 0%, #0b0c15 56%, #0d0d18 100%);
+    }
+
+    /* 顶部渐变线 */
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 2px;
+      background: linear-gradient(
+        90deg,
+        var(--yellow),
+        #ddae89 42%,
+        var(--purple) 86%,
+        transparent
+      );
+    }
+
+    /* 背景网格 */
+    .slide::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.1;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.024) 1px, transparent 1px),
+        linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.024) 1px,
+          transparent 1px
+        );
+      background-size: 54px 54px;
+      mask-image: radial-gradient(
+        circle at center,
+        #000 0%,
+        transparent 72%
+      );
+    }
+
+    .header,
+    .hero,
+    .footer {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 顶部 */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-label {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .page-number {
+      display: grid;
+      width: 48px;
+      height: 28px;
+      place-items: center;
+      border: 1px solid rgba(255, 197, 71, 0.65);
+      border-radius: 999px;
+      color: var(--yellow);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .section-name {
+      color: var(--sub);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+    }
+
+    .page-mark {
+      color: rgba(177, 161, 255, 0.82);
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: 0.28em;
+    }
+
+    /* 中心内容 */
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      text-align: center;
+    }
+
+    .hero-content {
+      position: relative;
+      display: flex;
+      width: min(920px, 82vw);
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .hero-content::before {
+      content: "";
+      position: absolute;
+      top: 44%;
+      left: 50%;
+      width: min(720px, 72vw);
+      height: min(360px, 42vh);
+      border-radius: 50%;
+      background: rgba(145, 113, 255, 0.09);
+      filter: blur(90px);
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: clamp(16px, 2.2vh, 26px);
+      color: var(--purple);
+      font-size: clamp(11px, 0.75vw, 14px);
+      font-weight: 800;
+      letter-spacing: 0.24em;
+    }
+
+    .eyebrow::before,
+    .eyebrow::after {
+      content: "";
+      width: clamp(36px, 4vw, 70px);
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(154, 130, 255, 0.7)
+      );
+    }
+
+    .eyebrow::after {
+      transform: rotate(180deg);
+    }
+
+    h1 {
+      position: relative;
+      margin: 0;
+      font-size: clamp(78px, 9vw, 168px);
+      line-height: 0.9;
+      font-weight: 900;
+      letter-spacing: -0.065em;
+
+      background: linear-gradient(
+        90deg,
+        #a98df7 2%,
+        #d6afc2 48%,
+        var(--yellow) 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+
+      filter: drop-shadow(0 12px 35px rgba(141, 108, 255, 0.12));
+    }
+
+    .cn-title {
+      position: relative;
+      margin-top: clamp(22px, 3vh, 34px);
+      font-size: clamp(27px, 2.25vw, 43px);
+      line-height: 1.2;
+      font-weight: 850;
+      letter-spacing: 0.04em;
+    }
+
+    .cn-title span {
+      color: var(--yellow);
+    }
+
+    .closing-line {
+      position: relative;
+      max-width: 780px;
+      margin: clamp(14px, 2vh, 22px) auto 0;
+      color: var(--sub);
+      font-size: clamp(15px, 1.08vw, 20px);
+      line-height: 1.65;
+    }
+
+    .closing-line strong {
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .closing-line em {
+      color: var(--yellow);
+      font-style: normal;
+      font-weight: 800;
+    }
+
+    /* 汇报信息 */
+    .meta {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-top: clamp(25px, 3.5vh, 42px);
+      color: var(--muted);
+      font-size: clamp(11px, 0.78vw, 14px);
+    }
+
+    .meta strong {
+      color: #aaa0de;
+      font-weight: 750;
+    }
+
+    .divider {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.28);
+    }
+
+    /* 页脚 */
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: clamp(12px, 1.7vh, 20px);
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 650;
+      letter-spacing: 0.1em;
+    }
+
+    .footer strong {
+      color: #a596ee;
+    }
+
+    .footer-right {
+      color: #888ea2;
+    }
+
+    /* 装饰元素 */
+    .orbit {
+      position: absolute;
+      z-index: 0;
+      border: 1px solid rgba(154, 130, 255, 0.08);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .orbit-1 {
+      top: 50%;
+      left: 50%;
+      width: min(780px, 62vw);
+      height: min(780px, 62vw);
+      transform: translate(-50%, -50%);
+    }
+
+    .orbit-2 {
+      top: 50%;
+      left: 50%;
+      width: min(560px, 45vw);
+      height: min(560px, 45vw);
+      transform: translate(-50%, -50%);
+      border-color: rgba(255, 197, 71, 0.055);
+    }
+
+    .dot {
+      position: absolute;
+      z-index: 1;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--purple);
+      box-shadow: 0 0 18px rgba(154, 130, 255, 0.8);
+    }
+
+    .dot-1 {
+      top: 27%;
+      left: 21%;
+    }
+
+    .dot-2 {
+      right: 18%;
+      bottom: 29%;
+      background: var(--yellow);
+      box-shadow: 0 0 18px rgba(255, 197, 71, 0.7);
+    }
+
+    @media (max-height: 760px) {
+      .slide {
+        padding-top: 22px;
+        padding-bottom: 14px;
+      }
+
+      h1 {
+        font-size: clamp(70px, 8vw, 125px);
+      }
+
+      .cn-title {
+        margin-top: 16px;
+      }
+
+      .closing-line {
+        margin-top: 10px;
+      }
+
+      .meta {
+        margin-top: 20px;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .slide {
+        padding-left: 22px;
+        padding-right: 22px;
+      }
+
+      .page-mark,
+      .section-name {
+        display: none;
+      }
+
+      .hero-content {
+        width: 100%;
+      }
+
+      h1 {
+        font-size: clamp(66px, 18vw, 110px);
+      }
+
+      .meta {
+        flex-wrap: wrap;
+      }
+
+      .footer-right {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="slide">
+    <!-- 背景装饰 -->
+    <div class="orbit orbit-1"></div>
+    <div class="orbit orbit-2"></div>
+    <span class="dot dot-1"></span>
+    <span class="dot dot-2"></span>
+
+    <!-- 顶部 -->
+    <header class="header">
+      <div class="header-label">
+        <span class="page-number">END</span>
+        <span class="section-name">2026 届校招生期中答辩</span>
+      </div>
+
+      <div class="page-mark">THANK YOU</div>
+    </header>
+
+    <!-- 中心内容 -->
+    <section class="hero">
+      <div class="hero-content">
+        <div class="eyebrow">PRESENTATION COMPLETE</div>
+
+        <h1>THANKS</h1>
+
+        <div class="cn-title">
+          谢谢聆听 <span>·</span> 恳请指正
+        </div>
+
+        <p class="closing-line">
+          让 AI 扩展可能、加速验证，
+          让<strong>人的判断</strong>决定方向并<em>承担结果</em>。
+        </p>
+
+        <div class="meta">
+          <strong>肖莹莹</strong>
+          <span class="divider"></span>
+          <span>虎牙直播研发部</span>
+          <span class="divider"></span>
+          <span>PC业务组</span>
+          <span class="divider"></span>
+          <span>C++客户端开发工程师</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+      <span>
+        <strong>2026.09</strong> · 实习 2025.12—2026.02 · 正职 2026.07—至今
+      </span>
+
+      <span class="footer-right">END / THANK YOU</span>
+    </footer>
+  </main>
+</body>
+</html>

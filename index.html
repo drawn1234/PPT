@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <title>试用期工作汇报</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #05060a;
+      --panel: rgba(18, 19, 29, 0.88);
+      --line: rgba(255, 255, 255, 0.12);
+
+      --white: #f7f7f9;
+      --muted: #8d92a1;
+
+      --purple: #8b7cff;
+      --purple-light: #c3bbff;
+
+      --yellow: #f2b93b;
+      --yellow-light: #ffd466;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+
+      font-family:
+        "Microsoft YaHei",
+        "PingFang SC",
+        Arial,
+        sans-serif;
+    }
+
+    body {
+      color: var(--white);
+    }
+
+    /* 整体演示容器 */
+    #presentation {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      background: #05060a;
+    }
+
+    /* 页面 iframe */
+    #slide-frame {
+      position: absolute;
+      inset: 0;
+
+      width: 100%;
+      height: 100%;
+
+      border: 0;
+      outline: 0;
+      background: #05060a;
+
+      opacity: 1;
+      transition:
+        opacity 0.18s ease,
+        transform 0.18s ease;
+    }
+
+    #slide-frame.changing-next {
+      opacity: 0;
+      transform: translateX(12px);
+    }
+
+    #slide-frame.changing-prev {
+      opacity: 0;
+      transform: translateX(-12px);
+    }
+
+    /* 顶部进度条 */
+    .progress-track {
+      position: fixed;
+      z-index: 20;
+      top: 0;
+      left: 0;
+      right: 0;
+
+      height: 3px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .progress-bar {
+      width: 0;
+      height: 100%;
+
+      background: linear-gradient(
+        90deg,
+        var(--yellow),
+        var(--purple)
+      );
+
+      box-shadow:
+        0 0 12px rgba(139, 124, 255, 0.4);
+
+      transition: width 0.25s ease;
+    }
+
+    /* 左右翻页热区 */
+    .page-zone {
+      position: fixed;
+      z-index: 10;
+      top: 0;
+      bottom: 0;
+
+      width: 9%;
+      min-width: 72px;
+
+      border: 0;
+      padding: 0;
+
+      color: rgba(255, 255, 255, 0);
+      background: transparent;
+
+      cursor: pointer;
+      transition:
+        color 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .page-zone:hover {
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .page-zone.prev {
+      left: 0;
+
+      background: linear-gradient(
+        90deg,
+        rgba(5, 6, 10, 0.55),
+        transparent
+      );
+    }
+
+    .page-zone.next {
+      right: 0;
+
+      background: linear-gradient(
+        -90deg,
+        rgba(5, 6, 10, 0.55),
+        transparent
+      );
+    }
+
+    .page-zone:disabled {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .zone-icon {
+      position: absolute;
+      top: 50%;
+
+      width: 40px;
+      height: 40px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      transform: translateY(-50%);
+
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 50%;
+
+      color: inherit;
+      background: rgba(15, 16, 25, 0.65);
+      backdrop-filter: blur(10px);
+
+      font-size: 21px;
+    }
+
+    .prev .zone-icon {
+      left: 20px;
+    }
+
+    .next .zone-icon {
+      right: 20px;
+    }
+
+    /* 底部控制栏 */
+    .controls {
+      position: fixed;
+      z-index: 30;
+      right: 22px;
+      bottom: 18px;
+
+      height: 42px;
+      padding: 0 8px 0 15px;
+
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      border: 1px solid var(--line);
+      border-radius: 22px;
+
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+
+      opacity: 0.28;
+      transition: opacity 0.2s ease;
+    }
+
+    .controls:hover {
+      opacity: 1;
+    }
+
+    .page-number {
+      min-width: 62px;
+
+      color: #dadbe1;
+      font-size: 12px;
+      font-weight: 650;
+      text-align: center;
+    }
+
+    .page-number strong {
+      color: var(--yellow-light);
+      font-size: 14px;
+    }
+
+    .control-divider {
+      width: 1px;
+      height: 18px;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .control-button {
+      width: 30px;
+      height: 30px;
+      padding: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border: 1px solid transparent;
+      border-radius: 50%;
+
+      color: #aaaebb;
+      background: transparent;
+
+      font-size: 15px;
+      cursor: pointer;
+
+      transition:
+        color 0.2s ease,
+        border-color 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .control-button:hover {
+      color: var(--white);
+      border-color: rgba(139, 124, 255, 0.35);
+      background: rgba(139, 124, 255, 0.1);
+    }
+
+    /* 左下角页面名称 */
+    .slide-info {
+      position: fixed;
+      z-index: 30;
+      left: 22px;
+      bottom: 18px;
+
+      max-width: 360px;
+      height: 36px;
+      padding: 0 15px;
+
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      border: 1px solid var(--line);
+      border-radius: 18px;
+
+      color: #a7abb7;
+      background: rgba(18, 19, 29, 0.76);
+      backdrop-filter: blur(12px);
+
+      font-size: 11px;
+
+      opacity: 0.2;
+      transition: opacity 0.2s ease;
+    }
+
+    .slide-info:hover {
+      opacity: 1;
+    }
+
+    .slide-info-dot {
+      width: 6px;
+      height: 6px;
+      flex: 0 0 auto;
+
+      border-radius: 50%;
+      background: var(--purple);
+      box-shadow: 0 0 9px rgba(139, 124, 255, 0.65);
+    }
+
+    .slide-name {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    /* 帮助面板 */
+    .help-panel {
+      position: fixed;
+      z-index: 100;
+      inset: 0;
+
+      display: none;
+      align-items: center;
+      justify-content: center;
+
+      background: rgba(3, 4, 8, 0.72);
+      backdrop-filter: blur(8px);
+    }
+
+    .help-panel.visible {
+      display: flex;
+    }
+
+    .help-card {
+      width: 460px;
+      padding: 28px;
+
+      border: 1px solid rgba(139, 124, 255, 0.28);
+      border-radius: 18px;
+
+      background:
+        radial-gradient(
+          circle at 90% 10%,
+          rgba(139, 124, 255, 0.12),
+          transparent 36%
+        ),
+        #151722;
+
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+    }
+
+    .help-title {
+      margin: 0 0 20px;
+
+      color: var(--white);
+      font-size: 21px;
+    }
+
+    .shortcut-list {
+      display: grid;
+      grid-template-columns: 125px 1fr;
+      gap: 13px 18px;
+
+      color: #aeb2bf;
+      font-size: 13px;
+    }
+
+    .shortcut-key {
+      color: var(--purple-light);
+      font-weight: 700;
+    }
+
+    .help-close {
+      width: 100%;
+      height: 38px;
+      margin-top: 25px;
+
+      border: 1px solid rgba(242, 185, 59, 0.35);
+      border-radius: 9px;
+
+      color: var(--yellow-light);
+      background: rgba(242, 185, 59, 0.07);
+
+      cursor: pointer;
+    }
+
+    /* 加载提示 */
+    .loading {
+      position: fixed;
+      z-index: 5;
+      inset: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      color: #7d8291;
+      background: #080910;
+
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+
+    .loading.hidden {
+      display: none;
+    }
+
+    /* 全屏时弱化控制区域 */
+    :fullscreen .controls,
+    :fullscreen .slide-info {
+      opacity: 0.06;
+    }
+
+    :fullscreen .controls:hover,
+    :fullscreen .slide-info:hover {
+      opacity: 1;
+    }
+
+    /* 触屏设备隐藏大面积翻页热区 */
+    @media (hover: none) {
+      .page-zone {
+        width: 14%;
+      }
+
+      .page-zone .zone-icon {
+        display: none;
+      }
+
+      .controls,
+      .slide-info {
+        opacity: 0.75;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main id="presentation">
+
+    <!-- 页面加载提示 -->
+    <div id="loading" class="loading">
+      LOADING PRESENTATION
+    </div>
+
+    <!-- 每一页通过 iframe 独立加载，避免 CSS 冲突 -->
+    <iframe
+      id="slide-frame"
+      title="演示文稿页面"
+      allowfullscreen
+    ></iframe>
+
+    <!-- 顶部进度 -->
+    <div class="progress-track">
+      <div id="progress-bar" class="progress-bar"></div>
+    </div>
+
+    <!-- 左右翻页 -->
+    <button
+      id="prev-zone"
+      class="page-zone prev"
+      type="button"
+      aria-label="上一页"
+    >
+      <span class="zone-icon">‹</span>
+    </button>
+
+    <button
+      id="next-zone"
+      class="page-zone next"
+      type="button"
+      aria-label="下一页"
+    >
+      <span class="zone-icon">›</span>
+    </button>
+
+    <!-- 当前页面信息 -->
+    <div class="slide-info">
+      <span class="slide-info-dot"></span>
+      <span id="slide-name" class="slide-name"></span>
+    </div>
+
+    <!-- 底部操作栏 -->
+    <nav class="controls" aria-label="演示控制">
+      <div id="page-number" class="page-number"></div>
+
+      <span class="control-divider"></span>
+
+      <button
+        id="prev-button"
+        class="control-button"
+        type="button"
+        title="上一页"
+      >
+        ‹
+      </button>
+
+      <button
+        id="next-button"
+        class="control-button"
+        type="button"
+        title="下一页"
+      >
+        ›
+      </button>
+
+      <button
+        id="fullscreen-button"
+        class="control-button"
+        type="button"
+        title="全屏"
+      >
+        ⛶
+      </button>
+
+      <button
+        id="help-button"
+        class="control-button"
+        type="button"
+        title="快捷键"
+      >
+        ?
+      </button>
+    </nav>
+
+    <!-- 快捷键说明 -->
+    <section id="help-panel" class="help-panel">
+      <div class="help-card">
+        <h2 class="help-title">演示快捷键</h2>
+
+        <div class="shortcut-list">
+          <div class="shortcut-key">→ / ↓ / Space</div>
+          <div>下一页</div>
+
+          <div class="shortcut-key">← / ↑</div>
+          <div>上一页</div>
+
+          <div class="shortcut-key">Home</div>
+          <div>跳转到第一页</div>
+
+          <div class="shortcut-key">End</div>
+          <div>跳转到最后一页</div>
+
+          <div class="shortcut-key">F</div>
+          <div>进入或退出全屏</div>
+
+          <div class="shortcut-key">R</div>
+          <div>重新加载当前页</div>
+
+          <div class="shortcut-key">H / ?</div>
+          <div>显示或关闭快捷键说明</div>
+
+          <div class="shortcut-key">Esc</div>
+          <div>关闭帮助或退出全屏</div>
+        </div>
+
+        <button
+          id="help-close"
+          class="help-close"
+          type="button"
+        >
+          关闭
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /*
+     * ====================================================
+     * 只需要修改这里的页面列表
+     * ====================================================
+     *
+     * file：HTML 文件路径
+     * title：左下角显示的页面名称
+     */
+
+    const slides = [
+      {
+        file: "1-封面.html",
+        title: "试用期工作汇报"
+      },
+      {
+        file: "2-目录.html",
+        title: "目录"
+      },
+      {
+        file: "3-个人简介.html",
+        title: "个人简介"
+      },
+      {
+        file: "4-工作产出.html",
+        title: "工作产出"
+      },
+      {
+        file: "4-工作产出1.html",
+        title: "工作产出2"
+      },
+      {
+        file: "6-工作成果1.html",
+        title: "平台会员接入 · 情境与功能"
+      },
+      {
+        file: "7-工作成果2.html",
+        title: "平台会员接入 · 行动与结果"
+      },
+      {
+        file: "8-工作挑战1.html",
+        title: "AI 应用实践"
+      },
+      {
+        file: "9-工作挑战2.html",
+        title: "AI 能力边界与人工判断"
+      },
+      {
+        file: "10-工作挑战3.html",
+        title: "下一步规划"
+      },
+      {
+        file: "11-AI应用实践.html",
+        title: "工作产出"
+      },
+      {
+        file: "12-AI案例.html",
+        title: "工作产出2"
+      },
+      {
+        file: "13-AI使用.html",
+        title: "平台会员接入 · 情境与功能"
+      },
+      {
+        file: "14-AI转变.html",
+        title: "平台会员接入 · 行动与结果"
+      },
+      {
+        file: "15-下一步规划.html",
+        title: "AI 应用实践"
+      },
+      {
+        file: "16-谢语.html",
+        title: "AI 能力边界与人工判断"
+      }
+    ];
+
+    const frame = document.getElementById("slide-frame");
+    const loading = document.getElementById("loading");
+
+    const prevZone = document.getElementById("prev-zone");
+    const nextZone = document.getElementById("next-zone");
+
+    const prevButton = document.getElementById("prev-button");
+    const nextButton = document.getElementById("next-button");
+
+    const fullscreenButton = document.getElementById(
+      "fullscreen-button"
+    );
+
+    const helpButton = document.getElementById("help-button");
+    const helpPanel = document.getElementById("help-panel");
+    const helpClose = document.getElementById("help-close");
+
+    const progressBar = document.getElementById("progress-bar");
+    const pageNumber = document.getElementById("page-number");
+    const slideName = document.getElementById("slide-name");
+
+    let currentIndex = getInitialPage();
+    let changing = false;
+
+    /**
+     * 支持通过 URL 页码直接打开。
+     *
+     * 示例：
+     * index.html?page=5
+     * index.html#5
+     */
+    function getInitialPage() {
+      const query = new URLSearchParams(window.location.search);
+      const queryPage = Number(query.get("page"));
+      const hashPage = Number(
+        window.location.hash.replace("#", "")
+      );
+
+      const requestedPage = queryPage || hashPage || 1;
+
+      return Math.min(
+        Math.max(requestedPage - 1, 0),
+        slides.length - 1
+      );
+    }
+
+    /**
+     * 显示指定页面。
+     */
+    function showSlide(index, direction = "next", immediate = false) {
+      if (
+        changing ||
+        index < 0 ||
+        index >= slides.length
+      ) {
+        return;
+      }
+
+      const targetSlide = slides[index];
+
+      changing = true;
+
+      if (!immediate) {
+        frame.classList.add(
+          direction === "prev"
+            ? "changing-prev"
+            : "changing-next"
+        );
+      }
+
+      const delay = immediate ? 0 : 170;
+
+      window.setTimeout(() => {
+        currentIndex = index;
+
+        frame.src = targetSlide.file;
+        updateInterface();
+        updateAddress();
+
+        window.setTimeout(() => {
+          frame.classList.remove(
+            "changing-prev",
+            "changing-next"
+          );
+
+          changing = false;
+        }, 60);
+      }, delay);
+    }
+
+    /**
+     * 更新页码、进度、按钮状态与页面名称。
+     */
+    function updateInterface() {
+      const currentPage = currentIndex + 1;
+      const totalPage = slides.length;
+
+      pageNumber.innerHTML =
+        `<strong>${String(currentPage).padStart(2, "0")}</strong>` +
+        ` / ${String(totalPage).padStart(2, "0")}`;
+
+      slideName.textContent = slides[currentIndex].title;
+
+      progressBar.style.width =
+        `${(currentPage / totalPage) * 100}%`;
+
+      prevZone.disabled = currentIndex === 0;
+      prevButton.disabled = currentIndex === 0;
+
+      nextZone.disabled =
+        currentIndex === slides.length - 1;
+
+      nextButton.disabled =
+        currentIndex === slides.length - 1;
+
+      document.title =
+        `${slides[currentIndex].title} ` +
+        `(${currentPage}/${totalPage})`;
+    }
+
+    /**
+     * 把当前页码写入地址栏。
+     * 刷新之后仍能停留在当前页。
+     */
+    function updateAddress() {
+      history.replaceState(
+        null,
+        "",
+        `${window.location.pathname}` +
+        `${window.location.search}#${currentIndex + 1}`
+      );
+    }
+
+    function nextSlide() {
+      if (currentIndex < slides.length - 1) {
+        showSlide(currentIndex + 1, "next");
+      }
+    }
+
+    function prevSlide() {
+      if (currentIndex > 0) {
+        showSlide(currentIndex - 1, "prev");
+      }
+    }
+
+    function firstSlide() {
+      if (currentIndex !== 0) {
+        showSlide(0, "prev");
+      }
+    }
+
+    function lastSlide() {
+      if (currentIndex !== slides.length - 1) {
+        showSlide(slides.length - 1, "next");
+      }
+    }
+
+    /**
+     * 全屏切换。
+     */
+    async function toggleFullscreen() {
+      try {
+        if (!document.fullscreenElement) {
+          await document
+            .getElementById("presentation")
+            .requestFullscreen();
+        } else {
+          await document.exitFullscreen();
+        }
+      } catch (error) {
+        console.warn("浏览器未允许进入全屏：", error);
+      }
+    }
+
+    /**
+     * 帮助面板。
+     */
+    function toggleHelp(force) {
+      const shouldShow =
+        typeof force === "boolean"
+          ? force
+          : !helpPanel.classList.contains("visible");
+
+      helpPanel.classList.toggle("visible", shouldShow);
+    }
+
+    /**
+     * iframe 加载完成。
+     */
+    frame.addEventListener("load", () => {
+      loading.classList.add("hidden");
+
+      /*
+       * 让 iframe 内部也能响应翻页键。
+       * 只有同源文件才可以访问 contentWindow。
+       */
+      try {
+        frame.contentWindow.addEventListener(
+          "keydown",
+          handleKeydown
+        );
+      } catch (error) {
+        console.warn("无法绑定 iframe 键盘事件：", error);
+      }
+    });
+
+    /**
+     * 键盘操作。
+     */
+    function handleKeydown(event) {
+      const key = event.key;
+
+      /*
+       * 避免用户正在输入时触发翻页。
+       */
+      const target = event.target;
+
+      if (
+        target &&
+        (
+          target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable
+        )
+      ) {
+        return;
+      }
+
+      if (
+        key === "ArrowRight" ||
+        key === "ArrowDown" ||
+        key === "PageDown" ||
+        key === " "
+      ) {
+        event.preventDefault();
+        nextSlide();
+        return;
+      }
+
+      if (
+        key === "ArrowLeft" ||
+        key === "ArrowUp" ||
+        key === "PageUp"
+      ) {
+        event.preventDefault();
+        prevSlide();
+        return;
+      }
+
+      if (key === "Home") {
+        event.preventDefault();
+        firstSlide();
+        return;
+      }
+
+      if (key === "End") {
+        event.preventDefault();
+        lastSlide();
+        return;
+      }
+
+      if (key.toLowerCase() === "f") {
+        event.preventDefault();
+        toggleFullscreen();
+        return;
+      }
+
+      if (key.toLowerCase() === "r") {
+        event.preventDefault();
+        frame.contentWindow.location.reload();
+        return;
+      }
+
+      if (
+        key.toLowerCase() === "h" ||
+        key === "?"
+      ) {
+        event.preventDefault();
+        toggleHelp();
+        return;
+      }
+
+      if (
+        key === "Escape" &&
+        helpPanel.classList.contains("visible")
+      ) {
+        event.preventDefault();
+        toggleHelp(false);
+      }
+    }
+
+    document.addEventListener("keydown", handleKeydown);
+
+    prevZone.addEventListener("click", prevSlide);
+    nextZone.addEventListener("click", nextSlide);
+
+    prevButton.addEventListener("click", prevSlide);
+    nextButton.addEventListener("click", nextSlide);
+
+    fullscreenButton.addEventListener(
+      "click",
+      toggleFullscreen
+    );
+
+    helpButton.addEventListener(
+      "click",
+      () => toggleHelp()
+    );
+
+    helpClose.addEventListener(
+      "click",
+      () => toggleHelp(false)
+    );
+
+    helpPanel.addEventListener("click", event => {
+      if (event.target === helpPanel) {
+        toggleHelp(false);
+      }
+    });
+
+    /*
+     * 触屏滑动翻页。
+     */
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    document.addEventListener(
+      "touchstart",
+      event => {
+        const touch = event.changedTouches[0];
+
+        touchStartX = touch.clientX;
+        touchStartY = touch.clientY;
+      },
+      { passive: true }
+    );
+
+    document.addEventListener(
+      "touchend",
+      event => {
+        const touch = event.changedTouches[0];
+
+        const distanceX = touch.clientX - touchStartX;
+        const distanceY = touch.clientY - touchStartY;
+
+        /*
+         * 横向移动超过 60px，
+         * 且明显大于纵向移动时才触发翻页。
+         */
+        if (
+          Math.abs(distanceX) > 60 &&
+          Math.abs(distanceX) > Math.abs(distanceY)
+        ) {
+          if (distanceX < 0) {
+            nextSlide();
+          } else {
+            prevSlide();
+          }
+        }
+      },
+      { passive: true }
+    );
+
+    /*
+     * 初始化。
+     */
+    updateInterface();
+    showSlide(currentIndex, "next", true);
+  </script>
+</body>
+</html>

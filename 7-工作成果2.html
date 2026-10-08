@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>工作成果② · 行动与结果</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --white: #f7f7f9;
+      --text: #c9ccd5;
+      --muted: #8b909f;
+      --dim: #606574;
+
+      --panel: #151722;
+      --panel-deep: #11131d;
+      --line: #303442;
+      --line-light: #3a3e4d;
+
+      --purple: #917cff;
+      --purple-light: #c8beff;
+      --purple-bg: #25213e;
+
+      --yellow: #e8a33d;
+      --yellow-light: #f4c66e;
+      --yellow-bg: #30281d;
+
+      --cyan: #45d8c5;
+      --cyan-light: #8aeee0;
+      --cyan-bg: #122c2e;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #05060a;
+      font-family:
+        "Microsoft YaHei",
+        "PingFang SC",
+        "Noto Sans CJK SC",
+        Arial,
+        sans-serif;
+    }
+
+    body {
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    #viewport {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #05060a;
+    }
+
+    #slide {
+      position: relative;
+      width: 1600px;
+      height: 900px;
+      flex: 0 0 auto;
+      overflow: hidden;
+      transform-origin: center center;
+      color: var(--white);
+
+      background:
+        radial-gradient(
+          circle at 94% 5%,
+          rgba(139, 124, 255, 0.17),
+          transparent 29%
+        ),
+        radial-gradient(
+          circle at 3% 97%,
+          rgba(242, 185, 59, 0.04),
+          transparent 24%
+        ),
+        linear-gradient(
+          135deg,
+          #080910 0%,
+          #0a0b13 65%,
+          #161229 100%
+        );
+    }
+
+    #slide::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 680px;
+      height: 4px;
+      background: linear-gradient(
+        90deg,
+        var(--yellow),
+        var(--purple),
+        transparent
+      );
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+      padding: 30px 62px 18px;
+
+      display: grid;
+      grid-template-rows: 96px 68px 570px 48px 14px;
+      gap: 10px;
+    }
+
+    /* ==================== 页头 ==================== */
+
+    .header {
+      position: relative;
+      border-bottom: 1px solid #2a2d39;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .chapter-tag {
+      height: 30px;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+
+      border: 1px solid rgba(232, 163, 61, 0.55);
+      border-radius: 15px;
+
+      color: var(--yellow-light);
+      background: rgba(48, 40, 29, 0.75);
+
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+    }
+
+    .title {
+      margin: 0;
+      color: var(--white);
+      font-size: 34px;
+      line-height: 1.2;
+      font-weight: 750;
+      letter-spacing: -0.7px;
+    }
+
+    .subtitle {
+      margin-top: 12px;
+      color: #a4a8b5;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .subtitle strong {
+      color: #f0f0f3;
+      font-weight: 700;
+    }
+
+    .header-en {
+      position: absolute;
+      top: 8px;
+      right: 0;
+      color: #8c83c8;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+
+    /* ==================== 交付节奏 ==================== */
+
+    .delivery-bar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) repeat(4, 142px);
+      align-items: center;
+      overflow: hidden;
+
+      border: 1px solid #353847;
+      border-radius: 14px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(139, 124, 255, 0.085),
+          rgba(21, 23, 34, 0.98) 57%,
+          rgba(69, 216, 197, 0.05)
+        );
+    }
+
+    .delivery-summary {
+      min-width: 0;
+      padding: 0 22px;
+    }
+
+    .delivery-label {
+      margin-bottom: 5px;
+      color: var(--purple-light);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .delivery-text {
+      overflow: hidden;
+      color: #d7d9e1;
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .delivery-text strong {
+      color: var(--white);
+    }
+
+    .schedule-item {
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      border-left: 1px solid #363947;
+    }
+
+    .schedule-number {
+      color: var(--purple-light);
+      font-size: 27px;
+      line-height: 1;
+      font-weight: 750;
+      letter-spacing: -1px;
+    }
+
+    .schedule-item:nth-child(3) .schedule-number {
+      color: var(--yellow-light);
+    }
+
+    .schedule-item:nth-child(4) .schedule-number {
+      color: #ff9cad;
+    }
+
+    .schedule-item:nth-child(5) .schedule-number {
+      color: var(--cyan-light);
+    }
+
+    .schedule-unit {
+      margin-left: 2px;
+      font-size: 11px;
+      letter-spacing: 0;
+    }
+
+    .schedule-label {
+      color: #9498a6;
+      font-size: 10px;
+      line-height: 1.35;
+    }
+
+    /* ==================== 主体 ==================== */
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 14px;
+      min-height: 0;
+    }
+
+    .panel {
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+
+      border: 1px solid var(--line);
+      border-radius: 16px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.022),
+          transparent 60%
+        ),
+        rgba(21, 23, 34, 0.98);
+
+      box-shadow:
+        0 16px 36px rgba(0, 0, 0, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    }
+
+    /* ==================== 流程面板 ==================== */
+
+    .workflow-panel {
+      padding: 17px 20px;
+    }
+
+    .panel-header {
+      height: 42px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      border-bottom: 1px solid #2b2e3a;
+    }
+
+    .panel-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .panel-line {
+      width: 4px;
+      height: 20px;
+      border-radius: 2px;
+      background: var(--purple);
+    }
+
+    .panel-title {
+      color: var(--white);
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding-top: 2px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #9a9eab;
+      font-size: 11px;
+    }
+
+    .legend-dot {
+      width: 11px;
+      height: 11px;
+      border: 1px solid var(--yellow);
+      border-radius: 3px;
+      background: var(--yellow-bg);
+    }
+
+    .legend-dot.ai {
+      border-color: var(--purple);
+      background: var(--purple-bg);
+    }
+
+    .workflow {
+      height: calc(100% - 42px);
+      padding-top: 14px;
+
+      display: grid;
+      grid-template-rows: 108px 268px 112px;
+      gap: 10px;
+    }
+
+    /* 阶段容器 */
+    .phase {
+      position: relative;
+      min-height: 0;
+      padding: 31px 14px 12px;
+
+      border: 1px solid #353846;
+      border-radius: 13px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.018),
+          transparent 64%
+        ),
+        rgba(17, 19, 29, 0.78);
+    }
+
+    .phase.main-loop {
+      padding-top: 35px;
+
+      border-color: rgba(145, 124, 255, 0.58);
+
+      background:
+        linear-gradient(
+          110deg,
+          rgba(145, 124, 255, 0.075),
+          transparent 65%
+        ),
+        rgba(17, 19, 29, 0.84);
+    }
+
+    .phase-label {
+      position: absolute;
+      top: 10px;
+      left: 14px;
+
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .phase-index {
+      color: var(--purple-light);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.7px;
+    }
+
+    .phase-name {
+      color: #8e93a1;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .loop-tag {
+      position: absolute;
+      top: 8px;
+      right: 13px;
+
+      height: 23px;
+      padding: 0 11px;
+
+      display: inline-flex;
+      align-items: center;
+
+      border: 1px solid rgba(145, 124, 255, 0.5);
+      border-radius: 12px;
+
+      color: #d3cdff;
+      background: rgba(145, 124, 255, 0.12);
+
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    /* ==================== 第一、三阶段 ==================== */
+
+    .linear-flow {
+      height: 100%;
+      display: grid;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .linear-flow.three {
+      grid-template-columns: 1fr 22px 1fr 22px 1fr;
+    }
+
+    .linear-flow.four {
+      grid-template-columns: 1fr 22px 1fr 22px 1fr 22px 1fr;
+    }
+
+    .flow-arrow {
+      position: relative;
+      height: 1px;
+      background: #697080;
+    }
+
+    .flow-arrow::after {
+      content: "";
+      position: absolute;
+      top: -4px;
+      right: -1px;
+
+      border-top: 4px solid transparent;
+      border-bottom: 4px solid transparent;
+      border-left: 7px solid #697080;
+    }
+
+    /* ==================== 节点 ==================== */
+
+    .step-card {
+      --accent: var(--yellow);
+      --accent-light: var(--yellow-light);
+
+      position: relative;
+      min-width: 0;
+      height: 62px;
+      padding: 9px 14px;
+
+      border: 1px solid rgba(232, 163, 61, 0.88);
+      border-radius: 10px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(232, 163, 61, 0.14),
+          rgba(232, 163, 61, 0.045)
+        );
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .step-card.ai {
+      --accent: var(--purple);
+      --accent-light: var(--purple-light);
+
+      border-color: rgba(145, 124, 255, 0.86);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(145, 124, 255, 0.16),
+          rgba(145, 124, 255, 0.05)
+        );
+    }
+
+    .step-card.release {
+      --accent: var(--cyan);
+      --accent-light: var(--cyan-light);
+
+      border-color: rgba(69, 216, 197, 0.9);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(69, 216, 197, 0.16),
+          rgba(69, 216, 197, 0.05)
+        );
+    }
+
+    .step-code {
+      color: var(--accent-light);
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 750;
+    }
+
+    .step-title {
+      margin-top: 5px;
+      overflow: hidden;
+
+      color: #f3f3f6;
+      font-size: 13px;
+      line-height: 1.15;
+      font-weight: 700;
+
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .step-desc {
+      margin-top: 4px;
+      overflow: hidden;
+
+      color: #a1a5b2;
+      font-size: 9px;
+      line-height: 1.2;
+
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    /* ==================== 第二阶段 ==================== */
+
+    .loop-flow {
+      position: relative;
+      height: 100%;
+
+      display: grid;
+      grid-template-rows: 1fr 20px 1fr;
+      gap: 6px;
+    }
+
+    .loop-row {
+      display: grid;
+      grid-template-columns: 1fr 22px 1fr 22px 1fr 22px 1fr;
+      align-items: center;
+      gap: 8px;
+      min-height: 0;
+    }
+
+    .loop-row .step-card {
+      height: 84px;
+      padding: 12px 13px;
+    }
+
+    .loop-row .step-title {
+      margin-top: 7px;
+      font-size: 14px;
+    }
+
+    .loop-row .step-desc {
+      margin-top: 6px;
+      font-size: 10px;
+    }
+
+    .row-transition {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 10px;
+    }
+
+    .row-transition-line {
+      position: relative;
+      width: calc(100% - 30px);
+      height: 1px;
+
+      border-top: 1px dashed #666c7b;
+    }
+
+    .row-transition-line::before {
+      content: "继续验收与审查";
+      position: absolute;
+      top: -9px;
+      left: 50%;
+
+      padding: 0 10px;
+      transform: translateX(-50%);
+
+      color: #747989;
+      background: #151722;
+
+      font-size: 9px;
+      white-space: nowrap;
+    }
+
+    .row-transition-line::after {
+      content: "";
+      position: absolute;
+      top: -4px;
+      left: -1px;
+
+      border-top: 4px solid transparent;
+      border-bottom: 4px solid transparent;
+      border-right: 7px solid #666c7b;
+    }
+
+    /* ==================== 结果面板 ==================== */
+
+    .result-panel {
+      padding: 20px;
+
+      display: grid;
+      grid-template-rows: 45px 125px 165px 1fr;
+
+      border-color: rgba(69, 216, 197, 0.42);
+
+      background:
+        radial-gradient(
+          circle at 92% 7%,
+          rgba(69, 216, 197, 0.13),
+          transparent 37%
+        ),
+        linear-gradient(
+          145deg,
+          rgba(69, 216, 197, 0.04),
+          transparent 60%
+        ),
+        rgba(15, 29, 35, 0.98);
+    }
+
+    .result-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      border-bottom: 1px solid #29433f;
+    }
+
+    .result-title {
+      color: var(--cyan);
+      font-size: 17px;
+      font-weight: 750;
+      letter-spacing: 1px;
+    }
+
+    .result-title span {
+      margin-left: 7px;
+      color: var(--white);
+      font-size: 15px;
+      letter-spacing: 0;
+    }
+
+    .online-tag {
+      height: 28px;
+      padding: 0 11px;
+
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+
+      border: 1px solid rgba(69, 216, 197, 0.38);
+      border-radius: 14px;
+
+      color: var(--cyan-light);
+      background: rgba(69, 216, 197, 0.09);
+
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .online-tag::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+    }
+
+    .result-hero {
+      display: grid;
+      grid-template-columns: 95px 1fr;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid #29433f;
+    }
+
+    .date-main {
+      color: var(--cyan);
+      font-size: 48px;
+      line-height: 1;
+      font-weight: 780;
+      letter-spacing: -2px;
+    }
+
+    .date-label {
+      margin-top: 8px;
+      color: #718b88;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+
+    .result-summary {
+      color: #d8dae1;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    .result-summary strong {
+      color: #fff;
+    }
+
+    .result-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      align-items: center;
+      border-bottom: 1px solid #29433f;
+    }
+
+    .result-metric {
+      min-width: 0;
+      padding: 0 9px;
+      text-align: center;
+      border-right: 1px solid #29433f;
+    }
+
+    .result-metric:last-child {
+      border-right: 0;
+    }
+
+    .result-value {
+      color: var(--white);
+      font-size: 31px;
+      line-height: 1;
+      font-weight: 760;
+    }
+
+    .result-value.cyan {
+      color: var(--cyan-light);
+    }
+
+    .result-unit {
+      margin-left: 2px;
+      font-size: 10px;
+    }
+
+    .result-label {
+      margin-top: 10px;
+      color: #ededf1;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .result-note {
+      margin-top: 6px;
+      color: #778a88;
+      font-size: 8px;
+      line-height: 1.4;
+    }
+
+    .result-bottom {
+      padding-top: 17px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .result-conclusion {
+      padding: 14px 15px;
+
+      border: 1px solid rgba(69, 216, 197, 0.24);
+      border-radius: 11px;
+
+      color: #aebfbd;
+      background: rgba(69, 216, 197, 0.045);
+
+      font-size: 11px;
+      line-height: 1.65;
+    }
+
+    .result-conclusion strong {
+      color: var(--cyan-light);
+    }
+
+    .scene-label {
+      margin-top: 15px;
+      color: #74928f;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+
+    .scene-list {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .scene-tag {
+      height: 27px;
+      padding: 0 11px;
+
+      display: inline-flex;
+      align-items: center;
+
+      border: 1px solid rgba(69, 216, 197, 0.35);
+      border-radius: 14px;
+
+      color: var(--cyan-light);
+      background: rgba(69, 216, 197, 0.08);
+
+      font-size: 9px;
+      font-weight: 600;
+    }
+
+    /* ==================== 方法总结 ==================== */
+
+    .method-bar {
+      display: grid;
+      grid-template-columns: 170px 1fr auto;
+      align-items: center;
+      gap: 18px;
+      padding: 8px 19px;
+
+      border: 1px solid #343746;
+      border-radius: 13px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(145, 124, 255, 0.075),
+          rgba(21, 23, 34, 0.98) 56%,
+          rgba(232, 163, 61, 0.035)
+        );
+    }
+
+    .method-label {
+      color: var(--purple-light);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .method-text {
+      color: #d4d6de;
+      font-size: 12px;
+    }
+
+    .method-text strong {
+      color: var(--white);
+    }
+
+    .method-tags {
+      display: flex;
+      gap: 7px;
+    }
+
+    .method-tag {
+      height: 25px;
+      padding: 0 10px;
+
+      display: inline-flex;
+      align-items: center;
+
+      border: 1px solid #464354;
+      border-radius: 13px;
+
+      color: #aaa6bc;
+      background: #191a25;
+
+      font-size: 9px;
+      font-weight: 600;
+    }
+
+    /* ==================== 页脚 ==================== */
+
+    .footer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+
+      color: #4f5462;
+      font-size: 9px;
+      line-height: 1;
+      letter-spacing: 1px;
+    }
+
+    .footer strong {
+      color: #8178b5;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="viewport">
+    <main id="slide">
+      <div class="page">
+
+        <!-- 页头 -->
+        <header class="header">
+          <div class="title-row">
+            <div class="chapter-tag">02②–2</div>
+            <h1 class="title">工作成果 ② · 行动与结果</h1>
+          </div>
+
+          <div class="subtitle">
+            <strong>人工负责方向与决策</strong>，AI 辅助分析、开发与风险识别
+          </div>
+
+          <div class="header-en">
+            ACTION · DELIVERY · RESULT
+          </div>
+        </header>
+
+        <!-- 交付节奏 -->
+        <section class="delivery-bar">
+          <div class="delivery-summary">
+            <div class="delivery-label">DELIVERY SCHEDULE</div>
+
+            <div class="delivery-text">
+              建立人机协同开发流程，完成
+              <strong>5 个会员模块</strong>集中交付
+            </div>
+          </div>
+
+          <div class="schedule-item">
+            <div class="schedule-number">
+              5<span class="schedule-unit">天</span>
+            </div>
+            <div class="schedule-label">功能<br />开发</div>
+          </div>
+
+          <div class="schedule-item">
+            <div class="schedule-number">
+              2<span class="schedule-unit">天</span>
+            </div>
+            <div class="schedule-label">联调<br />验证</div>
+          </div>
+
+          <div class="schedule-item">
+            <div class="schedule-number">
+              2<span class="schedule-unit">天</span>
+            </div>
+            <div class="schedule-label">埋点<br />验收</div>
+          </div>
+
+          <div class="schedule-item">
+            <div class="schedule-number">9.1</div>
+            <div class="schedule-label">按期<br />上线</div>
+          </div>
+        </section>
+
+        <!-- 主体 -->
+        <section class="main-grid">
+
+          <!-- 左侧：人机协同流程 -->
+          <article class="panel workflow-panel">
+            <div class="panel-header">
+              <div class="panel-title-wrap">
+                <span class="panel-line"></span>
+                <span class="panel-title">人机协同开发流程</span>
+              </div>
+
+              <div class="legend">
+                <div class="legend-item">
+                  <span class="legend-dot"></span>
+                  人工主导
+                </div>
+
+                <div class="legend-item">
+                  <span class="legend-dot ai"></span>
+                  AI 辅助
+                </div>
+              </div>
+            </div>
+
+            <div class="workflow">
+
+              <!-- PHASE 01 -->
+              <section class="phase">
+                <div class="phase-label">
+                  <span class="phase-index">PHASE 01</span>
+                  <span class="phase-name">方向定义</span>
+                </div>
+
+                <div class="linear-flow three">
+                  <div class="step-card">
+                    <div class="step-code">R1</div>
+                    <div class="step-title">需求对齐</div>
+                    <div class="step-desc">产品、研发与后端统一理解</div>
+                  </div>
+
+                  <span class="flow-arrow"></span>
+
+                  <div class="step-card">
+                    <div class="step-code">R2</div>
+                    <div class="step-title">范围定义</div>
+                    <div class="step-desc">模块、边界、效果与代码规范</div>
+                  </div>
+
+                  <span class="flow-arrow"></span>
+
+                  <div class="step-card">
+                    <div class="step-code">R3</div>
+                    <div class="step-title">模块拆解</div>
+                    <div class="step-desc">按 5 个会员模块推进</div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- PHASE 02 -->
+              <section class="phase main-loop">
+                <div class="phase-label">
+                  <span class="phase-index">PHASE 02</span>
+                  <span class="phase-name">单模块开发闭环</span>
+                </div>
+
+                <div class="loop-tag">× 5 模块循环</div>
+
+                <div class="loop-flow">
+                  <!-- 第一行 -->
+                  <div class="loop-row">
+                    <div class="step-card ai">
+                      <div class="step-code">A1</div>
+                      <div class="step-title">现状扫描</div>
+                      <div class="step-desc">代码、组件、接口与测试</div>
+                    </div>
+
+                    <span class="flow-arrow"></span>
+
+                    <div class="step-card ai">
+                      <div class="step-code">A2</div>
+                      <div class="step-title">方案建议</div>
+                      <div class="step-desc">路径、风险与测试点</div>
+                    </div>
+
+                    <span class="flow-arrow"></span>
+
+                    <div class="step-card">
+                      <div class="step-code">R4</div>
+                      <div class="step-title">方案评审</div>
+                      <div class="step-desc">人工取舍并确认执行</div>
+                    </div>
+
+                    <span class="flow-arrow"></span>
+
+                    <div class="step-card ai">
+                      <div class="step-code">A3</div>
+                      <div class="step-title">辅助开发</div>
+                      <div class="step-desc">代码生成、修改与调试</div>
+                    </div>
+                  </div>
+
+                  <!-- 换行连接 -->
+                  <div class="row-transition">
+                    <div class="row-transition-line"></div>
+                  </div>
+
+                  <!-- 第二行 -->
+                  <div class="loop-row">
+                    <div class="step-card">
+                      <div class="step-code">R5</div>
+                      <div class="step-title">效果验收</div>
+                      <div class="step-desc">功能、视觉与交互验证</div>
+                    </div>
+
+                    <span class="flow-arrow"></span>
+
+                    <div class="step-card">
+                      <div class="step-code">R6</div>
+                      <div class="step-title">差异修补</div>
+                      <div class="step-desc">确认问题后回到开发</div>
+                    </div>
+
+                    <span class="flow-arrow"></span>
+
+                    <div class="step-card ai">
+                      <div class="step-code">A4</div>
+                      <div class="step-title">代码审查</div>
+                      <div class="step-desc">识别缺陷、漏洞与风险</div>
+                    </div>
+
+                    <span class="flow-arrow"></span>
+
+                    <div class="step-card">
+                      <div class="step-code">R7</div>
+                      <div class="step-title">修复决策</div>
+                      <div class="step-desc">确定优先级与修复方案</div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- PHASE 03 -->
+              <section class="phase">
+                <div class="phase-label">
+                  <span class="phase-index">PHASE 03</span>
+                  <span class="phase-name">发布沉淀</span>
+                </div>
+
+                <div class="linear-flow four">
+                  <div class="step-card">
+                    <div class="step-code">R8</div>
+                    <div class="step-title">联调测试</div>
+                    <div class="step-desc">前后端联合验证</div>
+                  </div>
+
+                  <span class="flow-arrow"></span>
+
+                  <div class="step-card">
+                    <div class="step-code">R9</div>
+                    <div class="step-title">修复回归</div>
+                    <div class="step-desc">问题闭环与回归确认</div>
+                  </div>
+
+                  <span class="flow-arrow"></span>
+
+                  <div class="step-card release">
+                    <div class="step-code">R10</div>
+                    <div class="step-title">发布上线</div>
+                    <div class="step-desc">灰度验证后正式发布</div>
+                  </div>
+
+                  <span class="flow-arrow"></span>
+
+                  <div class="step-card ai">
+                    <div class="step-code">A5</div>
+                    <div class="step-title">知识沉淀</div>
+                    <div class="step-desc">改动、结论与经验归档</div>
+                  </div>
+                </div>
+              </section>
+
+            </div>
+          </article>
+
+          <!-- 右侧：结果 -->
+          <aside class="panel result-panel">
+            <div class="result-header">
+              <div class="result-title">
+                RESULT
+                <span>按期稳定上线</span>
+              </div>
+
+              <div class="online-tag">已上线</div>
+            </div>
+
+            <div class="result-hero">
+              <div>
+                <div class="date-main">9.1</div>
+                <div class="date-label">RELEASE DATE</div>
+              </div>
+
+              <div class="result-summary">
+                平台会员体系<strong>完整交付</strong>，
+                兼容当前框架，埋点与验收全部通过。
+              </div>
+            </div>
+
+            <div class="result-metrics">
+              <div class="result-metric">
+                <div class="result-value cyan">
+                  5<span class="result-unit">个</span>
+                </div>
+                <div class="result-label">模块交付</div>
+                <div class="result-note">10 天完成闭环</div>
+              </div>
+
+              <div class="result-metric">
+                <div class="result-value">
+                  0<span class="result-unit">返工</span>
+                </div>
+                <div class="result-label">上线质量</div>
+                <div class="result-note">线上无 Bug</div>
+              </div>
+
+              <div class="result-metric">
+                <div class="result-value">
+                  3<span class="result-unit">类</span>
+                </div>
+                <div class="result-label">核心场景</div>
+                <div class="result-note">完整覆盖</div>
+              </div>
+            </div>
+
+            <div class="result-bottom">
+              <div class="result-conclusion">
+                从需求对齐到上线沉淀形成完整闭环，
+                <strong>兼顾交付速度与上线质量</strong>。
+              </div>
+
+              <div>
+                <div class="scene-label">COVERED SCENARIOS</div>
+
+                <div class="scene-list">
+                  <span class="scene-tag">公屏</span>
+                  <span class="scene-tag">弹幕</span>
+                  <span class="scene-tag">用户卡片</span>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <!-- 方法总结 -->
+        <section class="method-bar">
+          <div class="method-label">METHOD SUMMARY</div>
+
+          <div class="method-text">
+            <strong>人工把控方向与质量，AI 提升分析、编码和审查效率。</strong>
+          </div>
+
+          <div class="method-tags">
+            <span class="method-tag">方向可控</span>
+            <span class="method-tag">模块闭环</span>
+            <span class="method-tag">过程可复用</span>
+          </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+          <span>
+            <strong>平台会员接入 · 人机协同交付实践</strong>
+          </span>
+
+          <span>02 / ACTION &amp; RESULT</span>
+        </footer>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function resizeSlide() {
+      const slide = document.getElementById("slide");
+
+      const scale = Math.min(
+        window.innerWidth / 1600,
+        window.innerHeight / 900
+      );
+
+      slide.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener("load", resizeSlide);
+    window.addEventListener("resize", resizeSlide);
+  </script>
+</body>
+</html>

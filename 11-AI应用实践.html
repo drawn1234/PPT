@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 应用实践</title>
+
+  <style>
+    :root {
+      --bg: #07080e;
+      --bg-purple: #17152b;
+
+      --panel: #151722;
+      --panel-light: #191b28;
+      --panel-yellow: #1c1b20;
+
+      --border: #303342;
+      --border-light: rgba(255, 255, 255, 0.08);
+
+      --text: #f7f5f1;
+      --secondary: #afb1bf;
+      --muted: #73778a;
+
+      --purple: #8170ff;
+      --purple-light: #b8adff;
+      --purple-soft: rgba(129, 112, 255, 0.11);
+
+      --yellow: #f5bc24;
+      --yellow-light: #ffd55b;
+      --yellow-soft: rgba(245, 188, 36, 0.09);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--text);
+      background: #04050a;
+      font-family:
+        Inter, "PingFang SC", "Microsoft YaHei",
+        "Noto Sans SC", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    .page {
+      position: relative;
+      width: min(1680px, 100%);
+      min-height: 100vh;
+      margin: 0 auto;
+      overflow: hidden;
+      padding: 46px 70px 30px;
+      background:
+        radial-gradient(
+          circle at 100% 0,
+          rgba(96, 72, 185, 0.16),
+          transparent 31%
+        ),
+        linear-gradient(
+          100deg,
+          var(--bg) 0%,
+          #0b0b15 63%,
+          var(--bg-purple) 100%
+        );
+    }
+
+    .page::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 44%;
+      height: 3px;
+      background: linear-gradient(
+        90deg,
+        var(--yellow),
+        var(--purple),
+        transparent
+      );
+    }
+
+    .page::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: -120px;
+      width: 460px;
+      height: 460px;
+      pointer-events: none;
+      background: radial-gradient(
+        circle,
+        rgba(129, 112, 255, 0.08),
+        transparent 68%
+      );
+    }
+
+    .page-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 顶部 */
+
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 36px;
+      padding-bottom: 26px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 17px;
+    }
+
+    .chapter {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 52px;
+      height: 31px;
+      padding: 0 15px;
+      border: 1px solid rgba(245, 188, 36, 0.6);
+      border-radius: 999px;
+      color: var(--yellow-light);
+      background: rgba(245, 188, 36, 0.04);
+      font-family: monospace;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--text);
+      font-size: clamp(30px, 2.5vw, 42px);
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+    }
+
+    .subtitle {
+      margin: 14px 0 0;
+      color: var(--secondary);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .subtitle strong {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .header-en {
+      padding-top: 8px;
+      color: #9488dc;
+      font-family: monospace;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      white-space: nowrap;
+    }
+
+    /* 公共卡片 */
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: rgba(21, 23, 34, 0.94);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.3;
+    }
+
+    .section-title::before {
+      content: "";
+      width: 4px;
+      height: 20px;
+      border-radius: 999px;
+      background: var(--purple);
+    }
+
+    .section-title.yellow::before {
+      background: var(--yellow);
+    }
+
+    .section-en {
+      color: var(--muted);
+      font-family: monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      white-space: nowrap;
+    }
+
+    /* 数据指标 */
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .metric {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(150px, 0.72fr) 1fr;
+      align-items: center;
+      min-height: 106px;
+      overflow: hidden;
+      padding: 19px 25px;
+    }
+
+    .metric::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 4px;
+      background: var(--purple);
+    }
+
+    .metric.highlight {
+      border-color: rgba(245, 188, 36, 0.26);
+      background:
+        linear-gradient(
+          105deg,
+          rgba(245, 188, 36, 0.055),
+          transparent 60%
+        ),
+        rgba(21, 23, 34, 0.94);
+    }
+
+    .metric.highlight::before {
+      background: var(--yellow);
+    }
+
+    .metric::after {
+      content: attr(data-index);
+      position: absolute;
+      top: 15px;
+      right: 18px;
+      color: #565b70;
+      font-family: monospace;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .metric-value-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding-right: 22px;
+      border-right: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .metric-value {
+      color: var(--purple-light);
+      font-family: Arial, sans-serif;
+      font-size: clamp(37px, 3vw, 51px);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+
+    .metric:nth-child(2) .metric-value {
+      color: #f1efff;
+    }
+
+    .metric.highlight .metric-value {
+      color: var(--yellow-light);
+    }
+
+    .metric-unit {
+      color: #d7d1ff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .metric.highlight .metric-unit {
+      color: var(--yellow-light);
+    }
+
+    .metric-copy {
+      min-width: 0;
+      padding-left: 24px;
+    }
+
+    .metric-copy strong {
+      display: block;
+      margin-bottom: 7px;
+      color: #f1f0f5;
+      font-size: 14px;
+    }
+
+    .metric-copy span {
+      display: block;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.5;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* 主区域 */
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(390px, 0.88fr) minmax(620px, 1.52fr);
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .main-panel {
+      height: 500px;
+      padding: 20px 23px;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding-bottom: 17px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* 趋势区域 */
+
+    .trend {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .trend-insight {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 0 8px;
+    }
+
+    .trend-kicker {
+      margin-bottom: 9px;
+      color: var(--purple-light);
+      font-family: monospace;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+    }
+
+    .trend-statement {
+      margin: 0;
+      color: #f5f3ef;
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .trend-statement span {
+      display: block;
+      color: var(--yellow-light);
+    }
+
+    .legend {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      padding-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-line {
+      width: 19px;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--purple);
+    }
+
+    .legend-line.yellow {
+      background: var(--yellow);
+    }
+
+    .chart {
+      width: 100%;
+      height: 208px;
+      margin-top: 1px;
+      overflow: visible;
+    }
+
+    .chart text {
+      font-family:
+        Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    .month-phases {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      margin-top: auto;
+    }
+
+    .month-card {
+      position: relative;
+      min-height: 75px;
+      padding: 13px 14px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.018);
+    }
+
+    .month-card.active {
+      border-color: rgba(245, 188, 36, 0.42);
+      background: var(--yellow-soft);
+    }
+
+    .month {
+      margin-bottom: 10px;
+      color: var(--purple-light);
+      font-family: monospace;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .month-card.active .month {
+      color: var(--yellow-light);
+    }
+
+    .month-card strong {
+      display: block;
+      color: #e8e6ef;
+      font-size: 13px;
+    }
+
+    .month-index {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      color: #55596b;
+      font-family: monospace;
+      font-size: 8px;
+      letter-spacing: 1px;
+    }
+
+    /* 角色区域 */
+
+    .roles-panel {
+      overflow: hidden;
+    }
+
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .role-card {
+      position: relative;
+      display: flex;
+      min-height: 196px;
+      overflow: hidden;
+      flex-direction: column;
+      padding: 17px 18px 15px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background:
+        linear-gradient(
+          130deg,
+          rgba(129, 112, 255, 0.06),
+          transparent 55%
+        ),
+        var(--panel-light);
+    }
+
+    .role-card.yellow-role {
+      background:
+        linear-gradient(
+          130deg,
+          rgba(245, 188, 36, 0.05),
+          transparent 55%
+        ),
+        var(--panel-light);
+    }
+
+    .role-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 34%;
+      height: 2px;
+      background: var(--purple);
+    }
+
+    .role-card.yellow-role::before {
+      background: var(--yellow);
+    }
+
+    .role-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+    }
+
+    .role-number {
+      display: grid;
+      flex: 0 0 auto;
+      width: 43px;
+      height: 43px;
+      place-items: center;
+      border: 1px solid rgba(129, 112, 255, 0.65);
+      border-radius: 10px;
+      color: var(--purple-light);
+      background: rgba(129, 112, 255, 0.07);
+      font-family: monospace;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .yellow-role .role-number {
+      border-color: rgba(245, 188, 36, 0.6);
+      color: var(--yellow-light);
+      background: rgba(245, 188, 36, 0.06);
+    }
+
+    .role-heading {
+      min-width: 0;
+      padding-top: 2px;
+    }
+
+    .role-en {
+      overflow: hidden;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-family: monospace;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .role-heading h3 {
+      margin: 0;
+      color: #f5f3ef;
+      font-size: 17px;
+      line-height: 1.25;
+    }
+
+    .role-tag {
+      margin-left: auto;
+      padding: 6px 9px;
+      border: 1px solid rgba(129, 112, 255, 0.36);
+      border-radius: 999px;
+      color: var(--purple-light);
+      background: rgba(129, 112, 255, 0.07);
+      font-size: 9px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .yellow-role .role-tag {
+      border-color: rgba(245, 188, 36, 0.32);
+      color: var(--yellow-light);
+      background: rgba(245, 188, 36, 0.06);
+    }
+
+    .role-description {
+      margin: 15px 0 14px;
+      color: var(--secondary);
+      font-size: 11px;
+      line-height: 1.65;
+    }
+
+    .role-flow {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    .flow-step {
+      padding: 5px 8px;
+      border: 1px solid #3b3e4d;
+      border-radius: 6px;
+      color: #9b9eae;
+      font-size: 8px;
+      white-space: nowrap;
+    }
+
+    .flow-step.result {
+      border-color: rgba(129, 112, 255, 0.45);
+      color: var(--purple-light);
+      background: rgba(129, 112, 255, 0.08);
+    }
+
+    .yellow-role .flow-step.result {
+      border-color: rgba(245, 188, 36, 0.42);
+      color: var(--yellow-light);
+      background: rgba(245, 188, 36, 0.07);
+    }
+
+    .flow-arrow {
+      color: #626679;
+      font-size: 9px;
+    }
+
+    /* 核心洞察 */
+
+    .insight {
+      display: grid;
+      grid-template-columns: 150px 1fr auto;
+      align-items: center;
+      gap: 26px;
+      min-height: 79px;
+      margin-top: 14px;
+      padding: 18px 22px;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(129, 112, 255, 0.05),
+          transparent 35%,
+          rgba(245, 188, 36, 0.025)
+        ),
+        rgba(21, 23, 34, 0.94);
+    }
+
+    .insight-label {
+      color: var(--purple-light);
+      font-family: monospace;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+    }
+
+    .insight-copy {
+      margin: 0;
+      color: #c6c5ce;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .insight-copy strong {
+      color: #fff;
+    }
+
+    .insight-copy .purple {
+      color: var(--purple-light);
+    }
+
+    .insight-copy .yellow {
+      color: var(--yellow-light);
+    }
+
+    .insight-result {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      color: var(--yellow-light);
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .insight-result::before {
+      content: "";
+      width: 62px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--purple), var(--yellow));
+    }
+
+    /* 页脚 */
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-top: 15px;
+      color: #55596b;
+      font-family: monospace;
+      font-size: 8px;
+      letter-spacing: 1.3px;
+    }
+
+    /* 响应式 */
+
+    @media (max-width: 1180px) {
+      .page {
+        padding: 38px 34px 28px;
+      }
+
+      .metric {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-value-wrap {
+        padding: 0 0 12px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+      }
+
+      .metric-copy {
+        padding: 12px 0 0;
+      }
+
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .main-panel {
+        height: auto;
+      }
+
+      .trend {
+        min-height: 520px;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        padding: 28px 16px 24px;
+      }
+
+      .header {
+        flex-direction: column;
+      }
+
+      .title-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .header-en {
+        display: none;
+      }
+
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .metric {
+        grid-template-columns: 140px 1fr;
+      }
+
+      .metric-value-wrap {
+        padding: 0 18px 0 0;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+        border-bottom: 0;
+      }
+
+      .metric-copy {
+        padding: 0 0 0 18px;
+      }
+
+      .roles-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .main-panel {
+        padding: 18px 16px;
+      }
+
+      .trend-insight {
+        flex-direction: column;
+      }
+
+      .legend {
+        flex-direction: row;
+      }
+
+      .month-phases {
+        grid-template-columns: 1fr;
+      }
+
+      .insight {
+        grid-template-columns: 1fr;
+      }
+
+      .insight-result::before {
+        display: none;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .metric {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-value-wrap {
+        padding: 0 0 12px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+      }
+
+      .metric-copy {
+        padding: 12px 0 0;
+      }
+
+      .role-tag {
+        display: none;
+      }
+
+      .role-flow {
+        flex-wrap: wrap;
+      }
+
+      .flow-arrow {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <div class="page-content">
+
+      <!-- 标题 -->
+      <header class="header">
+        <div>
+          <div class="title-row">
+            <span class="chapter">03</span>
+            <h1>AI 应用实践</h1>
+          </div>
+
+          <p class="subtitle">
+            从<strong>高频浅层问答</strong>转向<strong>低频深度协作</strong>，
+            逐步形成四类稳定的 AI 协作模式。
+          </p>
+        </div>
+
+        <div class="header-en">AI PRACTICE · COLLABORATION</div>
+      </header>
+
+      <!-- 核心指标 -->
+      <section class="metrics">
+        <article class="card metric" data-index="01">
+          <div class="metric-value-wrap">
+            <strong class="metric-value">55</strong>
+            <span class="metric-unit">工作日</span>
+          </div>
+
+          <div class="metric-copy">
+            <strong>持续实践周期</strong>
+            <span>覆盖需求、开发、排查与学习场景</span>
+          </div>
+        </article>
+
+        <article class="card metric" data-index="02">
+          <div class="metric-value-wrap">
+            <strong class="metric-value">1,044</strong>
+            <span class="metric-unit">轮</span>
+          </div>
+
+          <div class="metric-copy">
+            <strong>累计协作对话</strong>
+            <span>从零散提问逐步转向结构化任务</span>
+          </div>
+        </article>
+
+        <article class="card metric highlight" data-index="03">
+          <div class="metric-value-wrap">
+            <strong class="metric-value">43.3</strong>
+            <span class="metric-unit">小时</span>
+          </div>
+
+          <div class="metric-copy">
+            <strong>累计深度协作</strong>
+            <span>单轮投入与问题分析深度持续提升</span>
+          </div>
+        </article>
+      </section>
+
+      <!-- 中间主内容 -->
+      <section class="main-grid">
+
+        <!-- 左：趋势 -->
+        <article class="card main-panel trend">
+          <div class="panel-head">
+            <h2 class="section-title">使用深度演进</h2>
+            <span class="section-en">JULY — SEPTEMBER</span>
+          </div>
+
+          <div class="trend-insight">
+            <div>
+              <div class="trend-kicker">TREND INSIGHT</div>
+              <p class="trend-statement">
+                协作轮次逐步收敛
+                <span>单轮协作深度持续提升</span>
+              </p>
+            </div>
+
+            <div class="legend">
+              <div class="legend-item">
+                <i class="legend-line"></i>
+                <span>协作轮次</span>
+              </div>
+
+              <div class="legend-item">
+                <i class="legend-line yellow"></i>
+                <span>协作时长</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 趋势图 -->
+          <svg
+            class="chart"
+            viewBox="0 0 530 210"
+            role="img"
+            aria-label="7月至9月AI协作轮次与时长趋势"
+          >
+            <defs>
+              <linearGradient id="purpleArea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#8170ff" stop-opacity="0.15" />
+                <stop offset="100%" stop-color="#8170ff" stop-opacity="0" />
+              </linearGradient>
+
+              <linearGradient id="yellowArea" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#f5bc24" stop-opacity="0.10" />
+                <stop offset="100%" stop-color="#f5bc24" stop-opacity="0" />
+              </linearGradient>
+            </defs>
+
+            <!-- 水平线 -->
+            <line
+              x1="42" y1="55" x2="500" y2="55"
+              stroke="#292c39" stroke-width="1"
+            />
+            <line
+              x1="42" y1="112" x2="500" y2="112"
+              stroke="#292c39" stroke-width="1"
+            />
+            <line
+              x1="42" y1="168" x2="500" y2="168"
+              stroke="#353846" stroke-width="1"
+            />
+
+            <!-- 填充 -->
+            <path
+              d="M82 100 L270 62 L458 112 L458 168 L82 168 Z"
+              fill="url(#purpleArea)"
+            />
+
+            <path
+              d="M82 145 L270 96 L458 48 L458 168 L82 168 Z"
+              fill="url(#yellowArea)"
+            />
+
+            <!-- 紫色折线：轮次 -->
+            <polyline
+              points="82,100 270,62 458,112"
+              fill="none"
+              stroke="#8170ff"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+
+            <!-- 黄色折线：时长 -->
+            <polyline
+              points="82,145 270,96 458,48"
+              fill="none"
+              stroke="#f5bc24"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+
+            <!-- 紫色数据点 -->
+            <g fill="#8170ff" stroke="#151722" stroke-width="4">
+              <circle cx="82" cy="100" r="6" />
+              <circle cx="270" cy="62" r="6" />
+              <circle cx="458" cy="112" r="6" />
+            </g>
+
+            <!-- 黄色数据点 -->
+            <g fill="#f5bc24" stroke="#151722" stroke-width="4">
+              <circle cx="82" cy="145" r="6" />
+              <circle cx="270" cy="96" r="6" />
+              <circle cx="458" cy="48" r="6" />
+            </g>
+
+            <!-- 轮次数字 -->
+            <g
+              fill="#b8adff"
+              font-size="10"
+              font-weight="700"
+              text-anchor="middle"
+            >
+              <text x="82" y="85">315 轮</text>
+              <text x="270" y="46">436 轮</text>
+              <text x="458" y="130">293 轮</text>
+            </g>
+
+            <!-- 时长数字 -->
+            <g
+              fill="#ffd55b"
+              font-size="10"
+              font-weight="700"
+              text-anchor="middle"
+            >
+              <text x="82" y="163">6.9h</text>
+              <text x="270" y="116">15.8h</text>
+              <text x="458" y="32">20.6h</text>
+            </g>
+
+            <!-- 月份 -->
+            <g
+              fill="#818597"
+              font-size="11"
+              font-weight="600"
+              text-anchor="middle"
+            >
+              <text x="82" y="198">7 月</text>
+              <text x="270" y="198">8 月</text>
+              <text x="458" y="198">9 月</text>
+            </g>
+          </svg>
+
+          <div class="month-phases">
+            <div class="month-card">
+              <span class="month-index">01</span>
+              <div class="month">7 月</div>
+              <strong>探索验证期</strong>
+            </div>
+
+            <div class="month-card">
+              <span class="month-index">02</span>
+              <div class="month">8 月</div>
+              <strong>需求攻坚期</strong>
+            </div>
+
+            <div class="month-card active">
+              <span class="month-index">03</span>
+              <div class="month">9 月</div>
+              <strong>深度协作期</strong>
+            </div>
+          </div>
+        </article>
+
+        <!-- 右：角色 -->
+        <article class="card main-panel roles-panel">
+          <div class="panel-head">
+            <h2 class="section-title yellow">AI 在协作中的四种角色</h2>
+            <span class="section-en">ROLE-BASED COLLABORATION</span>
+          </div>
+
+          <div class="roles-grid">
+
+            <!-- 角色 1 -->
+            <section class="role-card">
+              <div class="role-head">
+                <span class="role-number">01</span>
+
+                <div class="role-heading">
+                  <div class="role-en">Solution Analyst</div>
+                  <h3>方案分析师</h3>
+                </div>
+
+                <span class="role-tag">核心角色</span>
+              </div>
+
+              <p class="role-description">
+                将功能需求拆解为实现路径、系统边界与潜在风险，
+                由人工完成最终方案取舍。
+              </p>
+
+              <div class="role-flow">
+                <span class="flow-step">输入需求</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">分析路径</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step result">输出方案</span>
+              </div>
+            </section>
+
+            <!-- 角色 2 -->
+            <section class="role-card yellow-role">
+              <div class="role-head">
+                <span class="role-number">02</span>
+
+                <div class="role-heading">
+                  <div class="role-en">Code Reviewer</div>
+                  <h3>代码审查员</h3>
+                </div>
+
+                <span class="role-tag">质量保障</span>
+              </div>
+
+              <p class="role-description">
+                检查实现逻辑、边界条件与潜在风险，
+                输出清晰、可执行的问题清单。
+              </p>
+
+              <div class="role-flow">
+                <span class="flow-step">代码实现</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">风险审查</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step result">问题清单</span>
+              </div>
+            </section>
+
+            <!-- 角色 3 -->
+            <section class="role-card">
+              <div class="role-head">
+                <span class="role-number">03</span>
+
+                <div class="role-heading">
+                  <div class="role-en">Log Analyst</div>
+                  <h3>日志分析助手</h3>
+                </div>
+
+                <span class="role-tag">问题排查</span>
+              </div>
+
+              <p class="role-description">
+                从日志和异常信息中提取有效证据，
+                收敛问题链路并定位根因方向。
+              </p>
+
+              <div class="role-flow">
+                <span class="flow-step">提取日志</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">证据分析</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step result">根因线索</span>
+              </div>
+            </section>
+
+            <!-- 角色 4 -->
+            <section class="role-card yellow-role">
+              <div class="role-head">
+                <span class="role-number">04</span>
+
+                <div class="role-heading">
+                  <div class="role-en">Knowledge Mentor</div>
+                  <h3>授课导师</h3>
+                </div>
+
+                <span class="role-tag">能力提升</span>
+              </div>
+
+              <p class="role-description">
+                结合项目上下文讲解技术原理，
+                促进知识理解、实践迁移和经验沉淀。
+              </p>
+
+              <div class="role-flow">
+                <span class="flow-step">知识问题</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step">深度讲解</span>
+                <span class="flow-arrow">→</span>
+                <span class="flow-step result">知识沉淀</span>
+              </div>
+            </section>
+          </div>
+        </article>
+      </section>
+
+      <!-- 底部洞察 -->
+      <section class="card insight">
+        <div class="insight-label">CORE INSIGHT</div>
+
+        <p class="insight-copy">
+          AI 的价值不只是“回答问题”，而是通过
+          <strong class="purple">明确角色</strong>、
+          <strong>补充上下文</strong>和
+          <strong class="yellow">设置验证环节</strong>，
+          参与完整研发协作。
+        </p>
+
+        <div class="insight-result">从问答工具 → 协作角色</div>
+      </section>
+
+      <footer class="footer">
+        <span>AI 应用实践 · 从工具使用到协作方式升级</span>
+        <span>03 / AI PRACTICE</span>
+      </footer>
+    </div>
+  </main>
+</body>
+  <script>
+    function resizeSlide() {
+      const slide = document.getElementById("slide");
+
+      const scale = Math.min(
+        window.innerWidth / 1600,
+        window.innerHeight / 900
+      );
+
+      slide.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener("load", resizeSlide);
+    window.addEventListener("resize", resizeSlide);
+  </script>
+</html>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>试用期工作汇报</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --white: #f7f7fa;
+      --text: #b7bac7;
+      --muted: #747989;
+      --line: #2d303d;
+
+      --purple: #8b7cff;
+      --purple-light: #c2baff;
+
+      --yellow: #f2b93b;
+      --yellow-light: #ffd466;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #05060a;
+
+      font-family:
+        "Microsoft YaHei",
+        "PingFang SC",
+        "Noto Sans CJK SC",
+        Arial,
+        sans-serif;
+    }
+
+    body {
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    #viewport {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #05060a;
+    }
+
+    #slide {
+      position: relative;
+      width: 1600px;
+      height: 900px;
+      flex: 0 0 auto;
+      overflow: hidden;
+      transform-origin: center center;
+      color: var(--white);
+
+      background:
+        radial-gradient(
+          circle at 90% 10%,
+          rgba(139, 124, 255, 0.18),
+          transparent 31%
+        ),
+        radial-gradient(
+          circle at 4% 96%,
+          rgba(242, 185, 59, 0.05),
+          transparent 25%
+        ),
+        linear-gradient(
+          135deg,
+          #080910 0%,
+          #0a0b13 66%,
+          #171229 100%
+        );
+    }
+
+    /* 顶部品牌线 */
+    #slide::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 650px;
+      height: 4px;
+
+      background: linear-gradient(
+        90deg,
+        var(--yellow),
+        var(--purple),
+        transparent
+      );
+    }
+
+    /* 右侧装饰圆 */
+    #slide::after {
+      content: "";
+      position: absolute;
+      top: 90px;
+      right: -320px;
+      width: 780px;
+      height: 780px;
+
+      border: 1px solid rgba(139, 124, 255, 0.08);
+      border-radius: 50%;
+
+      box-shadow:
+        0 0 0 80px rgba(139, 124, 255, 0.015),
+        0 0 0 160px rgba(139, 124, 255, 0.01);
+    }
+
+    .page {
+      position: absolute;
+      z-index: 2;
+      inset: 0;
+      padding: 66px 84px 44px;
+
+      display: grid;
+      grid-template-rows: 48px 1fr 112px 22px;
+      row-gap: 20px;
+    }
+
+    /* 顶部 */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .review-tag {
+      height: 34px;
+      padding: 0 18px;
+
+      display: inline-flex;
+      align-items: center;
+
+      border: 1px solid rgba(242, 185, 59, 0.45);
+      border-radius: 17px;
+
+      color: var(--yellow-light);
+      background: rgba(48, 39, 19, 0.42);
+
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .top-en {
+      color: #8178bd;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+
+    /* 主标题区 */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      padding-bottom: 16px;
+    }
+
+    .eyebrow {
+      margin-bottom: 24px;
+
+      color: var(--purple-light);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 4px;
+    }
+
+    .title {
+      margin: 0;
+
+      color: transparent;
+      background: linear-gradient(
+        90deg,
+        #ffffff 0%,
+        #d0c5ff 55%,
+        #f5c64e 100%
+      );
+
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      font-size: 86px;
+      line-height: 1.08;
+      font-weight: 780;
+      letter-spacing: -5px;
+    }
+
+    .accent-line {
+      width: 92px;
+      height: 5px;
+      margin-top: 32px;
+
+      border-radius: 3px;
+      background: linear-gradient(
+        90deg,
+        var(--purple),
+        var(--yellow)
+      );
+    }
+
+    .subtitle {
+      margin-top: 28px;
+
+      color: #c2c5d0;
+      font-size: 20px;
+      line-height: 1.65;
+    }
+
+    .subtitle strong {
+      color: var(--white);
+      font-weight: 700;
+    }
+
+    .period {
+      margin-top: 21px;
+
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      color: #7f8493;
+      font-size: 13px;
+    }
+
+    .period-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--purple);
+    }
+
+    /* 底部信息 */
+    .info-bar {
+      display: grid;
+      grid-template-columns: 0.75fr 1.35fr 1.15fr;
+
+      overflow: hidden;
+
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .info-item {
+      position: relative;
+      padding: 22px 30px 20px 0;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .info-item + .info-item {
+      padding-left: 30px;
+      border-left: 1px solid var(--line);
+    }
+
+    .info-label {
+      margin-bottom: 9px;
+
+      color: #696e7d;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .info-value {
+      color: #e9e9ee;
+      font-size: 15px;
+      font-weight: 650;
+    }
+
+    .info-value.purple {
+      color: var(--purple-light);
+    }
+
+    .info-value.yellow {
+      color: var(--yellow-light);
+    }
+
+    /* 页脚 */
+    .footer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+
+      color: #4f5462;
+      font-size: 9px;
+      letter-spacing: 1.3px;
+    }
+
+    .footer strong {
+      color: #7f76b5;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="viewport">
+    <main id="slide">
+      <div class="page">
+
+        <!-- 顶部 -->
+        <header class="topbar">
+          <div class="review-tag">
+            虎牙 2026 届校招生 · 期中答辩
+          </div>
+
+          <div class="top-en">
+            PROBATION REVIEW · 2026
+          </div>
+        </header>
+
+        <!-- 主标题 -->
+        <section class="hero">
+          <div class="eyebrow">
+            MID-TERM PERFORMANCE REVIEW
+          </div>
+
+          <h1 class="title">试用期工作汇报</h1>
+
+          <div class="accent-line"></div>
+
+          <div class="subtitle">
+            从<strong>基础能力建设</strong>，到<strong>直播间核心链路优化</strong>
+          </div>
+
+          <div class="period">
+            <span class="period-dot"></span>
+            <span>汇报周期：2025.12—至今</span>
+          </div>
+        </section>
+
+        <!-- 基本信息 -->
+        <section class="info-bar">
+          <div class="info-item">
+            <div class="info-label">汇报人 / PRESENTER</div>
+            <div class="info-value purple">肖苹苹</div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">部门 / DEPARTMENT</div>
+            <div class="info-value">虎牙直播研发部 · PC业务组</div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-label">岗位 / POSITION</div>
+            <div class="info-value yellow">C++ 客户端开发工程师</div>
+          </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+          <span>
+            <strong>PC 客户端新框架研发与维护</strong>
+          </span>
+
+          <span>HUYA · 2026</span>
+        </footer>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function resizeSlide() {
+      const slide = document.getElementById("slide");
+
+      const scale = Math.min(
+        window.innerWidth / 1600,
+        window.innerHeight / 900
+      );
+
+      slide.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener("load", resizeSlide);
+    window.addEventListener("resize", resizeSlide);
+  </script>
+</body>
+</html>

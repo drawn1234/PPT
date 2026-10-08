@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>案例反思：猜测不等于实际</title>
+
+  <style>
+    :root {
+      --bg: #080910;
+      --panel: #121421;
+      --panel-2: #171929;
+      --line: rgba(255, 255, 255, 0.11);
+
+      --text: #f6f7fb;
+      --sub: #b9bdcc;
+      --muted: #777d91;
+
+      --purple: #947dff;
+      --purple-soft: rgba(148, 125, 255, 0.11);
+
+      --yellow: #ffc547;
+      --yellow-soft: rgba(255, 197, 71, 0.1);
+
+      --red: #ff6675;
+      --red-soft: rgba(255, 102, 117, 0.1);
+
+      --green: #42dfba;
+      --green-soft: rgba(66, 223, 186, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    body {
+      color: var(--text);
+      font-family:
+        Inter,
+        "PingFang SC",
+        "Microsoft YaHei",
+        "Noto Sans SC",
+        Arial,
+        sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .slide {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto auto;
+      gap: clamp(12px, 1.6vh, 20px);
+
+      width: 100vw;
+      height: 100vh;
+      padding:
+        clamp(22px, 3.2vh, 42px)
+        clamp(32px, 4vw, 76px)
+        clamp(15px, 2vh, 26px);
+
+      overflow: hidden;
+
+      background:
+        radial-gradient(
+          circle at 96% 0%,
+          rgba(112, 83, 218, 0.2),
+          transparent 30%
+        ),
+        radial-gradient(
+          circle at 0% 100%,
+          rgba(255, 197, 71, 0.05),
+          transparent 25%
+        ),
+        linear-gradient(135deg, #080910 0%, #0c0d18 100%);
+    }
+
+    .slide::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.12;
+
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+
+      background-size: 52px 52px;
+      mask-image: linear-gradient(to bottom, transparent, #000 25%, #000);
+    }
+
+    .header,
+    .main,
+    .takeaway,
+    .footer {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* 顶部标题 */
+
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 32px;
+      padding-bottom: clamp(12px, 1.7vh, 20px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .page-number {
+      display: grid;
+      flex: 0 0 auto;
+      width: 48px;
+      height: 28px;
+      place-items: center;
+
+      border: 1px solid rgba(255, 197, 71, 0.65);
+      border-radius: 999px;
+
+      color: var(--yellow);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(29px, 2.45vw, 47px);
+      line-height: 1.12;
+      letter-spacing: -0.04em;
+    }
+
+    h1 em {
+      color: var(--yellow);
+      font-style: normal;
+    }
+
+    .subtitle {
+      margin: 8px 0 0 64px;
+      color: var(--sub);
+      font-size: clamp(14px, 1vw, 18px);
+      line-height: 1.5;
+    }
+
+    .case-mark {
+      padding-top: 10px;
+      color: rgba(177, 161, 255, 0.82);
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: 0.25em;
+      white-space: nowrap;
+    }
+
+    /* 主体 */
+
+    .main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.22fr) minmax(390px, 0.78fr);
+      gap: clamp(15px, 1.6vw, 24px);
+      min-height: 0;
+    }
+
+    .panel {
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+
+      border: 1px solid var(--line);
+      border-radius: 16px;
+
+      background: rgba(18, 20, 33, 0.91);
+      box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.18),
+        inset 0 1px rgba(255, 255, 255, 0.025);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-height: 50px;
+      padding: 11px 19px;
+
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.018);
+    }
+
+    .panel-number {
+      display: grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+
+      border-radius: 8px;
+      color: var(--yellow);
+      background: var(--yellow-soft);
+
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: clamp(17px, 1.25vw, 23px);
+      line-height: 1.2;
+    }
+
+    /* 左侧：案例证据 */
+
+    .case-panel {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .case-body {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: clamp(12px, 1.5vh, 18px);
+      min-height: 0;
+      padding: clamp(14px, 1.8vh, 22px);
+    }
+
+    .scene {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 15px;
+      padding: clamp(12px, 1.5vh, 17px) 18px;
+
+      border: 1px solid rgba(148, 125, 255, 0.34);
+      border-radius: 12px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(148, 125, 255, 0.12),
+          transparent 72%
+        ),
+        var(--panel-2);
+    }
+
+    .scene-icon {
+      display: grid;
+      width: 40px;
+      height: 40px;
+      place-items: center;
+
+      border: 1px solid rgba(148, 125, 255, 0.55);
+      border-radius: 11px;
+
+      color: #c5baff;
+      font-size: 19px;
+      font-weight: 850;
+    }
+
+    .scene-label {
+      margin-bottom: 3px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .scene-text {
+      font-size: clamp(15px, 1.1vw, 20px);
+      line-height: 1.35;
+      font-weight: 800;
+    }
+
+    .scene-tag {
+      padding: 7px 12px;
+      border-radius: 999px;
+
+      color: #c8beff;
+      background: var(--purple-soft);
+
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .comparison {
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      min-height: 0;
+
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      overflow: hidden;
+    }
+
+    .row-label,
+    .row-content {
+      min-height: 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .comparison > :nth-last-child(-n + 2) {
+      border-bottom: 0;
+    }
+
+    .row-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+
+      border-right: 1px solid var(--line);
+
+      font-size: clamp(14px, 1vw, 17px);
+      font-weight: 850;
+      text-align: center;
+    }
+
+    .guess-label {
+      color: var(--red);
+      background: var(--red-soft);
+    }
+
+    .actual-label {
+      color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .row-content {
+      display: grid;
+      grid-template-columns:
+        minmax(150px, 0.82fr)
+        34px
+        minmax(190px, 1fr)
+        34px
+        minmax(180px, 0.95fr);
+      align-items: center;
+      gap: 4px;
+      padding: clamp(13px, 1.7vh, 20px);
+    }
+
+    .flow-step {
+      min-width: 0;
+    }
+
+    .step-label {
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .step-value {
+      color: var(--text);
+      font-size: clamp(14px, 1.08vw, 19px);
+      line-height: 1.4;
+      font-weight: 800;
+    }
+
+    .step-value.red {
+      color: var(--red);
+    }
+
+    .step-value.green {
+      color: var(--green);
+    }
+
+    .arrow {
+      position: relative;
+      width: 22px;
+      height: 1px;
+      background: #53586b;
+    }
+
+    .arrow::after {
+      content: "";
+      position: absolute;
+      top: -3px;
+      right: 0;
+      width: 7px;
+      height: 7px;
+
+      border-top: 1px solid #74798b;
+      border-right: 1px solid #74798b;
+
+      transform: rotate(45deg);
+    }
+
+    /* 右侧：核心判断 */
+
+    .insight-panel {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .insight-body {
+      display: grid;
+      grid-template-rows: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      min-height: 0;
+    }
+
+    .formula-area {
+      display: flex;
+      min-height: 0;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(18px, 2.4vh, 30px);
+      text-align: center;
+    }
+
+    .formula-caption {
+      margin-bottom: 14px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: 0.16em;
+    }
+
+    .formula {
+      font-size: clamp(35px, 3.25vw, 62px);
+      line-height: 1.05;
+      letter-spacing: -0.045em;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .formula .guess {
+      color: var(--red);
+    }
+
+    .formula .not-equal {
+      display: inline-block;
+      margin: 0 12px;
+      color: var(--yellow);
+    }
+
+    .formula .actual {
+      color: var(--green);
+    }
+
+    .formula-copy {
+      max-width: 500px;
+      margin: 16px auto 0;
+      color: var(--sub);
+      font-size: clamp(13px, 0.92vw, 16px);
+      line-height: 1.55;
+    }
+
+    .formula-copy strong {
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .checks {
+      display: grid;
+      align-content: center;
+      gap: clamp(8px, 1.1vh, 13px);
+      min-height: 0;
+      padding: clamp(15px, 2vh, 24px);
+
+      border-top: 1px solid var(--line);
+
+      background:
+        linear-gradient(
+          100deg,
+          rgba(255, 197, 71, 0.075),
+          transparent 75%
+        );
+    }
+
+    .checks-title {
+      margin-bottom: 2px;
+      color: var(--yellow);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .check-item {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      align-items: center;
+      gap: 11px;
+
+      color: var(--sub);
+      font-size: clamp(13px, 0.95vw, 17px);
+      line-height: 1.35;
+    }
+
+    .check-number {
+      display: grid;
+      width: 27px;
+      height: 27px;
+      place-items: center;
+
+      border-radius: 7px;
+      color: var(--yellow);
+      background: var(--yellow-soft);
+
+      font-size: 10px;
+      font-weight: 850;
+    }
+
+    .check-item strong {
+      color: var(--text);
+      font-weight: 750;
+    }
+
+    /* 底部结论 */
+
+    .takeaway {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 18px;
+
+      min-height: 58px;
+      padding: 11px 20px;
+
+      border: 1px solid rgba(255, 197, 71, 0.28);
+      border-left: 4px solid var(--yellow);
+      border-radius: 12px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(255, 197, 71, 0.09),
+          rgba(148, 125, 255, 0.035),
+          transparent
+        ),
+        rgba(18, 20, 33, 0.92);
+    }
+
+    .takeaway-tag {
+      padding: 7px 16px;
+      border-radius: 999px;
+
+      color: #291c00;
+      background: var(--yellow);
+
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .takeaway-text {
+      color: var(--sub);
+      font-size: clamp(14px, 1vw, 18px);
+      line-height: 1.4;
+    }
+
+    .takeaway-text strong {
+      color: var(--text);
+    }
+
+    .takeaway-text em {
+      color: var(--yellow);
+      font-style: normal;
+      font-weight: 850;
+    }
+
+    .method {
+      color: #afa1f7;
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    /* 页脚 */
+
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 650;
+      letter-spacing: 0.1em;
+    }
+
+    .footer strong {
+      color: #a596ee;
+    }
+
+    /* 低高度屏幕 */
+
+    @media (max-height: 760px) {
+      .slide {
+        gap: 9px;
+        padding-top: 17px;
+        padding-bottom: 12px;
+      }
+
+      .header {
+        padding-bottom: 10px;
+      }
+
+      .subtitle {
+        margin-top: 4px;
+      }
+
+      .panel-header {
+        min-height: 43px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+      }
+
+      .case-body {
+        gap: 8px;
+        padding: 11px;
+      }
+
+      .scene {
+        padding-top: 9px;
+        padding-bottom: 9px;
+      }
+
+      .row-content {
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+
+      .formula-area {
+        padding-top: 12px;
+        padding-bottom: 12px;
+      }
+
+      .formula-copy {
+        margin-top: 9px;
+      }
+
+      .checks {
+        gap: 7px;
+        padding-top: 11px;
+        padding-bottom: 11px;
+      }
+
+      .takeaway {
+        min-height: 49px;
+        padding-top: 7px;
+        padding-bottom: 7px;
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .slide {
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+
+      .main {
+        grid-template-columns: minmax(0, 1.16fr) minmax(330px, 0.84fr);
+      }
+
+      .row-content {
+        grid-template-columns: 1fr 22px 1fr;
+      }
+
+      .row-content .flow-step:last-child,
+      .row-content .arrow:nth-last-child(2) {
+        display: none;
+      }
+
+      .case-mark,
+      .method {
+        display: none;
+      }
+
+      .takeaway {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="slide">
+    <!-- 标题 -->
+    <header class="header">
+      <div>
+        <div class="title-row">
+          <span class="page-number">03</span>
+          <h1>案例反思：<em>猜测 ≠ 实际</em></h1>
+        </div>
+
+        <p class="subtitle">
+          AI 猜测“保留记录”就能继续执行，但真实结果取决于
+          <strong>任务状态与调度机制</strong>。
+        </p>
+      </div>
+
+      <div class="case-mark">CASE REVIEW</div>
+    </header>
+
+    <!-- 主体 -->
+    <section class="main">
+      <!-- 左侧案例 -->
+      <article class="panel case-panel">
+        <header class="panel-header">
+          <span class="panel-number">01</span>
+          <h2>方案与实际结果</h2>
+        </header>
+
+        <div class="case-body">
+          <div class="scene">
+            <div class="scene-icon">!</div>
+
+            <div>
+              <div class="scene-label">问题场景</div>
+              <div class="scene-text">弹幕轮到上屏，但所有轨道已满</div>
+            </div>
+
+            <span class="scene-tag">无可用轨道</span>
+          </div>
+
+          <div class="comparison">
+            <!-- AI猜测 -->
+            <div class="row-label guess-label">AI 猜测</div>
+
+            <div class="row-content">
+              <div class="flow-step">
+                <div class="step-label">采取动作</div>
+                <div class="step-value">保留显示记录</div>
+              </div>
+
+              <span class="arrow"></span>
+
+              <div class="flow-step">
+                <div class="step-label">真实状态</div>
+                <div class="step-value">任务已离开队伍</div>
+              </div>
+
+              <span class="arrow"></span>
+
+              <div class="flow-step">
+                <div class="step-label">最终结果</div>
+                <div class="step-value red">无人调度，弹幕消失</div>
+              </div>
+            </div>
+
+            <!-- 实际机制 -->
+            <div class="row-label actual-label">实际机制</div>
+
+            <div class="row-content">
+              <div class="flow-step">
+                <div class="step-label">正确动作</div>
+                <div class="step-value">放回等待队伍</div>
+              </div>
+
+              <span class="arrow"></span>
+
+              <div class="flow-step">
+                <div class="step-label">任务状态</div>
+                <div class="step-value">继续等待调度</div>
+              </div>
+
+              <span class="arrow"></span>
+
+              <div class="flow-step">
+                <div class="step-label">最终结果</div>
+                <div class="step-value green">轨道空闲，重新上屏</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 右侧核心 -->
+      <aside class="panel insight-panel">
+        <header class="panel-header">
+          <span class="panel-number">02</span>
+          <h2>不要把推测当成事实</h2>
+        </header>
+
+        <div class="insight-body">
+          <div class="formula-area">
+            <div class="formula-caption">本次案例的关键问题</div>
+
+            <div class="formula">
+              <span class="guess">猜测</span>
+              <span class="not-equal">≠</span>
+              <span class="actual">实际</span>
+            </div>
+
+            <p class="formula-copy">
+              AI 根据表面信息推测结果，
+              但没有验证<strong>任务是否仍在真实执行链路中</strong>。
+            </p>
+          </div>
+
+          <div class="checks">
+            <div class="checks-title">人的验证清单</div>
+
+            <div class="check-item">
+              <span class="check-number">01</span>
+              <span>任务现在处于<strong>什么状态？</strong></span>
+            </div>
+
+            <div class="check-item">
+              <span class="check-number">02</span>
+              <span>后续由<strong>谁再次调度？</strong></span>
+            </div>
+
+            <div class="check-item">
+              <span class="check-number">03</span>
+              <span>失败后是否存在<strong>重试路径？</strong></span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 结论 -->
+    <section class="takeaway">
+      <span class="takeaway-tag">核心认知</span>
+
+      <div class="takeaway-text">
+        AI 给出的是<strong>候选答案</strong>，不是事实；
+        人必须用<em>状态、链路和结果</em>完成验证。
+      </div>
+
+      <div class="method">提出猜测 → 检查状态 → 验证链路</div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+      <span><strong>AI 应用实践</strong> · 案例复盘 · 人工验证</span>
+      <span>03 / CASE REVIEW</span>
+    </footer>
+  </main>
+</body>
+</html>

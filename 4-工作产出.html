@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>工作与产出</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #080910;
+      --panel: #151722;
+      --panel-light: #191b28;
+      --line: #2d303e;
+
+      --white: #f5f5f7;
+      --text: #bec1cc;
+      --muted: #7d8291;
+
+      --purple: #8b7cff;
+      --purple-light: #b9b0ff;
+      --purple-dark: #211d39;
+
+      --yellow: #f2b93b;
+      --yellow-light: #ffd466;
+      --yellow-dark: #302713;
+
+      --green: #55d7bb;
+      --green-dark: #142d2b;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow: hidden;
+      background: #05060a;
+      font-family:
+        "Microsoft YaHei",
+        "PingFang SC",
+        "Noto Sans CJK SC",
+        Arial,
+        sans-serif;
+    }
+
+    /* 自动适配浏览器窗口 */
+    #viewport {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #05060a;
+    }
+
+    #slide {
+      position: relative;
+      width: 1600px;
+      height: 900px;
+      flex: 0 0 auto;
+      overflow: hidden;
+      color: var(--white);
+      transform-origin: center center;
+
+      background:
+        radial-gradient(
+          circle at 92% 5%,
+          rgba(139, 124, 255, 0.17),
+          transparent 25%
+        ),
+        radial-gradient(
+          circle at 3% 95%,
+          rgba(242, 185, 59, 0.05),
+          transparent 24%
+        ),
+        linear-gradient(135deg, #080910 0%, #0a0a12 62%, #151127 100%);
+    }
+
+    /* 顶部微弱装饰 */
+    #slide::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 680px;
+      height: 3px;
+      background: linear-gradient(
+        90deg,
+        var(--yellow),
+        var(--purple),
+        transparent
+      );
+    }
+
+    /* 页面主体 */
+    .page {
+      position: absolute;
+      inset: 0;
+      padding: 46px 76px 28px;
+      display: grid;
+      grid-template-rows: 128px 148px 372px 142px 26px;
+      row-gap: 14px;
+    }
+
+    /* ==================== 页头 ==================== */
+
+    .header {
+      position: relative;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .eyebrow {
+      margin-bottom: 13px;
+      color: #968bda;
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+
+    .title {
+      margin: 0;
+      color: var(--white);
+      font-size: 38px;
+      line-height: 1.2;
+      font-weight: 700;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      margin-top: 12px;
+      color: #a2a6b4;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .subtitle strong {
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .header-right {
+      position: absolute;
+      top: 5px;
+      right: 0;
+      color: #7f76bd;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+    }
+
+    /* ==================== 核心数据 ==================== */
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .kpi-card {
+      position: relative;
+      min-width: 0;
+      padding: 20px 23px;
+      overflow: hidden;
+      border: 1px solid #303341;
+      border-radius: 15px;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.025),
+          rgba(255, 255, 255, 0)
+        ),
+        var(--panel);
+    }
+
+    .kpi-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--purple);
+    }
+
+    .kpi-card.yellow::before {
+      background: var(--yellow);
+    }
+
+    .kpi-card.green::before {
+      background: var(--green);
+    }
+
+    .kpi-card.featured {
+      border-color: #48402c;
+      background:
+        radial-gradient(
+          circle at 88% 20%,
+          rgba(242, 185, 59, 0.1),
+          transparent 45%
+        ),
+        var(--panel);
+    }
+
+    .kpi-main {
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+      white-space: nowrap;
+    }
+
+    .kpi-number {
+      color: var(--white);
+      font-size: 44px;
+      line-height: 1;
+      font-weight: 750;
+      letter-spacing: -1.5px;
+    }
+
+    .featured .kpi-number {
+      color: var(--yellow-light);
+    }
+
+    .kpi-unit {
+      color: var(--purple-light);
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .yellow .kpi-unit,
+    .featured .kpi-unit {
+      color: var(--yellow-light);
+    }
+
+    .green .kpi-unit {
+      color: #83e5d0;
+    }
+
+    .kpi-title {
+      margin-top: 10px;
+      color: #e7e7ec;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .kpi-desc {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .kpi-index {
+      position: absolute;
+      right: 20px;
+      top: 18px;
+      color: #555a69;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    /* ==================== 中间内容 ==================== */
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1.12fr 0.88fr;
+      gap: 16px;
+      min-height: 0;
+    }
+
+    .panel {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      padding: 21px 24px;
+      border: 1px solid #303341;
+      border-radius: 16px;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.025),
+          transparent 60%
+        ),
+        rgba(21, 23, 34, 0.96);
+    }
+
+    .panel-header {
+      height: 38px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      border-bottom: 1px solid #292c38;
+    }
+
+    .panel-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
+
+    .panel-line {
+      width: 4px;
+      height: 19px;
+      border-radius: 2px;
+      background: var(--purple);
+    }
+
+    .panel-line.yellow {
+      background: var(--yellow);
+    }
+
+    .panel-title {
+      color: var(--white);
+      font-size: 18px;
+      line-height: 1.2;
+      font-weight: 700;
+    }
+
+    .panel-note {
+      color: #6f7483;
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
+    /* ==================== 模块图表 ==================== */
+
+    .chart {
+      padding-top: 12px;
+    }
+
+    .chart-row {
+      display: grid;
+      grid-template-columns: 162px 1fr 74px;
+      align-items: center;
+      gap: 14px;
+      height: 44px;
+    }
+
+    .module-name {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+      color: #d9dbe3;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .module-number {
+      width: 22px;
+      height: 22px;
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #574d94;
+      border-radius: 7px;
+      color: #b8afff;
+      background: #211d39;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .bar-track {
+      position: relative;
+      display: flex;
+      height: 13px;
+      overflow: hidden;
+      border-radius: 7px;
+      background: #222434;
+    }
+
+    .bar-need {
+      height: 100%;
+      background: linear-gradient(90deg, #7664ed, #927fff);
+    }
+
+    .bar-issue {
+      height: 100%;
+      background: linear-gradient(90deg, #dba81f, #f3c52b);
+    }
+
+    .bar-value {
+      color: #aeb1be;
+      font-size: 12px;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .bar-value b:first-child {
+      color: #b9b0ff;
+    }
+
+    .bar-value b:last-child {
+      color: var(--yellow-light);
+    }
+
+    .chart-footer {
+      margin-top: 9px;
+      padding-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #292c38;
+    }
+
+    .legend {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: #858a99;
+      font-size: 11px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .legend-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 3px;
+      background: var(--purple);
+    }
+
+    .legend-dot.yellow {
+      background: var(--yellow);
+    }
+
+    .total {
+      color: #9397a5;
+      font-size: 12px;
+    }
+
+    .total strong {
+      color: var(--white);
+      font-size: 14px;
+    }
+
+    /* ==================== 代表成果 ==================== */
+
+    .result-list {
+      padding-top: 12px;
+      display: grid;
+      grid-template-rows: repeat(3, 1fr);
+      gap: 9px;
+      height: 299px;
+    }
+
+    .result-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 53px 1fr 132px;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 15px;
+      border: 1px solid #303342;
+      border-radius: 12px;
+      background:
+        linear-gradient(
+          100deg,
+          rgba(139, 124, 255, 0.05),
+          transparent 58%
+        ),
+        #181a26;
+    }
+
+    .result-item.yellow-result {
+      background:
+        linear-gradient(
+          100deg,
+          rgba(242, 185, 59, 0.055),
+          transparent 58%
+        ),
+        #181a26;
+    }
+
+    .result-index {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #6356ac;
+      border-radius: 50%;
+      color: #b9afff;
+      background: #211d39;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .yellow-result .result-index {
+      border-color: #98731c;
+      color: var(--yellow-light);
+      background: #302713;
+    }
+
+    .result-name {
+      margin-bottom: 6px;
+      color: #f0f0f3;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .result-desc {
+      color: #898e9d;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .result-metric {
+      min-width: 0;
+      text-align: right;
+    }
+
+    .result-number {
+      color: var(--white);
+      font-size: 31px;
+      line-height: 1;
+      font-weight: 750;
+      letter-spacing: -1px;
+    }
+
+    .yellow-result .result-number {
+      color: var(--yellow-light);
+    }
+
+    .result-unit {
+      margin-left: 3px;
+      color: var(--purple-light);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .yellow-result .result-unit {
+      color: var(--yellow-light);
+    }
+
+    .result-label {
+      margin-top: 7px;
+      color: #898e9d;
+      font-size: 10px;
+    }
+
+    /* ==================== 底部时间轴 ==================== */
+
+    .timeline-panel {
+      position: relative;
+      padding: 17px 24px;
+      overflow: hidden;
+      border: 1px solid #303341;
+      border-radius: 15px;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(139, 124, 255, 0.07),
+          rgba(21, 23, 34, 0.95) 42%,
+          rgba(242, 185, 59, 0.04)
+        );
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: 300px 1fr 390px;
+      align-items: center;
+      height: 100%;
+    }
+
+    .stage {
+      min-width: 0;
+    }
+
+    .stage-tag {
+      margin-bottom: 8px;
+      color: #898e9d;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+
+    .stage-main {
+      display: flex;
+      align-items: baseline;
+      gap: 9px;
+    }
+
+    .stage-number {
+      color: var(--white);
+      font-size: 29px;
+      line-height: 1;
+      font-weight: 750;
+    }
+
+    .stage-number.yellow {
+      color: var(--yellow-light);
+    }
+
+    .stage-unit {
+      color: var(--purple-light);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .stage-main .yellow + .stage-unit {
+      color: var(--yellow-light);
+    }
+
+    .stage-desc {
+      margin-top: 8px;
+      color: #999dab;
+      font-size: 12px;
+    }
+
+    .timeline-center {
+      position: relative;
+      height: 75px;
+      margin: 0 28px;
+    }
+
+    .timeline-line {
+      position: absolute;
+      top: 34px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(
+        90deg,
+        var(--purple),
+        #575267 46%,
+        var(--yellow)
+      );
+    }
+
+    .timeline-line::after {
+      content: "";
+      position: absolute;
+      top: -4px;
+      right: -1px;
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 9px solid var(--yellow);
+    }
+
+    .timeline-start,
+    .timeline-end {
+      position: absolute;
+      top: 28px;
+      width: 14px;
+      height: 14px;
+      border: 3px solid #171823;
+      border-radius: 50%;
+    }
+
+    .timeline-start {
+      left: 0;
+      background: var(--purple);
+    }
+
+    .timeline-end {
+      right: 0;
+      background: var(--yellow);
+    }
+
+    .growth-tag {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      padding: 6px 14px;
+      transform: translateX(-50%);
+      border: 1px solid #4a4659;
+      border-radius: 14px;
+      color: #c9c5dc;
+      background: #1c1d29;
+      font-size: 10px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .timeline-date-left,
+    .timeline-date-right {
+      position: absolute;
+      top: 52px;
+      color: #656a79;
+      font-size: 10px;
+    }
+
+    .timeline-date-left {
+      left: 0;
+    }
+
+    .timeline-date-right {
+      right: 0;
+    }
+
+    .timeline-summary {
+      position: absolute;
+      right: 24px;
+      top: 14px;
+      color: #666b7b;
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+
+    /* ==================== 页脚 ==================== */
+
+    .footer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      color: #515665;
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+
+    .footer strong {
+      color: #7b718f;
+      font-weight: 500;
+    }
+
+    /* 轻微入场效果，截图不受影响 */
+    @media screen {
+      .kpi-card,
+      .panel,
+      .timeline-panel {
+        animation: appear 0.55s ease both;
+      }
+
+      .kpi-card:nth-child(2) {
+        animation-delay: 0.05s;
+      }
+
+      .kpi-card:nth-child(3) {
+        animation-delay: 0.1s;
+      }
+
+      .kpi-card:nth-child(4) {
+        animation-delay: 0.15s;
+      }
+
+      @keyframes appear {
+        from {
+          opacity: 0;
+          transform: translateY(7px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="viewport">
+    <main id="slide">
+      <div class="page">
+
+        <!-- 页头 -->
+        <header class="header">
+          <div class="eyebrow">03 / WORK OUTPUT</div>
+
+          <h1 class="title">工作与产出</h1>
+
+          <div class="subtitle">
+            围绕直播互动链路，完成从
+            <strong>基础框架</strong>
+            到
+            <strong>核心体验与业务场景</strong>
+            的系统建设。
+          </div>
+
+          <div class="header-right">RESULT OVERVIEW</div>
+        </header>
+
+        <!-- 四项核心数据 -->
+        <section class="kpi-grid">
+          <article class="kpi-card">
+            <div class="kpi-index">01</div>
+
+            <div class="kpi-main">
+              <span class="kpi-number">25</span>
+              <span class="kpi-unit">项</span>
+            </div>
+
+            <div class="kpi-title">需求交付</div>
+            <div class="kpi-desc">早期 4 项 · 正式期 21 项</div>
+          </article>
+
+          <article class="kpi-card">
+            <div class="kpi-index">02</div>
+
+            <div class="kpi-main">
+              <span class="kpi-number">6</span>
+              <span class="kpi-unit">个</span>
+            </div>
+
+            <div class="kpi-title">业务模块</div>
+            <div class="kpi-desc">覆盖直播互动核心链路</div>
+          </article>
+
+          <article class="kpi-card yellow">
+            <div class="kpi-index">03</div>
+
+            <div class="kpi-main">
+              <span class="kpi-number">80</span>
+              <span class="kpi-unit">个</span>
+            </div>
+
+            <div class="kpi-title">问题处理</div>
+            <div class="kpi-desc">集中解决体验与稳定性问题</div>
+          </article>
+
+          <article class="kpi-card featured">
+            <div class="kpi-index">TOTAL</div>
+
+            <div class="kpi-main">
+              <span class="kpi-number">105</span>
+              <span class="kpi-unit">项</span>
+            </div>
+
+            <div class="kpi-title">工作产出</div>
+            <div class="kpi-desc">需求交付与问题处理合计</div>
+          </article>
+        </section>
+
+        <!-- 中部区域 -->
+        <section class="content-grid">
+
+          <!-- 左侧：模块投入 -->
+          <article class="panel">
+            <div class="panel-header">
+              <div class="panel-title-wrap">
+                <span class="panel-line"></span>
+                <span class="panel-title">六大模块投入分布</span>
+              </div>
+
+              <span class="panel-note">需求 / 问题处理</span>
+            </div>
+
+            <div class="chart">
+
+              <!-- 01：总量 23 / 最大值 25 -->
+              <div class="chart-row">
+                <div class="module-name">
+                  <span class="module-number">01</span>
+                  <span>新框架基础能力</span>
+                </div>
+
+                <div class="bar-track">
+                  <div class="bar-need" style="width:12%;"></div>
+                  <div class="bar-issue" style="width:80%;"></div>
+                </div>
+
+                <div class="bar-value">
+                  <b>3</b> / <b>20</b>
+                </div>
+              </div>
+
+              <!-- 02：总量 25 -->
+              <div class="chart-row">
+                <div class="module-name">
+                  <span class="module-number">02</span>
+                  <span>公屏消息体系</span>
+                </div>
+
+                <div class="bar-track">
+                  <div class="bar-need" style="width:28%;"></div>
+                  <div class="bar-issue" style="width:72%;"></div>
+                </div>
+
+                <div class="bar-value">
+                  <b>7</b> / <b>18</b>
+                </div>
+              </div>
+
+              <!-- 03：总量 22 -->
+              <div class="chart-row">
+                <div class="module-name">
+                  <span class="module-number">03</span>
+                  <span>弹幕渲染引擎</span>
+                </div>
+
+                <div class="bar-track">
+                  <div class="bar-need" style="width:20%;"></div>
+                  <div class="bar-issue" style="width:68%;"></div>
+                </div>
+
+                <div class="bar-value">
+                  <b>5</b> / <b>17</b>
+                </div>
+              </div>
+
+              <!-- 04：总量 13 -->
+              <div class="chart-row">
+                <div class="module-name">
+                  <span class="module-number">04</span>
+                  <span>会员与贵族体系</span>
+                </div>
+
+                <div class="bar-track">
+                  <div class="bar-need" style="width:12%;"></div>
+                  <div class="bar-issue" style="width:40%;"></div>
+                </div>
+
+                <div class="bar-value">
+                  <b>3</b> / <b>10</b>
+                </div>
+              </div>
+
+              <!-- 05：总量 11 -->
+              <div class="chart-row">
+                <div class="module-name">
+                  <span class="module-number">05</span>
+                  <span>商业化与上电视</span>
+                </div>
+
+                <div class="bar-track">
+                  <div class="bar-need" style="width:16%;"></div>
+                  <div class="bar-issue" style="width:28%;"></div>
+                </div>
+
+                <div class="bar-value">
+                  <b>4</b> / <b>7</b>
+                </div>
+              </div>
+
+              <!-- 06：总量 11 -->
+              <div class="chart-row">
+                <div class="module-name">
+                  <span class="module-number">06</span>
+                  <span>发言控制与持久化</span>
+                </div>
+
+                <div class="bar-track">
+                  <div class="bar-need" style="width:12%;"></div>
+                  <div class="bar-issue" style="width:32%;"></div>
+                </div>
+
+                <div class="bar-value">
+                  <b>3</b> / <b>8</b>
+                </div>
+              </div>
+
+              <div class="chart-footer">
+                <div class="legend">
+                  <div class="legend-item">
+                    <span class="legend-dot"></span>
+                    <span>需求交付</span>
+                  </div>
+
+                  <div class="legend-item">
+                    <span class="legend-dot yellow"></span>
+                    <span>问题处理</span>
+                  </div>
+                </div>
+
+                <div class="total">
+                  需求 25 · 问题 80 ·
+                  <strong>合计 105 项</strong>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 右侧：代表成果 -->
+          <article class="panel">
+            <div class="panel-header">
+              <div class="panel-title-wrap">
+                <span class="panel-line yellow"></span>
+                <span class="panel-title">代表性业务成果</span>
+              </div>
+
+              <span class="panel-note">BUSINESS IMPACT</span>
+            </div>
+
+            <div class="result-list">
+
+              <div class="result-item">
+                <div class="result-index">01</div>
+
+                <div>
+                  <div class="result-name">公屏发言提速</div>
+                  <div class="result-desc">
+                    本人发言直接插入公屏，减少等待服务端返回
+                  </div>
+                </div>
+
+                <div class="result-metric">
+                  <span class="result-number">200</span>
+                  <span class="result-unit">ms</span>
+                  <div class="result-label">发言显示时间</div>
+                </div>
+              </div>
+
+              <div class="result-item yellow-result">
+                <div class="result-index">02</div>
+
+                <div>
+                  <div class="result-name">弹幕体验优化</div>
+                  <div class="result-desc">
+                    覆盖不可见、轨道重叠与速度异常等问题
+                  </div>
+                </div>
+
+                <div class="result-metric">
+                  <span class="result-number">90</span>
+                  <span class="result-unit">%</span>
+                  <div class="result-label">相关反馈得到解决</div>
+                </div>
+              </div>
+
+              <div class="result-item">
+                <div class="result-index">03</div>
+
+                <div>
+                  <div class="result-name">新框架能力迁移</div>
+                  <div class="result-desc">
+                    弹幕彩蛋、用户管理、发言控制完成落地
+                  </div>
+                </div>
+
+                <div class="result-metric">
+                  <span class="result-number">3</span>
+                  <span class="result-unit">类</span>
+                  <div class="result-label">基础能力完成迁移</div>
+                </div>
+              </div>
+
+            </div>
+          </article>
+        </section>
+
+        <!-- 底部成长时间轴 -->
+        <section class="timeline-panel">
+          <div class="timeline-summary">
+            DELIVERY JOURNEY / 交付路径
+          </div>
+
+          <div class="timeline">
+            <div class="stage">
+              <div class="stage-tag">早期承接 · 2026.01—02</div>
+
+              <div class="stage-main">
+                <span class="stage-number">4</span>
+                <span class="stage-unit">项基础需求</span>
+              </div>
+
+              <div class="stage-desc">
+                独立承接新框架基础能力建设
+              </div>
+            </div>
+
+            <div class="timeline-center">
+              <div class="growth-tag">
+                职责升级：基础建设 → 核心模块负责
+              </div>
+
+              <div class="timeline-line"></div>
+              <div class="timeline-start"></div>
+              <div class="timeline-end"></div>
+
+              <div class="timeline-date-left">基础能力</div>
+              <div class="timeline-date-right">核心体验与业务场景</div>
+            </div>
+
+            <div class="stage">
+              <div class="stage-tag">正式阶段 · 2026.07—09</div>
+
+              <div class="stage-main">
+                <span class="stage-number yellow">21</span>
+                <span class="stage-unit">项核心任务</span>
+              </div>
+
+              <div class="stage-desc">
+                推进弹幕、公屏与业务体验优化
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+          <span>
+            从完成需求，到负责模块：
+            <strong>工作重心逐步扩展至核心体验与业务场景</strong>
+          </span>
+
+          <span>03 / 04</span>
+        </footer>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    /**
+     * 保持 1600×900 画布比例，并自动缩放到浏览器窗口。
+     * 按 F11 可进入浏览器全屏。
+     */
+    function resizeSlide() {
+      const slide = document.getElementById("slide");
+
+      const slideWidth = 1600;
+      const slideHeight = 900;
+
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+
+      const scale = Math.min(
+        windowWidth / slideWidth,
+        windowHeight / slideHeight
+      );
+
+      slide.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener("resize", resizeSlide);
+    window.addEventListener("load", resizeSlide);
+  </script>
+</body>
+</html>

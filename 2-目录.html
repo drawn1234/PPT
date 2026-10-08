@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>目录</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --white: #f6f6f8;
+      --text: #b8bbc7;
+      --muted: #777c8c;
+      --dim: #535866;
+
+      --panel: #151722;
+      --line: #303342;
+
+      --purple: #8b7cff;
+      --purple-light: #bcb4ff;
+
+      --cyan: #60cfd8;
+      --cyan-light: #9be8ed;
+
+      --yellow: #f2b93b;
+      --yellow-light: #ffd466;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #05060a;
+
+      font-family:
+        "Microsoft YaHei",
+        "PingFang SC",
+        "Noto Sans CJK SC",
+        Arial,
+        sans-serif;
+    }
+
+    body {
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    #viewport {
+      position: fixed;
+      inset: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      overflow: hidden;
+      background: #05060a;
+    }
+
+    #slide {
+      position: relative;
+      width: 1600px;
+      height: 900px;
+      flex: 0 0 auto;
+      overflow: hidden;
+      transform-origin: center center;
+      color: var(--white);
+
+      background:
+        radial-gradient(
+          circle at 93% 5%,
+          rgba(139, 124, 255, 0.17),
+          transparent 28%
+        ),
+        radial-gradient(
+          circle at 4% 96%,
+          rgba(242, 185, 59, 0.05),
+          transparent 25%
+        ),
+        linear-gradient(
+          135deg,
+          #080910 0%,
+          #0a0b13 65%,
+          #161229 100%
+        );
+    }
+
+    /* 顶部品牌线 */
+    #slide::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 620px;
+      height: 4px;
+
+      background: linear-gradient(
+        90deg,
+        var(--yellow),
+        var(--purple),
+        transparent
+      );
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+
+      padding: 50px 76px 28px;
+
+      display: grid;
+      grid-template-rows: 126px 550px 78px 24px;
+      gap: 14px;
+    }
+
+    /* ==================== 页头 ==================== */
+
+    .header {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+
+      border-bottom: 1px solid #2a2d39;
+    }
+
+    .header-main {
+      display: flex;
+      align-items: flex-start;
+      gap: 22px;
+    }
+
+    .contents-label {
+      height: 31px;
+      margin-top: 3px;
+      padding: 0 15px;
+
+      display: inline-flex;
+      align-items: center;
+
+      border: 1px solid #765b18;
+      border-radius: 16px;
+
+      color: var(--yellow-light);
+      background: rgba(48, 39, 19, 0.55);
+
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .eyebrow {
+      margin-bottom: 10px;
+
+      color: #9389d8;
+      font-size: 10px;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+
+    .title {
+      margin: 0;
+
+      color: var(--white);
+      font-size: 43px;
+      line-height: 1;
+      font-weight: 750;
+      letter-spacing: -1px;
+    }
+
+    .subtitle {
+      margin-top: 13px;
+
+      color: #8e93a2;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .header-right {
+      padding-top: 5px;
+      text-align: right;
+    }
+
+    .header-en {
+      color: #8178bd;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+
+    .header-count {
+      margin-top: 17px;
+
+      color: #626777;
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+
+    .header-count strong {
+      margin-right: 6px;
+
+      color: var(--white);
+      font-size: 21px;
+      font-weight: 700;
+    }
+
+    /* ==================== 目录卡片 ==================== */
+
+    .chapter-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      min-height: 0;
+    }
+
+    .chapter-card {
+      --accent: var(--purple);
+      --accent-light: var(--purple-light);
+      --accent-rgb: 139, 124, 255;
+
+      position: relative;
+      min-width: 0;
+      height: 100%;
+      padding: 31px 28px 27px;
+      overflow: hidden;
+
+      display: flex;
+      flex-direction: column;
+
+      border: 1px solid var(--line);
+      border-radius: 18px;
+
+      background:
+        radial-gradient(
+          circle at 90% 8%,
+          rgba(var(--accent-rgb), 0.1),
+          transparent 35%
+        ),
+        linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.025),
+          transparent 58%
+        ),
+        rgba(20, 22, 33, 0.97);
+
+      transition:
+        transform 0.25s ease,
+        border-color 0.25s ease;
+    }
+
+    .chapter-card:nth-child(2) {
+      --accent: #a080ff;
+      --accent-light: #c8b8ff;
+      --accent-rgb: 160, 128, 255;
+    }
+
+    .chapter-card:nth-child(3) {
+      --accent: var(--cyan);
+      --accent-light: var(--cyan-light);
+      --accent-rgb: 96, 207, 216;
+    }
+
+    .chapter-card:nth-child(4) {
+      --accent: var(--yellow);
+      --accent-light: var(--yellow-light);
+      --accent-rgb: 242, 185, 59;
+    }
+
+    .chapter-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(var(--accent-rgb), 0.55);
+    }
+
+    /* 顶部强调线 */
+    .chapter-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+
+      width: 100%;
+      height: 4px;
+
+      background: linear-gradient(
+        90deg,
+        var(--accent),
+        rgba(var(--accent-rgb), 0.15) 72%,
+        transparent
+      );
+    }
+
+    /* 右下角轻装饰 */
+    .chapter-card::after {
+      content: "";
+      position: absolute;
+      right: -82px;
+      bottom: -98px;
+
+      width: 210px;
+      height: 210px;
+
+      border: 1px solid rgba(var(--accent-rgb), 0.1);
+      border-radius: 50%;
+
+      box-shadow:
+        0 0 0 30px rgba(var(--accent-rgb), 0.018);
+    }
+
+    /* 卡片头部 */
+    .card-header {
+      position: relative;
+      z-index: 2;
+
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .chapter-number {
+      color: var(--accent-light);
+      font-size: 54px;
+      line-height: 1;
+      font-weight: 750;
+      letter-spacing: -3px;
+    }
+
+    .chapter-en {
+      padding-top: 8px;
+
+      color: #666b7a;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.8px;
+      text-align: right;
+    }
+
+    /* 主内容 */
+    .card-content {
+      position: relative;
+      z-index: 2;
+      margin-top: 70px;
+    }
+
+    .chapter-index {
+      margin-bottom: 12px;
+
+      color: rgba(var(--accent-rgb), 0.72);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .chapter-title {
+      margin: 0;
+      min-height: 88px;
+
+      color: var(--white);
+      font-size: 29px;
+      line-height: 1.45;
+      font-weight: 720;
+      letter-spacing: -0.5px;
+    }
+
+    .chapter-divider {
+      width: 40px;
+      height: 3px;
+      margin: 20px 0 17px;
+
+      border-radius: 2px;
+      background: var(--accent);
+    }
+
+    .chapter-subtitle {
+      color: var(--accent-light);
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .chapter-description {
+      margin-top: 13px;
+      min-height: 46px;
+
+      color: #858a99;
+      font-size: 12px;
+      line-height: 1.65;
+    }
+
+    /* 卡片底部 */
+    .card-footer {
+      position: relative;
+      z-index: 2;
+
+      margin-top: auto;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .keyword {
+      height: 28px;
+      padding: 0 12px;
+
+      display: inline-flex;
+      align-items: center;
+
+      border: 1px solid rgba(var(--accent-rgb), 0.27);
+      border-radius: 14px;
+
+      color: var(--accent-light);
+      background: rgba(var(--accent-rgb), 0.06);
+
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .page-range {
+      color: #5f6473;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    /* ==================== 底部路径 ==================== */
+
+    .story-bar {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      align-items: center;
+
+      padding: 14px 23px;
+
+      border: 1px solid #303342;
+      border-radius: 14px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(139, 124, 255, 0.075),
+          rgba(21, 23, 34, 0.96) 48%,
+          rgba(242, 185, 59, 0.05)
+        );
+    }
+
+    .story-heading {
+      border-right: 1px solid #353846;
+    }
+
+    .story-en {
+      color: #676c7b;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 1.8px;
+    }
+
+    .story-title {
+      margin-top: 5px;
+
+      color: #e8e8ec;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .story-steps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 17px;
+      padding-left: 25px;
+    }
+
+    .story-step {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      white-space: nowrap;
+    }
+
+    .story-number {
+      width: 23px;
+      height: 23px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      border: 1px solid #554d8d;
+      border-radius: 7px;
+
+      color: var(--purple-light);
+      background: #211d39;
+
+      font-size: 9px;
+      font-weight: 700;
+    }
+
+    .story-step:last-child .story-number {
+      border-color: #795d1a;
+      color: var(--yellow-light);
+      background: #302713;
+    }
+
+    .story-text {
+      color: #b6b9c5;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .story-arrow {
+      color: #565b69;
+      font-size: 15px;
+    }
+
+    /* ==================== 页脚 ==================== */
+
+    .footer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+
+      color: #4e5361;
+      font-size: 9px;
+      letter-spacing: 1px;
+    }
+
+    .footer strong {
+      color: #7f76b2;
+      font-weight: 600;
+    }
+
+    /* 轻量入场动画 */
+    @media screen {
+      .chapter-card {
+        animation: appear 0.5s ease both;
+      }
+
+      .chapter-card:nth-child(2) {
+        animation-delay: 0.05s;
+      }
+
+      .chapter-card:nth-child(3) {
+        animation-delay: 0.1s;
+      }
+
+      .chapter-card:nth-child(4) {
+        animation-delay: 0.15s;
+      }
+
+      @keyframes appear {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="viewport">
+    <main id="slide">
+      <div class="page">
+
+        <!-- 页头 -->
+        <header class="header">
+          <div class="header-main">
+            <div class="contents-label">CONTENTS</div>
+
+            <div>
+              <div class="eyebrow">PRESENTATION OVERVIEW</div>
+              <h1 class="title">目录</h1>
+
+              <div class="subtitle">
+                从个人职责出发，回顾工作实践，并沉淀思考与未来规划
+              </div>
+            </div>
+          </div>
+
+          <div class="header-right">
+            <div class="header-en">PRESENTATION ROADMAP</div>
+
+            <div class="header-count">
+              <strong>04</strong> CHAPTERS
+            </div>
+          </div>
+        </header>
+
+        <!-- 四个章节 -->
+        <section class="chapter-grid">
+
+          <!-- 01 -->
+          <article class="chapter-card">
+            <div class="card-header">
+              <div class="chapter-number">01</div>
+              <div class="chapter-en">ABOUT ME</div>
+            </div>
+
+            <div class="card-content">
+              <div class="chapter-index">CHAPTER 01</div>
+
+              <h2 class="chapter-title">
+                个人简介
+              </h2>
+
+              <div class="chapter-divider"></div>
+
+              <div class="chapter-subtitle">
+                介绍与职责
+              </div>
+
+              <div class="chapter-description">
+                个人定位、岗位职责与主要工作方向
+              </div>
+            </div>
+
+            <div class="card-footer">
+              <span class="keyword">个人定位</span>
+              <span class="page-range">01</span>
+            </div>
+          </article>
+
+          <!-- 02 -->
+          <article class="chapter-card">
+            <div class="card-header">
+              <div class="chapter-number">02</div>
+              <div class="chapter-en">WORK SUMMARY</div>
+            </div>
+
+            <div class="card-content">
+              <div class="chapter-index">CHAPTER 02</div>
+
+              <h2 class="chapter-title">
+                试用期<br />工作总结
+              </h2>
+
+              <div class="chapter-divider"></div>
+
+              <div class="chapter-subtitle">
+                产出与挑战
+              </div>
+
+              <div class="chapter-description">
+                回顾核心工作、业务成果与重点问题
+              </div>
+            </div>
+
+            <div class="card-footer">
+              <span class="keyword">工作复盘</span>
+              <span class="page-range">02</span>
+            </div>
+          </article>
+
+          <!-- 03 -->
+          <article class="chapter-card">
+            <div class="card-header">
+              <div class="chapter-number">03</div>
+              <div class="chapter-en">AI PRACTICE</div>
+            </div>
+
+            <div class="card-content">
+              <div class="chapter-index">CHAPTER 03</div>
+
+              <h2 class="chapter-title">
+                AI 应用<br />与思考
+              </h2>
+
+              <div class="chapter-divider"></div>
+
+              <div class="chapter-subtitle">
+                实践与使用心得
+              </div>
+
+              <div class="chapter-description">
+                总结 AI 工具在开发过程中的应用方式
+              </div>
+            </div>
+
+            <div class="card-footer">
+              <span class="keyword">方法沉淀</span>
+              <span class="page-range">03</span>
+            </div>
+          </article>
+
+          <!-- 04 -->
+          <article class="chapter-card">
+            <div class="card-header">
+              <div class="chapter-number">04</div>
+              <div class="chapter-en">NEXT STEP</div>
+            </div>
+
+            <div class="card-content">
+              <div class="chapter-index">CHAPTER 04</div>
+
+              <h2 class="chapter-title">
+                下一步<br />规划
+              </h2>
+
+              <div class="chapter-divider"></div>
+
+              <div class="chapter-subtitle">
+                未来探索方向
+              </div>
+
+              <div class="chapter-description">
+                明确能力提升方向与下一阶段工作目标
+              </div>
+            </div>
+
+            <div class="card-footer">
+              <span class="keyword">未来规划</span>
+              <span class="page-range">04</span>
+            </div>
+          </article>
+
+        </section>
+
+        <!-- 汇报路径 -->
+        <section class="story-bar">
+          <div class="story-heading">
+            <div class="story-title">汇报叙事路径</div>
+          </div>
+
+          <div class="story-steps">
+            <div class="story-step">
+              <span class="story-number">01</span>
+              <span class="story-text">认识我</span>
+            </div>
+
+            <span class="story-arrow">→</span>
+
+            <div class="story-step">
+              <span class="story-number">02</span>
+              <span class="story-text">回顾工作</span>
+            </div>
+
+            <span class="story-arrow">→</span>
+
+            <div class="story-step">
+              <span class="story-number">03</span>
+              <span class="story-text">沉淀方法</span>
+            </div>
+
+            <span class="story-arrow">→</span>
+
+            <div class="story-step">
+              <span class="story-number">04</span>
+              <span class="story-text">展望未来</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+          <span>
+            <strong>试用期工作总结与成长复盘</strong>
+          </span>
+
+          <span>CONTENTS / 00</span>
+        </footer>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function resizeSlide() {
+      const slide = document.getElementById("slide");
+
+      const scale = Math.min(
+        window.innerWidth / 1600,
+        window.innerHeight / 900
+      );
+
+      slide.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener("load", resizeSlide);
+    window.addEventListener("resize", resizeSlide);
+  </script>
+</body>
+</html>

@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>工作成果② · 平台会员接入</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --white: #f5f5f8;
+      --text: #c3c5cf;
+      --muted: #7e8291;
+      --line: #303342;
+      --panel: #151722;
+      --panel-light: #191b28;
+
+      --purple: #8b7cff;
+      --purple-light: #beb6ff;
+      --purple-dark: #211d39;
+
+      --yellow: #f2b93b;
+      --yellow-light: #ffd466;
+      --yellow-dark: #302713;
+
+      --cyan: #4dd8c4;
+      --cyan-light: #83eadb;
+      --cyan-dark: #102c2a;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #05060a;
+
+      font-family:
+        "Microsoft YaHei",
+        "PingFang SC",
+        "Noto Sans CJK SC",
+        Arial,
+        sans-serif;
+    }
+
+    body {
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    #viewport {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #05060a;
+    }
+
+    #slide {
+      position: relative;
+      width: 1600px;
+      height: 900px;
+      flex: 0 0 auto;
+      overflow: hidden;
+      transform-origin: center center;
+      color: var(--white);
+
+      background:
+        radial-gradient(
+          circle at 93% 6%,
+          rgba(139, 124, 255, 0.17),
+          transparent 28%
+        ),
+        radial-gradient(
+          circle at 4% 96%,
+          rgba(242, 185, 59, 0.045),
+          transparent 25%
+        ),
+        linear-gradient(
+          135deg,
+          #080910 0%,
+          #0a0b13 65%,
+          #161229 100%
+        );
+    }
+
+    #slide::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 680px;
+      height: 4px;
+
+      background: linear-gradient(
+        90deg,
+        var(--yellow),
+        var(--purple),
+        transparent
+      );
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+      padding: 42px 68px 26px;
+
+      display: grid;
+      grid-template-rows: 102px 82px 538px 68px 18px;
+      gap: 13px;
+    }
+
+    /* ==================== 页头 ==================== */
+
+    .header {
+      position: relative;
+      border-bottom: 1px solid #2a2d3a;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .chapter-tag {
+      height: 29px;
+      padding: 0 14px;
+
+      display: inline-flex;
+      align-items: center;
+
+      border: 1px solid #775b18;
+      border-radius: 15px;
+
+      color: var(--yellow-light);
+      background: rgba(48, 39, 19, 0.48);
+
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+
+    .title {
+      margin: 0;
+      color: var(--white);
+      font-size: 32px;
+      line-height: 1.2;
+      font-weight: 750;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      margin-top: 13px;
+      color: #9296a5;
+      font-size: 14px;
+    }
+
+    .subtitle strong {
+      color: #e8e8ed;
+      font-weight: 700;
+    }
+
+    .header-en {
+      position: absolute;
+      top: 5px;
+      right: 0;
+
+      color: #8178bd;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+
+    /* ==================== 项目概览 ==================== */
+
+    .overview {
+      display: grid;
+      grid-template-columns: 1fr 170px 170px 170px;
+      align-items: center;
+      gap: 10px;
+
+      padding: 10px 13px 10px 22px;
+
+      border: 1px solid #303342;
+      border-radius: 14px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(139, 124, 255, 0.075),
+          rgba(21, 23, 34, 0.97) 55%,
+          rgba(242, 185, 59, 0.04)
+        );
+    }
+
+    .overview-text {
+      padding-right: 28px;
+    }
+
+    .overview-label {
+      margin-bottom: 7px;
+
+      color: var(--purple-light);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .overview-main {
+      color: #d8dae2;
+      font-size: 15px;
+      line-height: 1.5;
+      font-weight: 600;
+    }
+
+    .overview-main strong {
+      color: var(--white);
+      font-weight: 700;
+    }
+
+    .metric {
+      height: 60px;
+      padding: 9px 15px;
+
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      border-left: 1px solid #353846;
+    }
+
+    .metric-number {
+      color: var(--purple-light);
+      font-size: 29px;
+      line-height: 1;
+      font-weight: 750;
+      letter-spacing: -1px;
+    }
+
+    .metric.yellow .metric-number {
+      color: var(--yellow-light);
+    }
+
+    .metric.cyan .metric-number {
+      color: var(--cyan-light);
+    }
+
+    .metric-unit {
+      margin-left: 2px;
+      font-size: 12px;
+      letter-spacing: 0;
+    }
+
+    .metric-label {
+      color: #9296a5;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    /* ==================== 主体 ==================== */
+
+    .content {
+      display: grid;
+      grid-template-columns: 1.12fr 0.88fr;
+      gap: 14px;
+      min-height: 0;
+    }
+
+    .panel {
+      min-width: 0;
+      min-height: 0;
+
+      border: 1px solid #303342;
+      border-radius: 16px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.024),
+          transparent 60%
+        ),
+        rgba(21, 23, 34, 0.97);
+    }
+
+    /* ==================== 左侧主场景 ==================== */
+
+    .main-scene {
+      padding: 20px 21px;
+
+      display: grid;
+      grid-template-rows: 41px 1fr 60px;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+
+      border-bottom: 1px solid #292c38;
+    }
+
+    .panel-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-line {
+      width: 4px;
+      height: 18px;
+      border-radius: 2px;
+      background: var(--purple);
+    }
+
+    .panel-title {
+      color: var(--white);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .panel-note {
+      color: #646978;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+
+    .image-frame {
+      position: relative;
+      min-height: 0;
+      margin-top: 15px;
+      overflow: hidden;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border: 1px solid #343747;
+      border-radius: 13px;
+
+      background:
+        radial-gradient(
+          circle at 50% 45%,
+          rgba(139, 124, 255, 0.09),
+          transparent 50%
+        ),
+        #10111b;
+    }
+
+    .image-frame img {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    .image-placeholder {
+      position: absolute;
+      inset: 0;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      color: #656a79;
+    }
+
+    .placeholder-icon {
+      width: 58px;
+      height: 44px;
+      margin-bottom: 12px;
+
+      border: 1px solid #4d4778;
+      border-radius: 9px;
+
+      background:
+        linear-gradient(
+          135deg,
+          transparent 48%,
+          rgba(139, 124, 255, 0.35) 49%,
+          rgba(139, 124, 255, 0.35) 58%,
+          transparent 59%
+        );
+    }
+
+    .placeholder-title {
+      color: #a5a8b4;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .placeholder-file {
+      margin-top: 6px;
+      color: #656a79;
+      font-size: 10px;
+    }
+
+    .scene-footer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-top: 15px;
+    }
+
+    .scene-tag {
+      height: 27px;
+      padding: 0 11px;
+
+      display: inline-flex;
+      align-items: center;
+
+      border: 1px solid #4f477f;
+      border-radius: 14px;
+
+      color: var(--purple-light);
+      background: rgba(139, 124, 255, 0.065);
+
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .scene-desc {
+      margin-left: 4px;
+      color: #858a99;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    /* ==================== 右侧能力卡片 ==================== */
+
+    .feature-list {
+      display: grid;
+      grid-template-rows: repeat(3, 1fr);
+      gap: 12px;
+      min-height: 0;
+    }
+
+    .feature-card {
+      --accent: var(--purple);
+      --accent-light: var(--purple-light);
+      --accent-rgb: 139, 124, 255;
+
+      position: relative;
+      min-height: 0;
+      padding: 14px 15px;
+      overflow: hidden;
+
+      display: grid;
+      grid-template-columns: 194px 1fr;
+      gap: 18px;
+
+      border: 1px solid #303342;
+      border-radius: 15px;
+
+      background:
+        linear-gradient(
+          100deg,
+          rgba(var(--accent-rgb), 0.055),
+          transparent 60%
+        ),
+        rgba(21, 23, 34, 0.97);
+    }
+
+    .feature-card:nth-child(2) {
+      --accent: var(--yellow);
+      --accent-light: var(--yellow-light);
+      --accent-rgb: 242, 185, 59;
+    }
+
+    .feature-card:nth-child(3) {
+      --accent: var(--cyan);
+      --accent-light: var(--cyan-light);
+      --accent-rgb: 77, 216, 196;
+    }
+
+    .feature-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--accent);
+    }
+
+    .feature-image {
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border: 1px solid #343747;
+      border-radius: 10px;
+      background: #10111b;
+    }
+
+    .feature-image img {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    .feature-placeholder {
+      position: absolute;
+      inset: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      color: #626777;
+      font-size: 10px;
+      text-align: center;
+    }
+
+    .feature-content {
+      min-width: 0;
+      padding: 7px 4px 5px 0;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .feature-index {
+      margin-bottom: 9px;
+
+      color: var(--accent-light);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+
+    .feature-title {
+      color: var(--white);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .feature-desc {
+      margin-top: 9px;
+      color: #888d9c;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .feature-result {
+      margin-top: 12px;
+      padding-top: 10px;
+
+      border-top: 1px solid #303342;
+
+      color: var(--accent-light);
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    /* ==================== 底部结果 ==================== */
+
+    .result-bar {
+      display: grid;
+      grid-template-columns: 145px 1fr auto;
+      align-items: center;
+      gap: 22px;
+
+      padding: 13px 20px;
+
+      border: 1px solid #28534e;
+      border-radius: 14px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(77, 216, 196, 0.095),
+          rgba(21, 23, 34, 0.97) 48%,
+          rgba(139, 124, 255, 0.055)
+        );
+    }
+
+    .result-label {
+      color: var(--cyan-light);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    .result-text {
+      color: #d7d9e1;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .result-text strong {
+      color: var(--white);
+      font-weight: 700;
+    }
+
+    .result-status {
+      height: 30px;
+      padding: 0 13px;
+
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+
+      border: 1px solid rgba(77, 216, 196, 0.3);
+      border-radius: 15px;
+
+      color: var(--cyan-light);
+      background: rgba(77, 216, 196, 0.07);
+
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .result-status::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--cyan);
+    }
+
+    /* ==================== 页脚 ==================== */
+
+    .footer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+
+      color: #4f5462;
+      font-size: 9px;
+      letter-spacing: 1px;
+    }
+
+    .footer strong {
+      color: #8178b5;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="viewport">
+    <main id="slide">
+      <div class="page">
+
+        <!-- 页头 -->
+        <header class="header">
+          <div class="title-row">
+            <div class="chapter-tag">02②–1</div>
+            <h1 class="title">工作成果 ② · 平台会员接入</h1>
+          </div>
+
+          <div class="subtitle">
+            快速完成平台会员能力在 PC 端的落地，验证<strong>用户付费意愿与营收折损</strong>
+          </div>
+
+          <div class="header-en">SITUATION · DELIVERY · EVIDENCE</div>
+        </header>
+
+        <!-- 项目概览 -->
+        <section class="overview">
+          <div class="overview-text">
+            <div class="overview-label">PROJECT OVERVIEW</div>
+
+            <div class="overview-main">
+              在紧凑周期内完成跨场景会员体验接入，覆盖从
+              <strong>进场展示</strong>到<strong>发言身份表达</strong>的完整链路。
+            </div>
+          </div>
+
+          <div class="metric">
+            <div class="metric-number">
+              10<span class="metric-unit">天</span>
+            </div>
+            <div class="metric-label">完成<br />集中交付</div>
+          </div>
+
+          <div class="metric yellow">
+            <div class="metric-number">
+              5<span class="metric-unit">个</span>
+            </div>
+            <div class="metric-label">会员模块<br />同步上线</div>
+          </div>
+
+          <div class="metric cyan">
+            <div class="metric-number">
+              3<span class="metric-unit">类</span>
+            </div>
+            <div class="metric-label">核心场景<br />完整覆盖</div>
+          </div>
+        </section>
+
+        <!-- 主体 -->
+        <section class="content">
+
+          <!-- 左侧主要体验 -->
+          <article class="panel main-scene">
+            <div class="panel-header">
+              <div class="panel-title-wrap">
+                <span class="panel-line"></span>
+                <span class="panel-title">会员进场体验</span>
+              </div>
+
+              <span class="panel-note">CORE EXPERIENCE</span>
+            </div>
+
+            <div class="image-frame">
+              <div class="image-placeholder">
+                <div class="placeholder-icon"></div>
+                <div class="placeholder-title">会员进场效果截图</div>
+                <div class="placeholder-file">member-overview.png</div>
+              </div>
+
+              <img
+                src="member-overview.png"
+                alt="会员进场效果"
+                onerror="this.style.display='none';"
+              />
+            </div>
+
+            <div class="scene-footer">
+              <span class="scene-tag">会员弹幕</span>
+              <span class="scene-tag">进场消息</span>
+
+              <span class="scene-desc">
+                强化会员身份感知，形成进入直播间后的第一触点。
+              </span>
+            </div>
+          </article>
+
+          <!-- 右侧三个能力 -->
+          <section class="feature-list">
+
+            <article class="feature-card">
+              <div class="feature-image">
+                <div class="feature-placeholder">
+                  member-card.png
+                </div>
+
+                <img
+                  src="member-card.png"
+                  alt="会员信息卡片"
+                  onerror="this.style.display='none';"
+                />
+              </div>
+
+              <div class="feature-content">
+                <div class="feature-index">01 / PROFILE</div>
+                <div class="feature-title">会员信息卡片</div>
+
+                <div class="feature-desc">
+                  在用户卡片中展示会员等级、身份与有效期信息。
+                </div>
+
+                <div class="feature-result">
+                  完善会员身份信息承载
+                </div>
+              </div>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-image">
+                <div class="feature-placeholder">
+                  badge-entry.png
+                </div>
+
+                <img
+                  src="badge-entry.png"
+                  alt="会员勋章入口"
+                  onerror="this.style.display='none';"
+                />
+              </div>
+
+              <div class="feature-content">
+                <div class="feature-index">02 / BADGE</div>
+                <div class="feature-title">会员勋章入口</div>
+
+                <div class="feature-desc">
+                  在公屏发言区域增加勋章入口，支持身份能力触达。
+                </div>
+
+                <div class="feature-result">
+                  缩短会员能力使用路径
+                </div>
+              </div>
+            </article>
+
+            <article class="feature-card">
+              <div class="feature-image">
+                <div class="feature-placeholder">
+                  identity-mark.png
+                </div>
+
+                <img
+                  src="identity-mark.png"
+                  alt="发言身份标识"
+                  onerror="this.style.display='none';"
+                />
+              </div>
+
+              <div class="feature-content">
+                <div class="feature-index">03 / IDENTITY</div>
+                <div class="feature-title">发言身份标识</div>
+
+                <div class="feature-desc">
+                  在公屏消息中展示会员标识，增强身份辨识度。
+                </div>
+
+                <div class="feature-result">
+                  提升直播互动中的身份表达
+                </div>
+              </div>
+            </article>
+
+          </section>
+        </section>
+
+        <!-- 结果总结 -->
+        <section class="result-bar">
+          <div class="result-label">DELIVERY RESULT</div>
+
+          <div class="result-text">
+            <strong>10 天完成 5 个模块交付</strong>，打通会员展示、身份触达与发言表达的核心体验。
+          </div>
+
+          <div class="result-status">已上线验证</div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+          <span>
+            <strong>平台会员接入 · PC 客户端体验落地</strong>
+          </span>
+
+          <span>02 / SITUATION & EVIDENCE</span>
+        </footer>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function resizeSlide() {
+      const slide = document.getElementById("slide");
+
+      const scale = Math.min(
+        window.innerWidth / 1600,
+        window.innerHeight / 900
+      );
+
+      slide.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener("load", resizeSlide);
+    window.addEventListener("resize", resizeSlide);
+  </script>
+</body>
+</html>

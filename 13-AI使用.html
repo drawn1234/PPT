@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 帮了什么 · 帮不了什么 · 我如何判断</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #080910;
+      --panel: #151722;
+      --panel-light: #191b28;
+      --panel-deep: #11131d;
+      --line: #303342;
+      --line-light: #3a3d4c;
+
+      --white: #f7f7f9;
+      --text: #c7cad3;
+      --muted: #858a99;
+      --dim: #5b6070;
+
+      --purple: #8b7cff;
+      --purple-light: #c6bdff;
+      --purple-dark: #211d39;
+      --purple-rgb: 139, 124, 255;
+
+      --yellow: #f2b93b;
+      --yellow-light: #ffd466;
+      --yellow-dark: #302713;
+      --yellow-rgb: 242, 185, 59;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #05060a;
+
+      font-family:
+        "Microsoft YaHei",
+        "PingFang SC",
+        "Noto Sans CJK SC",
+        Arial,
+        sans-serif;
+    }
+
+    body {
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    #viewport {
+      position: fixed;
+      inset: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      overflow: hidden;
+      background: #05060a;
+    }
+
+    #slide {
+      position: relative;
+
+      width: 1600px;
+      height: 900px;
+      flex: 0 0 auto;
+
+      overflow: hidden;
+      transform-origin: center center;
+      color: var(--white);
+
+      background:
+        radial-gradient(
+          circle at 94% 5%,
+          rgba(139, 124, 255, 0.18),
+          transparent 29%
+        ),
+        radial-gradient(
+          circle at 4% 96%,
+          rgba(242, 185, 59, 0.05),
+          transparent 25%
+        ),
+        linear-gradient(
+          135deg,
+          #080910 0%,
+          #0a0b13 65%,
+          #161229 100%
+        );
+    }
+
+    #slide::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+
+      width: 700px;
+      height: 4px;
+
+      background: linear-gradient(
+        90deg,
+        var(--yellow),
+        var(--purple),
+        transparent
+      );
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+
+      padding: 38px 66px 22px;
+
+      display: grid;
+      grid-template-rows: 108px 62px 542px 68px 18px;
+      gap: 11px;
+    }
+
+    /* ==================================================
+       页头
+    ================================================== */
+
+    .header {
+      position: relative;
+      border-bottom: 1px solid #2b2e3b;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .chapter-tag {
+      height: 30px;
+      padding: 0 15px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      border: 1px solid rgba(var(--yellow-rgb), 0.55);
+      border-radius: 15px;
+
+      color: var(--yellow-light);
+      background: rgba(var(--yellow-rgb), 0.08);
+
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+    }
+
+    .title {
+      margin: 0;
+
+      color: var(--white);
+      font-size: 34px;
+      line-height: 1.2;
+      font-weight: 750;
+      letter-spacing: -0.8px;
+    }
+
+    .subtitle {
+      margin-top: 14px;
+
+      color: #9da1af;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .subtitle .purple {
+      color: var(--purple-light);
+      font-weight: 700;
+    }
+
+    .subtitle .yellow {
+      color: var(--yellow-light);
+      font-weight: 700;
+    }
+
+    .header-en {
+      position: absolute;
+      top: 8px;
+      right: 0;
+
+      color: #8c83c8;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+
+    /* ==================================================
+       阅读规则
+    ================================================== */
+
+    .reading-guide {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+
+      overflow: hidden;
+
+      border: 1px solid #343746;
+      border-radius: 13px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(var(--purple-rgb), 0.07),
+          rgba(21, 23, 34, 0.98) 55%,
+          rgba(var(--yellow-rgb), 0.055)
+        );
+    }
+
+    .guide-item {
+      min-width: 0;
+      padding: 0 18px;
+
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      border-right: 1px solid #343746;
+    }
+
+    .guide-item:last-child {
+      border-right: 0;
+    }
+
+    .guide-line {
+      width: 4px;
+      height: 20px;
+      flex: 0 0 auto;
+
+      border-radius: 2px;
+      background: var(--purple);
+    }
+
+    .guide-item:nth-child(2) .guide-line {
+      background: #74798a;
+    }
+
+    .guide-item:nth-child(3) .guide-line {
+      background: var(--yellow);
+    }
+
+    .guide-title {
+      color: var(--purple-light);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .guide-item:nth-child(2) .guide-title {
+      color: #c2c5ce;
+    }
+
+    .guide-item:nth-child(3) .guide-title {
+      color: var(--yellow-light);
+    }
+
+    .guide-desc {
+      margin-left: 5px;
+
+      color: #7e8392;
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .guide-index {
+      margin-left: auto;
+
+      color: #535867;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+    }
+
+    /* ==================================================
+       四场景布局
+    ================================================== */
+
+    .scene-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 12px;
+
+      min-height: 0;
+    }
+
+    .scene-card {
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+
+      display: grid;
+      grid-template-columns: 142px 1fr;
+
+      border: 1px solid #343746;
+      border-radius: 16px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.022),
+          transparent 65%
+        ),
+        rgba(21, 23, 34, 0.98);
+
+      box-shadow:
+        0 14px 34px rgba(0, 0, 0, 0.13),
+        inset 0 1px 0 rgba(255, 255, 255, 0.018);
+    }
+
+    .scene-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+
+      height: 3px;
+
+      background: linear-gradient(
+        90deg,
+        var(--purple),
+        rgba(var(--purple-rgb), 0.18) 62%,
+        transparent
+      );
+    }
+
+    /* ==================================================
+       场景左栏
+    ================================================== */
+
+    .scene-side {
+      position: relative;
+      min-width: 0;
+      padding: 17px 16px;
+
+      display: flex;
+      flex-direction: column;
+
+      border-right: 1px solid #303342;
+
+      background:
+        radial-gradient(
+          circle at 20% 5%,
+          rgba(var(--purple-rgb), 0.16),
+          transparent 55%
+        ),
+        rgba(var(--purple-rgb), 0.055);
+    }
+
+    .scene-index {
+      color: #978dde;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 1.6px;
+    }
+
+    .scene-icon {
+      width: 38px;
+      height: 38px;
+      margin-top: 24px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border: 1px solid rgba(var(--purple-rgb), 0.62);
+      border-radius: 10px;
+
+      color: var(--purple-light);
+      background: rgba(var(--purple-rgb), 0.09);
+
+      font-size: 17px;
+      font-weight: 700;
+    }
+
+    .scene-name {
+      margin-top: 12px;
+
+      color: var(--white);
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 750;
+    }
+
+    .scene-en {
+      margin-top: 8px;
+
+      color: #666b7b;
+      font-size: 7px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+    }
+
+    .scene-summary {
+      margin-top: auto;
+
+      color: #858a99;
+      font-size: 9px;
+      line-height: 1.55;
+    }
+
+    /* ==================================================
+       场景右侧三行
+    ================================================== */
+
+    .scene-content {
+      min-width: 0;
+
+      display: grid;
+      grid-template-rows: repeat(3, 1fr);
+    }
+
+    .detail-row {
+      min-width: 0;
+      padding: 12px 16px;
+
+      display: grid;
+      grid-template-columns: 102px 1fr;
+      align-items: center;
+      gap: 12px;
+
+      border-bottom: 1px solid #2d303d;
+    }
+
+    .detail-row:last-child {
+      border-bottom: 0;
+    }
+
+    .detail-row.judgement {
+      background:
+        linear-gradient(
+          90deg,
+          rgba(var(--yellow-rgb), 0.075),
+          transparent 76%
+        );
+    }
+
+    .detail-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      color: var(--purple-light);
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .detail-row.boundary .detail-label {
+      color: #a5a9b5;
+    }
+
+    .detail-row.judgement .detail-label {
+      color: var(--yellow-light);
+    }
+
+    .detail-mark {
+      width: 4px;
+      height: 17px;
+      flex: 0 0 auto;
+
+      border-radius: 2px;
+      background: var(--purple);
+    }
+
+    .detail-row.boundary .detail-mark {
+      background: #6f7484;
+    }
+
+    .detail-row.judgement .detail-mark {
+      background: var(--yellow);
+    }
+
+    .detail-body {
+      min-width: 0;
+
+      color: #aeb2bf;
+      font-size: 10px;
+      line-height: 1.55;
+    }
+
+    .detail-body strong {
+      color: #e6e7eb;
+      font-weight: 700;
+    }
+
+    .detail-row.judgement .detail-body strong {
+      color: #fff0bd;
+    }
+
+    .ability-list {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .ability-tag {
+      height: 24px;
+      padding: 0 9px;
+
+      display: inline-flex;
+      align-items: center;
+
+      border: 1px solid rgba(var(--purple-rgb), 0.34);
+      border-radius: 7px;
+
+      color: #c7c0f3;
+      background: rgba(var(--purple-rgb), 0.065);
+
+      font-size: 9px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .ability-tag::before {
+      content: "";
+      width: 4px;
+      height: 4px;
+      margin-right: 6px;
+
+      border-radius: 50%;
+      background: var(--purple);
+    }
+
+    /* ==================================================
+       底部总原则
+    ================================================== */
+
+    .principle-bar {
+      position: relative;
+      overflow: hidden;
+
+      display: grid;
+      grid-template-columns: 105px 1fr 360px;
+      align-items: center;
+      gap: 20px;
+
+      padding: 12px 18px;
+
+      border: 1px solid #4e466f;
+      border-left: 4px solid var(--yellow);
+      border-radius: 14px;
+
+      background:
+        linear-gradient(
+          90deg,
+          rgba(var(--yellow-rgb), 0.075),
+          rgba(21, 23, 34, 0.98) 36%,
+          rgba(var(--purple-rgb), 0.065)
+        );
+    }
+
+    .principle-label {
+      height: 29px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 15px;
+
+      color: #17140d;
+      background: linear-gradient(
+        90deg,
+        var(--yellow),
+        var(--yellow-light)
+      );
+
+      font-size: 10px;
+      font-weight: 750;
+    }
+
+    .principle-text {
+      color: #d4d6de;
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .principle-text .purple {
+      color: var(--purple-light);
+      font-weight: 700;
+    }
+
+    .principle-text .yellow {
+      color: var(--yellow-light);
+      font-weight: 700;
+    }
+
+    .decision-flow {
+      display: grid;
+      grid-template-columns: 1fr 20px 1fr 20px 1fr;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .decision-step {
+      height: 30px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border: 1px solid #464253;
+      border-radius: 8px;
+
+      color: #a4a8b5;
+      background: #191b27;
+
+      font-size: 9px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .decision-step:first-child {
+      border-color: rgba(var(--purple-rgb), 0.5);
+      color: var(--purple-light);
+      background: rgba(var(--purple-rgb), 0.08);
+    }
+
+    .decision-step:last-child {
+      border-color: rgba(var(--yellow-rgb), 0.55);
+      color: var(--yellow-light);
+      background: rgba(var(--yellow-rgb), 0.09);
+    }
+
+    .decision-arrow {
+      position: relative;
+      height: 1px;
+      background: #5c6170;
+    }
+
+    .decision-arrow::after {
+      content: "";
+      position: absolute;
+      top: -3px;
+      right: -1px;
+
+      border-top: 3px solid transparent;
+      border-bottom: 3px solid transparent;
+      border-left: 6px solid #5c6170;
+    }
+
+    /* ==================================================
+       页脚
+    ================================================== */
+
+    .footer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+
+      color: #4f5462;
+      font-size: 9px;
+      line-height: 1;
+      letter-spacing: 1px;
+    }
+
+    .footer strong {
+      color: #8178b5;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="viewport">
+    <main id="slide">
+      <div class="page">
+
+        <!-- 页头 -->
+        <header class="header">
+          <div class="title-row">
+            <div class="chapter-tag">03</div>
+
+            <h1 class="title">
+              AI 帮了什么 · 帮不了什么 · 我如何判断
+            </h1>
+          </div>
+
+          <div class="subtitle">
+            让 AI
+            <span class="purple">扩展候选空间、缩短分析路径</span>，
+            由人工完成
+            <span class="yellow">事实核验、风险控制与最终决策</span>
+          </div>
+
+          <div class="header-en">
+            AI BOUNDARY · HUMAN JUDGEMENT
+          </div>
+        </header>
+
+        <!-- 阅读规则 -->
+        <section class="reading-guide">
+          <div class="guide-item">
+            <span class="guide-line"></span>
+
+            <div>
+              <span class="guide-title">AI 能力</span>
+              <span class="guide-desc">提供候选、模式与分析线索</span>
+            </div>
+
+            <span class="guide-index">01</span>
+          </div>
+
+          <div class="guide-item">
+            <span class="guide-line"></span>
+
+            <div>
+              <span class="guide-title">能力边界</span>
+              <span class="guide-desc">无法替代事实与环境验证</span>
+            </div>
+
+            <span class="guide-index">02</span>
+          </div>
+
+          <div class="guide-item">
+            <span class="guide-line"></span>
+
+            <div>
+              <span class="guide-title">人工判断</span>
+              <span class="guide-desc">基于标准、证据和风险决策</span>
+            </div>
+
+            <span class="guide-index">03</span>
+          </div>
+        </section>
+
+        <!-- 四个场景 -->
+        <section class="scene-grid">
+
+          <!-- 开发 -->
+          <article class="scene-card">
+            <aside class="scene-side">
+              <div class="scene-index">SCENE 01</div>
+              <div class="scene-icon">&lt;/&gt;</div>
+              <div class="scene-name">开发</div>
+              <div class="scene-en">DEVELOPMENT</div>
+
+              <div class="scene-summary">
+                生成候选实现<br />
+                人工验证差异
+              </div>
+            </aside>
+
+            <div class="scene-content">
+              <div class="detail-row">
+                <div class="detail-label">
+                  <span class="detail-mark"></span>
+                  AI 帮了什么
+                </div>
+
+                <div class="detail-body">
+                  <div class="ability-list">
+                    <span class="ability-tag">生成基础框架与同类代码模式</span>
+                    <span class="ability-tag">补齐陌生技术栈实现路径</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="detail-row boundary">
+                <div class="detail-label">
+                  <span class="detail-mark"></span>
+                  能力边界
+                </div>
+
+                <div class="detail-body">
+                  难以完整掌握<strong>业务语义、历史行为、边界条件</strong>
+                  及跨端兼容要求。
+                </div>
+              </div>
+
+              <div class="detail-row judgement">
+                <div class="detail-label">
+                  <span class="detail-mark"></span>
+                  我的判断
+                </div>
+
+                <div class="detail-body">
+                  以需求与验收标准为依据，逐项<strong>对照、联调和回归验证</strong>。
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 排错 -->
+          <article class="scene-card">
+            <aside class="scene-side">
+              <div class="scene-index">SCENE 02</div>
+              <div class="scene-icon">!</div>
+              <div class="scene-name">排错</div>
+              <div class="scene-en">DEBUGGING</div>
+
+              <div class="scene-summary">
+                生成排查假设<br />
+                人工建立证据链
+              </div>
+            </aside>
+
+            <div class="scene-content">
+              <div class="detail-row">
+                <div class="detail-label">
+                  <span class="detail-mark"></span>
+                  AI 帮了什么
+                </div>
+
+                <div class="detail-body">
+                  <div class="ability-list">
+                    <span class="ability-tag">快速生成排查假设</span>
+                    <span class="ability-tag">检查代码与日志异常模式</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="detail-row boundary">
+                <div class="detail-label">
+                  <span class="detail-mark"></span>
+                  能力边界
+                </div>
+
+                <div class="detail-body">
+                  无法直接确认<strong>真实根因、跨系统链路</strong>，
+                  也不能保证问题已形成完整闭环。
+                </div>
+              </div>
+
+              <div class="detail-row judgement">
+                <div class="detail-label">
+                  <span class="detail-mark"></span>
+                  我的判断
+                </div>
+
+                <div class="detail-body">
+                  先收集现象与证据，再通过日志、指标和链路
+                  <strong>缩小范围并证伪</strong>。
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 设计 -->
+          <article class="scene-card">
+            <aside class="scene-side">
+              <div class="scene-index">SCENE 03</div>
+              <div class="scene-icon">◇</div>
+              <div class="scene-name">设计</div>
+              <div class="scene-en">SOLUTION DESIGN</div>
+
+              <div class="scene-summary">
+                扩展方案空间<br />
+                人工完成取舍
+              </div>
+            </aside>
+
+            <div class="scene-content">
+              <div class="detail-row">
+                <div class="detail-label">
+                  <span class="detail-mark"></span>
+                  AI 帮了什么
+                </div>
+
+                <div class="detail-body">
+                  <div class="ability-list">
+                    <span class="ability-tag">发散多个候选方案</span>
+                    <span class="ability-tag">整理优缺点、风险与边界</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="detail-row boundary">
+                <div class="detail-label">
+                  <span class="detail-mark"></span>
+                  能力边界
+                </div>
+
+                <div class="detail-body">
+                  无法代替业务 <strong>trade-off</strong>，
+                  也无法确认关键前提和隐含假设是否成立。
+                </div>
+              </div>
+
+              <div class="detail-row judgement">
+                <div class="detail-label">
+                  <span class="detail-mark"></span>
+                  我的判断
+                </div>
+
+                <div class="detail-body">
+                  明确假设、验证成本、失败影响与回滚路径，
+                  关键假设未验证前<strong>不正式实施</strong>。
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 测试 -->
+          <article class="scene-card">
+            <aside class="scene-side">
+              <div class="scene-index">SCENE 04</div>
+              <div class="scene-icon">✓</div>
+              <div class="scene-name">测试</div>
+              <div class="scene-en">TESTING</div>
+
+              <div class="scene-summary">
+                扩展测试覆盖<br />
+                人工确认质量
+              </div>
+            </aside>
+
+            <div class="scene-content">
+              <div class="detail-row">
+                <div class="detail-label">
+                  <span class="detail-mark"></span>
+                  AI 帮了什么
+                </div>
+
+                <div class="detail-body">
+                  <div class="ability-list">
+                    <span class="ability-tag">生成测试用例与边界场景</span>
+                    <span class="ability-tag">整理回归项和发布检查项</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="detail-row boundary">
+                <div class="detail-label">
+                  <span class="detail-mark"></span>
+                  能力边界
+                </div>
+
+                <div class="detail-body">
+                  测试通过不等于真实环境可交付，也无法排除
+                  <strong>安全、性能和兼容性风险</strong>。
+                </div>
+              </div>
+
+              <div class="detail-row judgement">
+                <div class="detail-label">
+                  <span class="detail-mark"></span>
+                  我的判断
+                </div>
+
+                <div class="detail-body">
+                  以验收标准为准，执行单元、集成及关键链路验证；
+                  高风险变更必须<strong>灰度与回滚</strong>。
+                </div>
+              </div>
+            </div>
+          </article>
+
+        </section>
+
+        <!-- 总原则 -->
+        <section class="principle-bar">
+          <div class="principle-label">总原则</div>
+
+          <div class="principle-text">
+            AI 负责
+            <span class="purple">扩大候选空间、缩短验证路径</span>；
+            人负责
+            <span class="yellow">确认事实、解释差异，并承担最终决策与回滚责任</span>。
+          </div>
+
+          <div class="decision-flow">
+            <div class="decision-step">AI 提供候选</div>
+            <span class="decision-arrow"></span>
+            <div class="decision-step">证据验证</div>
+            <span class="decision-arrow"></span>
+            <div class="decision-step">人工决策</div>
+          </div>
+        </section>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+          <span>
+            <strong>AI 应用实践 · 能力有边界，判断有依据，决策有责任</strong>
+          </span>
+
+          <span>03 / AI BOUNDARY</span>
+        </footer>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function resizeSlide() {
+      const slide = document.getElementById("slide");
+
+      const scale = Math.min(
+        window.innerWidth / 1600,
+        window.innerHeight / 900
+      );
+
+      slide.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener("load", resizeSlide);
+    window.addEventListener("resize", resizeSlide);
+  </script>
+</body>
+</html>
