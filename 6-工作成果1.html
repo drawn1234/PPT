@@ -10,25 +10,35 @@
       box-sizing: border-box;
     }
 
-    :root {
-      --white: #f5f5f8;
-      --text: #c3c5cf;
-      --muted: #7e8291;
-      --line: #303342;
+        :root {
+      --white: #f6f6f8;
+      --text: #c2c5cf;
+      --muted: #7e8392;
+      --dim: #555a68;
       --panel: #151722;
       --panel-light: #191b28;
+      --panel-deep: #11131d;
+      --line: #303342;
+      --line-light: #3a3e4d;
 
       --purple: #8b7cff;
       --purple-light: #beb6ff;
       --purple-dark: #211d39;
+      --purple-rgb: 139, 124, 255;
 
       --yellow: #f2b93b;
       --yellow-light: #ffd466;
       --yellow-dark: #302713;
+      --yellow-rgb: 242, 185, 59;
 
       --cyan: #4dd8c4;
       --cyan-light: #83eadb;
       --cyan-dark: #102c2a;
+      --cyan-rgb: 77, 216, 196;
+
+      --radius-card: 14px;
+      --radius-small: 10px;
+      --radius-pill: 999px;
     }
 
     html,
@@ -74,12 +84,12 @@
       background:
         radial-gradient(
           circle at 93% 6%,
-          rgba(139, 124, 255, 0.17),
+          rgba(var(--purple-rgb), 0.17),
           transparent 28%
         ),
         radial-gradient(
           circle at 4% 96%,
-          rgba(242, 185, 59, 0.045),
+          rgba(var(--yellow-rgb), 0.045),
           transparent 25%
         ),
         linear-gradient(
@@ -137,7 +147,7 @@
       align-items: center;
 
       border: 1px solid #775b18;
-      border-radius: 15px;
+      border-radius: var(--radius-pill);
 
       color: var(--yellow-light);
       background: rgba(48, 39, 19, 0.48);
@@ -189,15 +199,15 @@
 
       padding: 10px 13px 10px 22px;
 
-      border: 1px solid #303342;
-      border-radius: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
 
       background:
         linear-gradient(
           90deg,
-          rgba(139, 124, 255, 0.075),
+          rgba(var(--purple-rgb), 0.075),
           rgba(21, 23, 34, 0.97) 55%,
-          rgba(242, 185, 59, 0.04)
+          rgba(var(--yellow-rgb), 0.04)
         );
     }
 
@@ -278,8 +288,8 @@
       min-width: 0;
       min-height: 0;
 
-      border: 1px solid #303342;
-      border-radius: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
 
       background:
         linear-gradient(
@@ -343,13 +353,13 @@
       align-items: center;
       justify-content: center;
 
-      border: 1px solid #343747;
-      border-radius: 13px;
+      border: 1px solid var(--line-light);
+      border-radius: var(--radius-small);
 
       background:
         radial-gradient(
           circle at 50% 45%,
-          rgba(139, 124, 255, 0.09),
+          rgba(var(--purple-rgb), 0.09),
           transparent 50%
         ),
         #10111b;
@@ -379,11 +389,11 @@
       display: inline-flex;
       align-items: center;
 
-      border: 1px solid #4f477f;
-      border-radius: 14px;
+      border: 1px solid rgba(var(--purple-rgb), 0.32);
+      border-radius: var(--radius-pill);
 
       color: var(--purple-light);
-      background: rgba(139, 124, 255, 0.065);
+      background: rgba(var(--purple-rgb), 0.065);
 
       font-size: 10px;
       font-weight: 600;
@@ -419,8 +429,8 @@
       grid-template-columns: 194px 1fr;
       gap: 18px;
 
-      border: 1px solid #303342;
-      border-radius: 15px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
 
       background:
         linear-gradient(
@@ -462,8 +472,8 @@
       align-items: center;
       justify-content: center;
 
-      border: 1px solid #343747;
-      border-radius: 10px;
+      border: 1px solid var(--line-light);
+      border-radius: var(--radius-small);
       background: #10111b;
     }
 
@@ -529,15 +539,15 @@
 
       padding: 13px 20px;
 
-      border: 1px solid #28534e;
-      border-radius: 14px;
+      border: 1px solid rgba(var(--cyan-rgb), 0.30);
+      border-radius: var(--radius-card);
 
       background:
         linear-gradient(
           90deg,
-          rgba(77, 216, 196, 0.095),
+          rgba(var(--cyan-rgb), 0.095),
           rgba(21, 23, 34, 0.97) 48%,
-          rgba(139, 124, 255, 0.055)
+          rgba(var(--purple-rgb), 0.055)
         );
     }
 
@@ -567,11 +577,11 @@
       align-items: center;
       gap: 7px;
 
-      border: 1px solid rgba(77, 216, 196, 0.3);
-      border-radius: 15px;
+      border: 1px solid rgba(var(--cyan-rgb), 0.30);
+      border-radius: var(--radius-pill);
 
       color: var(--cyan-light);
-      background: rgba(77, 216, 196, 0.07);
+      background: rgba(var(--cyan-rgb), 0.07);
 
       font-size: 10px;
       font-weight: 700;

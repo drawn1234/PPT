@@ -10,11 +10,13 @@
       box-sizing: border-box;
     }
 
-    :root {
+        :root {
       --bg: #080910;
       --panel: #151722;
       --panel-light: #191b28;
+      --panel-deep: #11131d;
       --line: #303342;
+      --line-light: #3a3e4d;
 
       --white: #f6f6f8;
       --text: #c2c5cf;
@@ -24,17 +26,24 @@
       --purple: #8b7cff;
       --purple-light: #c1b9ff;
       --purple-dark: #211d39;
+      --purple-rgb: 139, 124, 255;
 
       --yellow: #f2b93b;
       --yellow-light: #ffd466;
       --yellow-dark: #302713;
+      --yellow-rgb: 242, 185, 59;
 
-      --cyan: #45d8c4;
+      --cyan: #4dd8c4;
       --cyan-light: #86eadc;
       --cyan-dark: #102c2b;
+      --cyan-rgb: 77, 216, 196;
 
       --red: #ff7285;
       --red-dark: #321820;
+
+      --radius-card: 14px;
+      --radius-small: 10px;
+      --radius-pill: 999px;
     }
 
     html,
@@ -79,12 +88,12 @@
       background:
         radial-gradient(
           circle at 93% 5%,
-          rgba(139, 124, 255, 0.17),
+          rgba(var(--purple-rgb), 0.17),
           transparent 28%
         ),
         radial-gradient(
           circle at 3% 96%,
-          rgba(242, 185, 59, 0.045),
+          rgba(var(--yellow-rgb), 0.045),
           transparent 25%
         ),
         linear-gradient(
@@ -141,7 +150,7 @@
       align-items: center;
 
       border: 1px solid #775b18;
-      border-radius: 15px;
+      border-radius: var(--radius-pill);
 
       color: var(--yellow-light);
       background: rgba(48, 39, 19, 0.48);
@@ -194,15 +203,15 @@
 
       padding: 15px 22px;
 
-      border: 1px solid #343747;
-      border-radius: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
 
       background:
         linear-gradient(
           90deg,
-          rgba(139, 124, 255, 0.07),
+          rgba(var(--purple-rgb), 0.07),
           rgba(21, 23, 34, 0.97) 56%,
-          rgba(69, 216, 196, 0.05)
+          rgba(var(--cyan-rgb), 0.05)
         );
     }
 
@@ -251,8 +260,8 @@
       min-height: 0;
       padding: 20px 22px;
 
-      border: 1px solid #303342;
-      border-radius: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
 
       background:
         linear-gradient(
@@ -331,7 +340,7 @@
     .step {
       --accent: var(--purple);
       --accent-light: var(--purple-light);
-      --accent-bg: rgba(139, 124, 255, 0.08);
+      --accent-bg: rgba(var(--purple-rgb), 0.08);
 
       position: relative;
       z-index: 2;
@@ -342,7 +351,7 @@
     .step:nth-child(2) {
       --accent: var(--yellow);
       --accent-light: var(--yellow-light);
-      --accent-bg: rgba(242, 185, 59, 0.08);
+      --accent-bg: rgba(var(--yellow-rgb), 0.08);
     }
 
     .step:nth-child(3) {
@@ -354,7 +363,7 @@
     .step:nth-child(4) {
       --accent: var(--cyan);
       --accent-light: var(--cyan-light);
-      --accent-bg: rgba(69, 216, 196, 0.08);
+      --accent-bg: rgba(var(--cyan-rgb), 0.08);
     }
 
     .step-number {
@@ -382,8 +391,8 @@
       margin-top: 15px;
       padding: 15px 14px;
 
-      border: 1px solid #303342;
-      border-radius: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-small);
       background: var(--accent-bg);
     }
 
@@ -437,13 +446,13 @@
     .cause-card {
       position: relative;
       padding: 15px 17px;
-      border: 1px solid #42303a;
-      border-radius: 12px;
+      border: 1px solid rgba(255, 114, 133, 0.30);
+      border-radius: var(--radius-small);
       background: rgba(50, 24, 32, 0.45);
     }
 
     .cause-card.fix {
-      border-color: #24534e;
+      border-color: rgba(var(--cyan-rgb), 0.30);
       background: rgba(16, 44, 43, 0.58);
     }
 
@@ -477,8 +486,8 @@
       padding: 15px 17px;
       overflow: hidden;
 
-      border: 1px solid #303342;
-      border-radius: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-small);
 
       background: #0e0f1b;
       font-family:
@@ -538,17 +547,17 @@
       min-width: 0;
       padding: 20px;
 
-      border: 1px solid #303342;
-      border-radius: 15px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
       background: rgba(21, 23, 34, 0.97);
     }
 
     .result-card.primary {
-      border-color: #225a54;
+      border-color: rgba(var(--cyan-rgb), 0.30);
       background:
         radial-gradient(
           circle at 91% 14%,
-          rgba(69, 216, 196, 0.12),
+          rgba(var(--cyan-rgb), 0.12),
           transparent 44%
         ),
         rgba(16, 38, 39, 0.78);

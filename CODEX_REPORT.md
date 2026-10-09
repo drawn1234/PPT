@@ -1,3 +1,101 @@
+## Batch 11A — 统一第 02 章 HTML 页面卡片与颜色 Token（第 4 / 6 / 7 / 10 页）
+
+- **Batch 编号**：11A
+- **基线 Commit**：`6219808d1109d9ffe20f238dc55c64f4069dcb93`
+- **完成 Commit**：本批单一提交（`style(slides): unify chapter two card system`），完整 hash 以 `origin/main` 最新提交为准
+- **提交信息**：`style(slides): unify chapter two card system`
+- **Commit 数量**：单一 Commit（代码 + 两份报告）
+
+### 1. 修改文件
+
+| 文件 | 类型 |
+|---|---|
+| `4-工作产出.html` | 页面代码 |
+| `6-工作成果1.html` | 页面代码 |
+| `7-工作成果2.html` | 页面代码 |
+| `10-工作挑战3.html` | 页面代码 |
+| `STYLE_AUDIT.md` | 审计记录（追加 Batch 11A） |
+| `CODEX_REPORT.md` | 本报告 |
+
+未修改 `index.html`；未修改其余 12 个正式页面、备用页、图片、`.gitignore`。
+
+### 2. Token 对齐情况
+
+四页 `:root` 统一为同一套变量（可保留别名）：
+
+- 面板：`--panel:#151722` `--panel-light:#191b28` `--panel-deep:#11131d`
+- 边线：`--line:#303342` `--line-light:#3a3e4d`
+- 文字：`--white:#f6f6f8` `--text:#c2c5cf` `--muted:#7e8392` `--dim:#555a68`
+- 强调：`--purple:#8b7cff` `--purple-rgb:139,124,255` `--yellow:#f2b93b` `--yellow-rgb:242,185,59` `--cyan:#4dd8c4` `--cyan-rgb:77,216,196`
+- 圆角：`--radius-card:14px` `--radius-small:10px` `--radius-pill:999px`
+
+| 页 | 关键收敛 |
+|---|---|
+| 4 | `--line` `#2d303e` → `#303342`；补齐 `--*-rgb/--radius-*/--panel-deep/--line-light` |
+| 6 | 补齐 `--dim/--panel-deep/--line-light/--*-rgb/--radius-*` |
+| 7 | 红黄收敛 `#e8a33d`→`#f2b93b`、`#917cff`→`#8b7cff`、`#45d8c5`→`#4dd8c4`；补齐 rgb/radius（保留 `--*-bg`） |
+| 10 | `--purple`→`#8b7cff`、`--cyan` →`#4dd8c4`；补齐 `--panel-deep/--line-light/--*-rgb/--radius-*` |
+
+### 3. 卡片分层规范
+
+- A 外层主面板：`var(--radius-card)` 14px + `1px solid var(--line)`
+- B 内层信息卡：`var(--radius-small)` 10px + `1px solid var(--line)`
+- C 图片框：10px + `1px solid var(--line-light)`
+- D 胶囊：`var(--radius-pill)` 999px（章节/状态/场景/日期/胶囊按钮）
+- E 圆形元素：50%（头像/序号圆/状态点）
+- F 结果条：14px（语义边框）
+
+同级普通卡片边框统一为单一 `#303342`；语义强调卡使用 `rgba(var(--purple-rgb|--yellow-rgb|--cyan-rgb), 0.30~0.32)`；不同级圆角保持层级差异，未机械统一为同一值。
+
+### 4. 逐页修改摘要
+
+| 页 | 修改 |
+|---|---|
+| 4 | `.kpi-card` 15→14、`.panel` 16→14、`.timeline-panel` 15→14（A）；`.result-item` 12→10（B）；`.growth-tag` 14→999（D）；`.module-number` 7→10；`.kpi-card.featured` 边框 `#48402c`→`rgba(242,185,59,.32)`；四处 `#303341/#303342`→`var(--line)` |
+| 6 | `.overview`/`.panel`→14（A）；`.feature-card` 15→14（A）；`.image-frame` 13→10、`.feature-image` 10（C，`--line-light`）；`.chapter-tag`/`.scene-tag`/`.result-status` →999（D）；`.result-bar`/`.result-status` 语义青 |
+| 7 | `.panel` 16→14、`.delivery-bar` 14、`.method-bar` 13→14（A）；`.phase` 13→10、`.step-card` 10、`.result-conclusion` 11→10（B）；`.loop-tag`/`.online-tag`/`.scene-tag`/`.method-tag` →999（D）；`.panel` 阴影 16px→14px；流程节点 R/A 黄紫青语义保留 |
+| 10 | `.panel` 16→14、`.challenge-bar` 14、`.result-card` 15→14（A）；`.step-card`/`.cause-card`/`.code-box` 12→10（B）；`.cause-card` 语义红、`.cause-card.fix`/`.result-card.primary` 语义青 |
+
+### 5. 图片完整性（第 6 页）
+
+- 四张图片 `source-9-1.png` `source-9-2.png` `source-9-3.png` `source-9-4.png` 均存在，`object-fit: contain` 保持不变形，无 404。
+- 图片框圆角 13→10，边框→`--line-light`；图片内容未修改。
+
+### 6. 三尺寸回归
+
+| 窗口 | 入口 iframe | 滚动条 | 内部重排 |
+|---|---|---|---|
+| 1920×1080 | 1920×1080 整体缩放 1.2 | 无 | 无 |
+| 1600×900 | 1600×900（原尺） | 无 | 无 |
+| 1366×768 | 1366×768 整体缩放 0.853 | 无 | 无 |
+
+四页在 1600×900 下 `#slide` 均为 `1600×900`，`scrollWidth/scrollHeight` = 客户区，无溢出。
+
+### 7. 集成回归
+
+- 入口 `index.html?page=4` → `page=10` 连续 7 次：hash / iframe src / 标题 / 页码 / 进度条全部一致（04/16… 10/16，25%… 62.5%）。
+- 页脚保持 Batch 10A 结果：9px/600/`#555a68`，footerBottomGap = 28/26/26/26。
+- 标题区保持 Batch 10A：主标题 36px/700/`#f6f6f8`。
+- 未发现新增报错、无 404（四页引用图片均返回 200）、无原生 Tooltip。
+- 控制栏自动隐藏、键盘翻页、边缘翻页等均不受影响（本批未触及 `index.html`）。
+
+### 8. 编码检查
+
+- `STYLE_AUDIT.md` / `CODEX_REPORT.md`：UTF-8 无 BOM、无连续问号、无 U+FFFD，中文文件名完整。
+- 四份 HTML：保持 LF（CRLF=0），无整文件换行符重写。
+
+### 9. 未完成项 / 风险
+
+- 第 5 / 8 / 9 页（SVG）与第 11～16 页（AI 章节）的卡片系统未纳入本批，留待后续批次。
+- 第 4 页顶部全局线为 680×3（其余页 680×4），本批按约束未改。
+- 未修改任何正文、指标、日期、图片、章节号与页脚文案。
+
+### 10. Push 记录
+
+- `git push origin main`（普通 push，非 force），推送单一 Commit。
+
+---
+
 ## Batch 10B — 统一第 03、04 章标题与页脚系统（第 11～15 页）
 
 - **Commit hash**：本次提交（提交信息 `style(slides): align ai and outlook headers and footers`）

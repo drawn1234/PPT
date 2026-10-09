@@ -14,19 +14,32 @@
       --bg: #080910;
       --panel: #151722;
       --panel-light: #191b28;
-      --line: #2d303e;
+      --panel-deep: #11131d;
+      --line: #303342;
+      --line-light: #3a3e4d;
 
-      --white: #f5f5f7;
-      --text: #bec1cc;
-      --muted: #7d8291;
+      --white: #f6f6f8;
+      --text: #c2c5cf;
+      --muted: #7e8392;
+      --dim: #555a68;
 
       --purple: #8b7cff;
-      --purple-light: #b9b0ff;
+      --purple-light: #beb6ff;
       --purple-dark: #211d39;
+      --purple-rgb: 139, 124, 255;
 
       --yellow: #f2b93b;
       --yellow-light: #ffd466;
       --yellow-dark: #302713;
+      --yellow-rgb: 242, 185, 59;
+
+      --cyan: #4dd8c4;
+      --cyan-light: #83eadb;
+      --cyan-rgb: 77, 216, 196;
+
+      --radius-card: 14px;
+      --radius-small: 10px;
+      --radius-pill: 999px;
 
       --green: #55d7bb;
       --green-dark: #142d2b;
@@ -68,12 +81,12 @@
       background:
         radial-gradient(
           circle at 92% 5%,
-          rgba(139, 124, 255, 0.17),
+          rgba(var(--purple-rgb), 0.17),
           transparent 25%
         ),
         radial-gradient(
           circle at 3% 95%,
-          rgba(242, 185, 59, 0.05),
+          rgba(var(--yellow-rgb), 0.05),
           transparent 24%
         ),
         linear-gradient(135deg, #080910 0%, #0a0a12 62%, #151127 100%);
@@ -165,15 +178,15 @@
       min-width: 0;
       padding: 20px 23px;
       overflow: hidden;
-      border: 1px solid #303341;
-      border-radius: 15px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
       background:
         linear-gradient(
           135deg,
-          rgba(255, 255, 255, 0.025),
-          rgba(255, 255, 255, 0)
+          rgba(255, 255, 255, 0.024),
+          transparent 60%
         ),
-        var(--panel);
+        rgba(21, 23, 34, 0.97);
     }
 
     .kpi-card::before {
@@ -195,11 +208,11 @@
     }
 
     .kpi-card.featured {
-      border-color: #48402c;
+      border-color: rgba(var(--yellow-rgb), 0.32);
       background:
         radial-gradient(
           circle at 88% 20%,
-          rgba(242, 185, 59, 0.1),
+          rgba(var(--yellow-rgb), 0.1),
           transparent 45%
         ),
         var(--panel);
@@ -277,8 +290,8 @@
       min-width: 0;
       min-height: 0;
       padding: 21px 24px;
-      border: 1px solid #303341;
-      border-radius: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
       background:
         linear-gradient(
           135deg,
@@ -358,9 +371,9 @@
       align-items: center;
       justify-content: center;
       border: 1px solid #574d94;
-      border-radius: 7px;
+      border-radius: var(--radius-small);
       color: #b8afff;
-      background: #211d39;
+      background: var(--purple-dark);
       font-size: 10px;
       font-weight: 700;
     }
@@ -460,22 +473,22 @@
       align-items: center;
       gap: 14px;
       padding: 10px 15px;
-      border: 1px solid #303342;
-      border-radius: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-small);
       background:
         linear-gradient(
           100deg,
-          rgba(139, 124, 255, 0.05),
-          transparent 58%
+          rgba(var(--purple-rgb), 0.055),
+          transparent 60%
         ),
-        #181a26;
+        rgba(25, 27, 40, 0.96);
     }
 
     .result-item.yellow-result {
       background:
         linear-gradient(
           100deg,
-          rgba(242, 185, 59, 0.055),
+          rgba(var(--yellow-rgb), 0.055),
           transparent 58%
         ),
         #181a26;
@@ -554,14 +567,14 @@
       position: relative;
       padding: 17px 24px;
       overflow: hidden;
-      border: 1px solid #303341;
-      border-radius: 15px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
       background:
         linear-gradient(
           90deg,
-          rgba(139, 124, 255, 0.07),
+          rgba(var(--purple-rgb), 0.07),
           rgba(21, 23, 34, 0.95) 42%,
-          rgba(242, 185, 59, 0.04)
+          rgba(var(--yellow-rgb), 0.04)
         );
     }
 
@@ -675,8 +688,8 @@
       left: 50%;
       padding: 6px 14px;
       transform: translateX(-50%);
-      border: 1px solid #4a4659;
-      border-radius: 14px;
+      border: 1px solid var(--line-light);
+      border-radius: var(--radius-pill);
       color: #c9c5dc;
       background: #1c1d29;
       font-size: 10px;

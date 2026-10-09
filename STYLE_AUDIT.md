@@ -565,3 +565,94 @@
 
 - p11 页脚使用 `align-self:center` 定位在底部 Grid 行，与主体不重叠，但与其余页的“紧贴底部 padding”实现方式略有差异（未重构）。
 - 卡片圆角、边框颜色、紫黄 token、信息密度仍存在多值，未在本批处理。
+
+
+---
+
+# Batch 11A — 第 02 章 HTML 页面卡片与颜色 Token 统一
+
+基线：`6219808`。范围：第 4 / 6 / 7 / 10 页（`4-工作产出.html`、`6-工作成果1.html`、`7-工作成果2.html`、`10-工作挑战3.html`）。
+
+## 1. 卡片分层规范（A～F）
+
+| 层级 | 语义 | 圆角 | 边框 |
+|---|---|---|---|
+| A 外层主面板 | 预览/主面板 | `var(--radius-card)` 14px | `1px solid var(--line)` |
+| B 内层信息卡 | 卡片内容块 | `var(--radius-small)` 10px | `1px solid var(--line)` |
+| C 图片框 | 图片容器 | 10px | `1px solid var(--line-light)` |
+| D 胶囊 | 章节/状态/场景/阶段标签 | `var(--radius-pill)` 999px | 语义或 `--line`/`--line-light` |
+| E 指标块/圆形 | KPI 块 / 序号圆 | 卡片用 14px；圆形保留 50% | `--line` 或语义色 |
+| F 结果条 | 底部结果/方法条 | 14px | 语义色或 `--line` |
+
+## 2. 四页 :root Token 对齐
+
+四页均新增/收敛为同一套变量：
+
+`--panel:#151722` `--panel-light:#191b28` `--panel-deep:#11131d` `--line:#303342` `--line-light:#3a3e4d`
+`--white:#f6f6f8` `--text:#c2c5cf` `--muted:#7e8392` `--dim:#555a68`
+`--purple:#8b7cff` `--purple-rgb:139,124,255` `--yellow:#f2b93b` `--yellow-rgb:242,185,59` `--cyan:#4dd8c4` `--cyan-rgb:77,216,196`
+`--radius-card:14px` `--radius-small:10px` `--radius-pill:999px`
+
+| 页 | Token 改动 |
+|---|---|
+| 4 | `--line` `#2d303e` → `#303342`；补齐 `--panel-deep/--line-light/--dim/--*-rgb/--radius-*`；`--purple-light` → `#beb6ff` |
+| 6 | 补齐 `--dim/--panel-deep/--line-light/--*-rgb/--radius-*` |
+| 7 | 红黄收敛：`--yellow` `#e8a33d` → `#f2b93b`；`--purple` `#917cff` → `#8b7cff`；`--cyan` `#45d8c5` → `#4dd8c4`；补齐 `--*-rgb/--radius-*`（保留 `--purple-bg/--yellow-bg/--cyan-bg`） |
+| 10 | `--purple` → `#8b7cff`；`--cyan` `#45d8c4` → `#4dd8c4`；补齐 `--panel-deep/--line-light/--*-rgb/--radius-*` |
+
+## 3. 逐页圆角集合（改前 → 改后）
+
+| 页 | 改前圆角集合（卡片） | 改后（A/B/C/D） |
+|---|---|---|
+| 4 | 12 / 14 / 15 / 16 | A=14（`.panel`16→14、`.timeline-panel`15→14、`.kpi-card`15→14）；B=10（`.result-item`12→10）；D=999（`.growth-tag`14→999） |
+| 6 | 13 / 14 / 15 / 16 | A=14（`.overview`14、`.panel`16→14）；C=10（`.image-frame`13→10、`.feature-image`10）；B=10（`.feature-card`15→14）；D=999（`.chapter-tag`15→999、`.scene-tag`14→999、`.result-status`15→999） |
+| 7 | 10 / 11 / 12 / 13 / 14 / 15 / 16 | A=14（`.panel`16→14、`.delivery-bar`14、`.method-bar`13→14）；B=10（`.phase`13→10、`.step-card`10、`.result-conclusion`11→10）；D=999（`.chapter-tag/‌.loop-tag`12→999、`.online-tag/scene-tag/method-tag`13~14→999） |
+| 10 | 12 / 14 / 15 / 16 | A=14（`.panel`16→14、`.challenge-bar`14、`.result-card`15→14）；B=10（`.step-card`12→10、`.cause-card`12→10、`.code-box`12→10）；D=999（`.chapter-tag`15→999） |
+
+不参与统一的：图表柱条 `.bar-track` 7px、`.timeline` 6px、图例色块 `.legend-dot` 2~3px、页脚分割线、圆形元素 50%。
+
+## 4. 逐页普通边框值（改后）
+
+| 页 | 普通卡片 | 图片框/亮边界 | 语义强调 |
+|---|---|---|---|
+| 4 | `var(--line)` ×4 | `.growth-tag` `--line-light` | `.kpi-card.featured` `rgba(242,185,59,.32)` |
+| 6 | `var(--line)` ×3 | `.image-frame`/`.feature-image` `--line-light` | `.result-bar`/`.result-status` `rgba(77,216,196,.30)`；`.scene-tag` `rgba(139,124,255,.32)` |
+| 7 | `var(--line)` ×4 | `.method-tag` `--line-light` | `.phase.main-loop`/`.loop-tag` `rgba(139,124,255,.32)`；`.step-card` `rgba(242,185,59,.32)`、`.step-card.ai` `rgba(139,124,255,.32)`、`.step-card.release` `rgba(77,216,196,.32)`；`.result-panel`/`.online-tag`/‌`.scene-tag` `rgba(77,216,196,.32)`；`.result-conclusion` `rgba(77,216,196,.30)` |
+| 10 | `var(--line)` ×5 | — | `.cause-card` `rgba(255,114,133,.30)`；`.cause-card.fix`/`.result-card.primary` `rgba(77,216,196,.30)` |
+
+同级普通卡片已收敛为单一 `#303342`；原 `#303341/#343747/#353846/#353847/#343746/#424759/#4a4659/#464354` 等无语义差别多值已消除。
+
+## 5. 阴影变化
+
+| 页 | 改前 | 改后 |
+|---|---|---|
+| 7 `.panel` | `0 16px 36px rgba(0,0,0,.14), inset 0 1px 0 rgba(255,255,255,.02)` | `0 14px 34px rgba(0,0,0,.14), inset 0 1px 0 rgba(255,255,255,.02)` |
+| 4/6/7/10 内层卡 | 无 | 无（按规范不新增外阴影） |
+| 4/6/7/10 图片框 | 无 | 无（不加模糊阴影） |
+
+## 6. 强调线（统一 4px）
+
+| 页 | 元素 | 宽度 |
+|---|---|---|
+| 4 | `.kpi-card::before`、`.panel-line` | 4px（保持） |
+| 6 | `.feature-card::before`、`.panel-line` | 4px（保持） |
+| 7 | `.panel-line` | 4px（保持） |
+| 10 | `.panel-line` | 4px（保持） |
+
+顶部全局 680×4 渐变线未修改；p4 原为 680×3，本批按“不修改顶部全局线”约束保留现状（后续可单独纳入统一批次）。
+
+## 7. 审计项处理状态（本批四页）
+
+| 编号 | 原问题 | 第 4/6/7/10 页状态 |
+|---|---|---|
+| P2-1 | 圆角多值（10/12/13/14/15/16/18/20） | **已处理**：A=14 / B=10 / C=10 / D=999，同级一致 |
+| P2-2 | 卡片边框多值（#303342/#343747/#424759/…） | **已处理**：普通卡统一 `var(--line)`，图片框 `--line-light` |
+| P2-5 | 紫色多值（#8b7cff/#917cff/#8170ff/#927cff/…） | **已处理**：四页统一 `#8b7cff` + `--purple-rgb` |
+| P2-6 | 黄色多值（#f2b93b/#ffc547/#e8a33d） | **已处理**：p7 `#e8a33d` 系 → `#f2b93b` + `--yellow-rgb` |
+| P2-3/P2-4 | 页脚字号/距底 | 保持 Batch 10A 结果（未回退） |
+
+## 8. 未在本批处理（需后续批次）
+
+- **SVG 页面**：第 5、8、9 页，以及 11～16 页的 SVG 内嵌卡片与边框，未纳入本批（避免与 HTML 卡片混批）。
+- **AI 章节卡片**：第 11～14 页的卡片系统、信息密度，待后续批次。
+- **p4 顶部全局线 680×3**：未纳入本批（保持“不修改顶部全局渐变线”）。
