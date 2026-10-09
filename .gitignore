@@ -54,3 +54,5 @@ yarn-error.log*
 
 # ---- Git internal (defensive) ----
 .git/
+# ---- Local audit artifacts (not committed) ----
+.audit_shots/
