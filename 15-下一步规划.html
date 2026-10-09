@@ -41,59 +41,85 @@
     body {
       color: var(--text);
       font-family:
-        Inter,
-        "PingFang SC",
         "Microsoft YaHei",
-        "Noto Sans SC",
+        "PingFang SC",
+        "Noto Sans CJK SC",
         Arial,
         sans-serif;
       -webkit-font-smoothing: antialiased;
     }
 
-    .slide {
-      position: relative;
-      display: grid;
-      grid-template-rows: auto minmax(0, 1fr) auto auto;
-      gap: clamp(16px, 2.2vh, 28px);
+    #viewport {
+      position: fixed;
+      inset: 0;
 
-      width: 100vw;
-      height: 100vh;
-      padding:
-        clamp(28px, 4vh, 52px)
-        clamp(34px, 4vw, 76px)
-        clamp(18px, 2.5vh, 32px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       overflow: hidden;
+      background: #05060a;
+    }
+
+    #slide {
+      position: relative;
+
+      width: 1600px;
+      height: 900px;
+      flex: 0 0 auto;
+
+      overflow: hidden;
+      transform-origin: center center;
+      container-type: size;
+      color: var(--text);
 
       background:
         radial-gradient(
-          circle at 96% 0%,
-          rgba(110, 82, 215, 0.2),
-          transparent 31%
+          circle at 92% 8%,
+          rgba(139, 124, 255, 0.17),
+          transparent 28%
         ),
         radial-gradient(
-          circle at 0% 100%,
-          rgba(255, 197, 71, 0.05),
+          circle at 4% 96%,
+          rgba(242, 185, 59, 0.05),
           transparent 25%
         ),
-        linear-gradient(135deg, #080910 0%, #0c0d18 100%);
+        linear-gradient(135deg, #080910 0%, #0a0b12 64%, #161229 100%);
     }
 
-    .slide::before {
-      content: "";
+    .page {
       position: absolute;
       inset: 0;
+
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto auto;
+      gap: clamp(16px, 2.2cqh, 28px);
+
+      padding:
+        clamp(28px, 4cqh, 52px)
+        clamp(34px, 4cqw, 76px)
+        clamp(18px, 2.5cqh, 32px);
+
+      overflow: hidden;
+    }
+
+    #slide::before {
+      content: "";
+      position: absolute;
+      z-index: 5;
+      top: 0;
+      left: 0;
+
+      width: 680px;
+      height: 4px;
       pointer-events: none;
-      opacity: 0.12;
-      background-image:
-        linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
-        linear-gradient(
-          90deg,
-          rgba(255, 255, 255, 0.022) 1px,
-          transparent 1px
-        );
-      background-size: 52px 52px;
-      mask-image: linear-gradient(to bottom, transparent, #000 28%, #000);
+
+      background: linear-gradient(
+        90deg,
+        #f2b93b,
+        #8b7cff,
+        transparent
+      );
     }
 
     .header,
@@ -111,7 +137,7 @@
       align-items: flex-start;
       justify-content: space-between;
       gap: 30px;
-      padding-bottom: clamp(16px, 2vh, 24px);
+      padding-bottom: clamp(16px, 2cqh, 24px);
       border-bottom: 1px solid var(--line);
     }
 
@@ -138,7 +164,7 @@
 
     h1 {
       margin: 0;
-      font-size: clamp(30px, 2.5vw, 48px);
+      font-size: clamp(30px, 2.5cqw, 48px);
       line-height: 1.12;
       letter-spacing: -0.04em;
     }
@@ -151,7 +177,7 @@
     .subtitle {
       margin: 10px 0 0 64px;
       color: var(--sub);
-      font-size: clamp(15px, 1.05vw, 19px);
+      font-size: clamp(15px, 1.05cqw, 19px);
       line-height: 1.5;
     }
 
@@ -181,10 +207,10 @@
     .stage {
       position: relative;
       display: flex;
-      min-height: clamp(250px, 40vh, 390px);
+      min-height: clamp(250px, 40cqh, 390px);
       flex-direction: column;
       justify-content: space-between;
-      padding: clamp(24px, 2.4vw, 40px);
+      padding: clamp(24px, 2.4cqw, 40px);
 
       overflow: hidden;
       border: 1px solid var(--line);
@@ -241,7 +267,7 @@
 
     .stage-number {
       color: var(--stage-color);
-      font-size: clamp(34px, 3vw, 56px);
+      font-size: clamp(34px, 3cqw, 56px);
       line-height: 1;
       font-weight: 900;
       letter-spacing: -0.05em;
@@ -262,7 +288,7 @@
     }
 
     .stage-content {
-      margin: clamp(22px, 3vh, 36px) 0 auto;
+      margin: clamp(22px, 3cqh, 36px) 0 auto;
     }
 
     .stage-kicker {
@@ -275,7 +301,7 @@
 
     .stage h2 {
       margin: 0;
-      font-size: clamp(24px, 2vw, 38px);
+      font-size: clamp(24px, 2cqw, 38px);
       line-height: 1.18;
       letter-spacing: -0.03em;
     }
@@ -284,7 +310,7 @@
       max-width: 430px;
       margin: 15px 0 0;
       color: var(--sub);
-      font-size: clamp(14px, 1vw, 18px);
+      font-size: clamp(14px, 1cqw, 18px);
       line-height: 1.7;
     }
 
@@ -292,12 +318,12 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      margin-top: clamp(22px, 3vh, 36px);
+      margin-top: clamp(22px, 3cqh, 36px);
       padding-top: 18px;
       border-top: 1px solid var(--line);
 
       color: var(--sub);
-      font-size: clamp(13px, 0.9vw, 16px);
+      font-size: clamp(13px, 0.9cqw, 16px);
       font-weight: 700;
     }
 
@@ -386,13 +412,13 @@
       color: #c5bbff;
       background: rgba(148, 124, 255, 0.07);
 
-      font-size: clamp(12px, 0.85vw, 15px);
+      font-size: clamp(12px, 0.85cqw, 15px);
       font-weight: 700;
     }
 
     .summary {
       color: var(--sub);
-      font-size: clamp(13px, 0.9vw, 16px);
+      font-size: clamp(13px, 0.9cqw, 16px);
       white-space: nowrap;
     }
 
@@ -418,82 +444,13 @@
       color: #a596ee;
     }
 
-    /* 较矮屏幕 */
-
-    @media (max-height: 760px) {
-      .slide {
-        gap: 10px;
-        padding-top: 18px;
-        padding-bottom: 12px;
-      }
-
-      .header {
-        padding-bottom: 10px;
-      }
-
-      .subtitle {
-        margin-top: 5px;
-      }
-
-      .stage {
-        min-height: 225px;
-        padding: 20px;
-      }
-
-      .stage-content {
-        margin-top: 16px;
-      }
-
-      .stage p {
-        margin-top: 10px;
-        line-height: 1.55;
-      }
-
-      .stage-result {
-        margin-top: 15px;
-        padding-top: 13px;
-      }
-
-      .support {
-        min-height: 56px;
-        padding-top: 9px;
-        padding-bottom: 9px;
-      }
-    }
-
-    @media (max-width: 1100px) {
-      .slide {
-        padding-left: 24px;
-        padding-right: 24px;
-      }
-
-      .roadmap {
-        grid-template-columns:
-          minmax(0, 1fr)
-          40px
-          minmax(0, 1fr)
-          40px
-          minmax(0, 1fr);
-      }
-
-      .stage {
-        padding: 20px;
-      }
-
-      .page-mark,
-      .summary {
-        display: none;
-      }
-
-      .support {
-        grid-template-columns: auto minmax(0, 1fr);
-      }
-    }
   </style>
 </head>
 
 <body>
-  <main class="slide">
+  <div id="viewport">
+    <main id="slide">
+      <div class="page">
     <!-- 标题 -->
     <header class="header">
       <div>
@@ -594,6 +551,40 @@
       <span><strong>下一步规划</strong> · 工作展望 · 成长路线</span>
       <span>04 / OUTLOOK</span>
     </footer>
-  </main>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function resizeSlide() {
+      const slide = document.getElementById("slide");
+      if (!slide) return;
+
+      const viewportWidth = window.visualViewport
+        ? window.visualViewport.width
+        : window.innerWidth;
+
+      const viewportHeight = window.visualViewport
+        ? window.visualViewport.height
+        : window.innerHeight;
+
+      const scale = Math.min(
+        viewportWidth / 1600,
+        viewportHeight / 900
+      );
+
+      slide.style.transform = `scale(${scale})`;
+    }
+
+    resizeSlide();
+
+    window.addEventListener("load", resizeSlide);
+    window.addEventListener("resize", resizeSlide);
+    window.addEventListener("orientationchange", resizeSlide);
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", resizeSlide);
+    }
+  </script>
 </body>
 </html>

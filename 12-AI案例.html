@@ -45,57 +45,85 @@
     body {
       color: var(--text);
       font-family:
-        Inter,
-        "PingFang SC",
         "Microsoft YaHei",
-        "Noto Sans SC",
+        "PingFang SC",
+        "Noto Sans CJK SC",
         Arial,
         sans-serif;
       -webkit-font-smoothing: antialiased;
     }
 
-    .slide {
-      position: relative;
-      display: grid;
-      grid-template-rows: auto minmax(0, 1fr) auto auto;
-      gap: clamp(12px, 1.6vh, 20px);
+    #viewport {
+      position: fixed;
+      inset: 0;
 
-      width: 100vw;
-      height: 100vh;
-      padding:
-        clamp(22px, 3.2vh, 42px)
-        clamp(32px, 4vw, 76px)
-        clamp(15px, 2vh, 26px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       overflow: hidden;
+      background: #05060a;
+    }
+
+    #slide {
+      position: relative;
+
+      width: 1600px;
+      height: 900px;
+      flex: 0 0 auto;
+
+      overflow: hidden;
+      transform-origin: center center;
+      container-type: size;
+      color: var(--text);
 
       background:
         radial-gradient(
-          circle at 96% 0%,
-          rgba(112, 83, 218, 0.2),
-          transparent 30%
+          circle at 92% 8%,
+          rgba(139, 124, 255, 0.17),
+          transparent 28%
         ),
         radial-gradient(
-          circle at 0% 100%,
-          rgba(255, 197, 71, 0.05),
+          circle at 4% 96%,
+          rgba(242, 185, 59, 0.05),
           transparent 25%
         ),
-        linear-gradient(135deg, #080910 0%, #0c0d18 100%);
+        linear-gradient(135deg, #080910 0%, #0a0b12 64%, #161229 100%);
     }
 
-    .slide::before {
-      content: "";
+    .page {
       position: absolute;
       inset: 0;
+
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto auto;
+      gap: clamp(12px, 1.6cqh, 20px);
+
+      padding:
+        clamp(22px, 3.2cqh, 42px)
+        clamp(32px, 4cqw, 76px)
+        clamp(15px, 2cqh, 26px);
+
+      overflow: hidden;
+    }
+
+    #slide::before {
+      content: "";
+      position: absolute;
+      z-index: 5;
+      top: 0;
+      left: 0;
+
+      width: 680px;
+      height: 4px;
       pointer-events: none;
-      opacity: 0.12;
 
-      background-image:
-        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
-
-      background-size: 52px 52px;
-      mask-image: linear-gradient(to bottom, transparent, #000 25%, #000);
+      background: linear-gradient(
+        90deg,
+        #f2b93b,
+        #8b7cff,
+        transparent
+      );
     }
 
     .header,
@@ -113,7 +141,7 @@
       align-items: flex-start;
       justify-content: space-between;
       gap: 32px;
-      padding-bottom: clamp(12px, 1.7vh, 20px);
+      padding-bottom: clamp(12px, 1.7cqh, 20px);
       border-bottom: 1px solid var(--line);
     }
 
@@ -140,7 +168,7 @@
 
     h1 {
       margin: 0;
-      font-size: clamp(29px, 2.45vw, 47px);
+      font-size: clamp(29px, 2.45cqw, 47px);
       line-height: 1.12;
       letter-spacing: -0.04em;
     }
@@ -153,7 +181,7 @@
     .subtitle {
       margin: 8px 0 0 64px;
       color: var(--sub);
-      font-size: clamp(14px, 1vw, 18px);
+      font-size: clamp(14px, 1cqw, 18px);
       line-height: 1.5;
     }
 
@@ -171,7 +199,7 @@
     .main {
       display: grid;
       grid-template-columns: minmax(0, 1.22fr) minmax(390px, 0.78fr);
-      gap: clamp(15px, 1.6vw, 24px);
+      gap: clamp(15px, 1.6cqw, 24px);
       min-height: 0;
     }
 
@@ -216,7 +244,7 @@
 
     .panel-header h2 {
       margin: 0;
-      font-size: clamp(17px, 1.25vw, 23px);
+      font-size: clamp(17px, 1.25cqw, 23px);
       line-height: 1.2;
     }
 
@@ -230,9 +258,9 @@
     .case-body {
       display: grid;
       grid-template-rows: auto minmax(0, 1fr);
-      gap: clamp(12px, 1.5vh, 18px);
+      gap: clamp(12px, 1.5cqh, 18px);
       min-height: 0;
-      padding: clamp(14px, 1.8vh, 22px);
+      padding: clamp(14px, 1.8cqh, 22px);
     }
 
     .scene {
@@ -240,7 +268,7 @@
       grid-template-columns: auto minmax(0, 1fr) auto;
       align-items: center;
       gap: 15px;
-      padding: clamp(12px, 1.5vh, 17px) 18px;
+      padding: clamp(12px, 1.5cqh, 17px) 18px;
 
       border: 1px solid rgba(148, 125, 255, 0.34);
       border-radius: 12px;
@@ -277,7 +305,7 @@
     }
 
     .scene-text {
-      font-size: clamp(15px, 1.1vw, 20px);
+      font-size: clamp(15px, 1.1cqw, 20px);
       line-height: 1.35;
       font-weight: 800;
     }
@@ -323,7 +351,7 @@
 
       border-right: 1px solid var(--line);
 
-      font-size: clamp(14px, 1vw, 17px);
+      font-size: clamp(14px, 1cqw, 17px);
       font-weight: 850;
       text-align: center;
     }
@@ -348,7 +376,7 @@
         minmax(180px, 0.95fr);
       align-items: center;
       gap: 4px;
-      padding: clamp(13px, 1.7vh, 20px);
+      padding: clamp(13px, 1.7cqh, 20px);
     }
 
     .flow-step {
@@ -365,7 +393,7 @@
 
     .step-value {
       color: var(--text);
-      font-size: clamp(14px, 1.08vw, 19px);
+      font-size: clamp(14px, 1.08cqw, 19px);
       line-height: 1.4;
       font-weight: 800;
     }
@@ -418,7 +446,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: clamp(18px, 2.4vh, 30px);
+      padding: clamp(18px, 2.4cqh, 30px);
       text-align: center;
     }
 
@@ -431,7 +459,7 @@
     }
 
     .formula {
-      font-size: clamp(35px, 3.25vw, 62px);
+      font-size: clamp(35px, 3.25cqw, 62px);
       line-height: 1.05;
       letter-spacing: -0.045em;
       font-weight: 900;
@@ -456,7 +484,7 @@
       max-width: 500px;
       margin: 16px auto 0;
       color: var(--sub);
-      font-size: clamp(13px, 0.92vw, 16px);
+      font-size: clamp(13px, 0.92cqw, 16px);
       line-height: 1.55;
     }
 
@@ -468,9 +496,9 @@
     .checks {
       display: grid;
       align-content: center;
-      gap: clamp(8px, 1.1vh, 13px);
+      gap: clamp(8px, 1.1cqh, 13px);
       min-height: 0;
-      padding: clamp(15px, 2vh, 24px);
+      padding: clamp(15px, 2cqh, 24px);
 
       border-top: 1px solid var(--line);
 
@@ -497,7 +525,7 @@
       gap: 11px;
 
       color: var(--sub);
-      font-size: clamp(13px, 0.95vw, 17px);
+      font-size: clamp(13px, 0.95cqw, 17px);
       line-height: 1.35;
     }
 
@@ -559,7 +587,7 @@
 
     .takeaway-text {
       color: var(--sub);
-      font-size: clamp(14px, 1vw, 18px);
+      font-size: clamp(14px, 1cqw, 18px);
       line-height: 1.4;
     }
 
@@ -598,99 +626,13 @@
       color: #a596ee;
     }
 
-    /* 低高度屏幕 */
-
-    @media (max-height: 760px) {
-      .slide {
-        gap: 9px;
-        padding-top: 17px;
-        padding-bottom: 12px;
-      }
-
-      .header {
-        padding-bottom: 10px;
-      }
-
-      .subtitle {
-        margin-top: 4px;
-      }
-
-      .panel-header {
-        min-height: 43px;
-        padding-top: 8px;
-        padding-bottom: 8px;
-      }
-
-      .case-body {
-        gap: 8px;
-        padding: 11px;
-      }
-
-      .scene {
-        padding-top: 9px;
-        padding-bottom: 9px;
-      }
-
-      .row-content {
-        padding-top: 10px;
-        padding-bottom: 10px;
-      }
-
-      .formula-area {
-        padding-top: 12px;
-        padding-bottom: 12px;
-      }
-
-      .formula-copy {
-        margin-top: 9px;
-      }
-
-      .checks {
-        gap: 7px;
-        padding-top: 11px;
-        padding-bottom: 11px;
-      }
-
-      .takeaway {
-        min-height: 49px;
-        padding-top: 7px;
-        padding-bottom: 7px;
-      }
-    }
-
-    @media (max-width: 1100px) {
-      .slide {
-        padding-left: 24px;
-        padding-right: 24px;
-      }
-
-      .main {
-        grid-template-columns: minmax(0, 1.16fr) minmax(330px, 0.84fr);
-      }
-
-      .row-content {
-        grid-template-columns: 1fr 22px 1fr;
-      }
-
-      .row-content .flow-step:last-child,
-      .row-content .arrow:nth-last-child(2) {
-        display: none;
-      }
-
-      .case-mark,
-      .method {
-        display: none;
-      }
-
-      .takeaway {
-        grid-template-columns: auto minmax(0, 1fr);
-      }
-    }
   </style>
 </head>
 
 <body>
-  <main class="slide">
+  <div id="viewport">
+    <main id="slide">
+      <div class="page">
     <!-- 标题 -->
     <header class="header">
       <div>
@@ -843,6 +785,40 @@
       <span><strong>AI 应用实践</strong> · 案例复盘 · 人工验证</span>
       <span>03 / CASE REVIEW</span>
     </footer>
-  </main>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function resizeSlide() {
+      const slide = document.getElementById("slide");
+      if (!slide) return;
+
+      const viewportWidth = window.visualViewport
+        ? window.visualViewport.width
+        : window.innerWidth;
+
+      const viewportHeight = window.visualViewport
+        ? window.visualViewport.height
+        : window.innerHeight;
+
+      const scale = Math.min(
+        viewportWidth / 1600,
+        viewportHeight / 900
+      );
+
+      slide.style.transform = `scale(${scale})`;
+    }
+
+    resizeSlide();
+
+    window.addEventListener("load", resizeSlide);
+    window.addEventListener("resize", resizeSlide);
+    window.addEventListener("orientationchange", resizeSlide);
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", resizeSlide);
+    }
+  </script>
 </body>
 </html>

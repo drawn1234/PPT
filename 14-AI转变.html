@@ -43,55 +43,85 @@
     body {
       color: var(--text);
       font-family:
-        Inter,
-        "PingFang SC",
         "Microsoft YaHei",
-        "Noto Sans SC",
+        "PingFang SC",
+        "Noto Sans CJK SC",
         Arial,
         sans-serif;
       -webkit-font-smoothing: antialiased;
     }
 
-    .slide {
-      position: relative;
-      display: grid;
-      grid-template-rows: auto auto minmax(0, 1fr) auto auto;
-      gap: clamp(10px, 1.35vh, 18px);
+    #viewport {
+      position: fixed;
+      inset: 0;
 
-      width: 100vw;
-      height: 100vh;
-      padding:
-        clamp(20px, 3vh, 40px)
-        clamp(32px, 4vw, 76px)
-        clamp(14px, 2vh, 26px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
       overflow: hidden;
+      background: #05060a;
+    }
+
+    #slide {
+      position: relative;
+
+      width: 1600px;
+      height: 900px;
+      flex: 0 0 auto;
+
+      overflow: hidden;
+      transform-origin: center center;
+      container-type: size;
+      color: var(--text);
 
       background:
         radial-gradient(
-          circle at 96% 0%,
-          rgba(111, 82, 216, 0.2),
-          transparent 30%
+          circle at 92% 8%,
+          rgba(139, 124, 255, 0.17),
+          transparent 28%
         ),
         radial-gradient(
-          circle at 0% 100%,
-          rgba(255, 197, 71, 0.05),
-          transparent 24%
+          circle at 4% 96%,
+          rgba(242, 185, 59, 0.05),
+          transparent 25%
         ),
-        linear-gradient(135deg, #080910 0%, #0c0d18 100%);
+        linear-gradient(135deg, #080910 0%, #0a0b12 64%, #161229 100%);
     }
 
-    .slide::before {
-      content: "";
+    .page {
       position: absolute;
       inset: 0;
+
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+      gap: clamp(10px, 1.35cqh, 18px);
+
+      padding:
+        clamp(20px, 3cqh, 40px)
+        clamp(32px, 4cqw, 76px)
+        clamp(14px, 2cqh, 26px);
+
+      overflow: hidden;
+    }
+
+    #slide::before {
+      content: "";
+      position: absolute;
+      z-index: 5;
+      top: 0;
+      left: 0;
+
+      width: 680px;
+      height: 4px;
       pointer-events: none;
-      opacity: 0.11;
-      background-image:
-        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
-      background-size: 50px 50px;
-      mask-image: linear-gradient(to bottom, transparent, #000 28%, #000);
+
+      background: linear-gradient(
+        90deg,
+        #f2b93b,
+        #8b7cff,
+        transparent
+      );
     }
 
     .header,
@@ -110,7 +140,7 @@
       align-items: flex-start;
       justify-content: space-between;
       gap: 32px;
-      padding-bottom: clamp(11px, 1.5vh, 18px);
+      padding-bottom: clamp(11px, 1.5cqh, 18px);
       border-bottom: 1px solid var(--line);
     }
 
@@ -137,7 +167,7 @@
 
     h1 {
       margin: 0;
-      font-size: clamp(29px, 2.35vw, 45px);
+      font-size: clamp(29px, 2.35cqw, 45px);
       line-height: 1.12;
       letter-spacing: -0.04em;
     }
@@ -150,7 +180,7 @@
     .subtitle {
       margin: 7px 0 0 63px;
       color: var(--sub);
-      font-size: clamp(14px, 1vw, 18px);
+      font-size: clamp(14px, 1cqw, 18px);
       line-height: 1.45;
     }
 
@@ -178,7 +208,7 @@
         minmax(370px, 1.35fr);
       align-items: stretch;
 
-      min-height: clamp(105px, 14vh, 148px);
+      min-height: clamp(105px, 14cqh, 148px);
       overflow: hidden;
 
       border: 1px solid rgba(146, 124, 255, 0.3);
@@ -196,20 +226,20 @@
     .role {
       display: flex;
       align-items: center;
-      gap: clamp(14px, 1.5vw, 24px);
-      padding: clamp(15px, 1.8vw, 28px);
+      gap: clamp(14px, 1.5cqw, 24px);
+      padding: clamp(15px, 1.8cqw, 28px);
       min-width: 0;
     }
 
     .role-icon {
       display: grid;
       flex: 0 0 auto;
-      width: clamp(46px, 3.4vw, 62px);
-      height: clamp(46px, 3.4vw, 62px);
+      width: clamp(46px, 3.4cqw, 62px);
+      height: clamp(46px, 3.4cqw, 62px);
       place-items: center;
 
       border-radius: 15px;
-      font-size: clamp(20px, 1.5vw, 28px);
+      font-size: clamp(20px, 1.5cqw, 28px);
       font-weight: 850;
     }
 
@@ -236,7 +266,7 @@
 
     .role-title {
       color: #b0b4c1;
-      font-size: clamp(21px, 1.65vw, 31px);
+      font-size: clamp(21px, 1.65cqw, 31px);
       line-height: 1.15;
       font-weight: 850;
     }
@@ -252,7 +282,7 @@
     .role-copy {
       margin-top: 7px;
       color: var(--sub);
-      font-size: clamp(13px, 0.9vw, 16px);
+      font-size: clamp(13px, 0.9cqw, 16px);
       line-height: 1.45;
     }
 
@@ -297,7 +327,7 @@
     .changes {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: clamp(12px, 1.3vw, 20px);
+      gap: clamp(12px, 1.3cqw, 20px);
       min-height: 0;
     }
 
@@ -307,7 +337,7 @@
       grid-template-rows: auto auto minmax(0, 1fr) auto;
       min-width: 0;
       min-height: 0;
-      padding: clamp(16px, 1.55vw, 25px);
+      padding: clamp(16px, 1.55cqw, 25px);
 
       overflow: hidden;
       border: 1px solid var(--line);
@@ -361,7 +391,7 @@
 
     .card-head h2 {
       margin: 0;
-      font-size: clamp(17px, 1.2vw, 22px);
+      font-size: clamp(17px, 1.2cqw, 22px);
       line-height: 1.2;
     }
 
@@ -370,18 +400,18 @@
       grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr);
       align-items: center;
       gap: 6px;
-      margin: clamp(13px, 1.6vh, 20px) 0;
+      margin: clamp(13px, 1.6cqh, 20px) 0;
     }
 
     .change-from,
     .change-to {
       display: flex;
       align-items: center;
-      min-height: clamp(48px, 6.2vh, 64px);
+      min-height: clamp(48px, 6.2cqh, 64px);
       padding: 10px 13px;
       border-radius: 10px;
 
-      font-size: clamp(15px, 1.1vw, 20px);
+      font-size: clamp(15px, 1.1cqw, 20px);
       line-height: 1.25;
       font-weight: 850;
     }
@@ -432,7 +462,7 @@
       margin: 0;
       align-self: start;
       color: var(--sub);
-      font-size: clamp(13px, 0.9vw, 16px);
+      font-size: clamp(13px, 0.9cqw, 16px);
       line-height: 1.55;
     }
 
@@ -444,7 +474,7 @@
     .tags {
       display: flex;
       gap: 7px;
-      margin-top: clamp(10px, 1.3vh, 16px);
+      margin-top: clamp(10px, 1.3cqh, 16px);
       flex-wrap: wrap;
     }
 
@@ -470,10 +500,10 @@
       display: grid;
       grid-template-columns: auto minmax(0, 1fr) auto;
       align-items: center;
-      gap: clamp(15px, 1.5vw, 24px);
+      gap: clamp(15px, 1.5cqw, 24px);
 
-      min-height: clamp(76px, 9.5vh, 98px);
-      padding: clamp(12px, 1.4vh, 18px) clamp(17px, 1.5vw, 24px);
+      min-height: clamp(76px, 9.5cqh, 98px);
+      padding: clamp(12px, 1.4cqh, 18px) clamp(17px, 1.5cqw, 24px);
 
       border: 1px solid rgba(255, 197, 71, 0.25);
       border-left: 4px solid var(--yellow);
@@ -504,7 +534,7 @@
     .workflow-title strong {
       display: block;
       margin-top: 5px;
-      font-size: clamp(16px, 1.1vw, 20px);
+      font-size: clamp(16px, 1.1cqw, 20px);
     }
 
     .workflow-steps {
@@ -529,7 +559,7 @@
 
     .workflow-step-name {
       color: var(--text);
-      font-size: clamp(13px, 0.92vw, 16px);
+      font-size: clamp(13px, 0.92cqw, 16px);
       font-weight: 800;
       white-space: nowrap;
     }
@@ -537,7 +567,7 @@
     .workflow-step-value {
       margin-top: 4px;
       color: var(--sub);
-      font-size: clamp(11px, 0.75vw, 13px);
+      font-size: clamp(11px, 0.75cqw, 13px);
       white-space: nowrap;
     }
 
@@ -575,7 +605,7 @@
     .boundary {
       max-width: 320px;
       color: var(--sub);
-      font-size: clamp(12px, 0.8vw, 14px);
+      font-size: clamp(12px, 0.8cqw, 14px);
       line-height: 1.45;
       text-align: right;
     }
@@ -601,90 +631,13 @@
       color: #a596ee;
     }
 
-    /* 高度较小时自动压缩 */
-
-    @media (max-height: 760px) {
-      .slide {
-        gap: 8px;
-        padding-top: 16px;
-        padding-bottom: 10px;
-      }
-
-      .header {
-        padding-bottom: 8px;
-      }
-
-      .subtitle {
-        margin-top: 4px;
-      }
-
-      .role-change {
-        min-height: 92px;
-      }
-
-      .role {
-        padding-top: 11px;
-        padding-bottom: 11px;
-      }
-
-      .role-copy {
-        margin-top: 4px;
-      }
-
-      .change-card {
-        padding-top: 13px;
-        padding-bottom: 13px;
-      }
-
-      .change-line {
-        margin-top: 9px;
-        margin-bottom: 9px;
-      }
-
-      .change-from,
-      .change-to {
-        min-height: 42px;
-      }
-
-      .tags {
-        margin-top: 8px;
-      }
-
-      .workflow {
-        min-height: 68px;
-        padding-top: 8px;
-        padding-bottom: 8px;
-      }
-    }
-
-    @media (max-width: 1120px) {
-      .slide {
-        padding-left: 24px;
-        padding-right: 24px;
-      }
-
-      .page-mark,
-      .boundary {
-        display: none;
-      }
-
-      .workflow {
-        grid-template-columns: auto minmax(0, 1fr);
-      }
-
-      .role-change {
-        grid-template-columns: 1fr 100px 1.3fr;
-      }
-
-      .change-line {
-        grid-template-columns: 1fr 26px 1fr;
-      }
-    }
   </style>
 </head>
 
 <body>
-  <main class="slide">
+  <div id="viewport">
+    <main id="slide">
+      <div class="page">
     <!-- 标题 -->
     <header class="header">
       <div>
@@ -856,6 +809,40 @@
       <span><strong>AI 应用实践</strong> · 角色转变 · 后续行动</span>
       <span>03 / GROWTH</span>
     </footer>
-  </main>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function resizeSlide() {
+      const slide = document.getElementById("slide");
+      if (!slide) return;
+
+      const viewportWidth = window.visualViewport
+        ? window.visualViewport.width
+        : window.innerWidth;
+
+      const viewportHeight = window.visualViewport
+        ? window.visualViewport.height
+        : window.innerHeight;
+
+      const scale = Math.min(
+        viewportWidth / 1600,
+        viewportHeight / 900
+      );
+
+      slide.style.transform = `scale(${scale})`;
+    }
+
+    resizeSlide();
+
+    window.addEventListener("load", resizeSlide);
+    window.addEventListener("resize", resizeSlide);
+    window.addEventListener("orientationchange", resizeSlide);
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", resizeSlide);
+    }
+  </script>
 </body>
 </html>

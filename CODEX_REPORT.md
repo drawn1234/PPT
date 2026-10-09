@@ -1,4 +1,123 @@
-﻿## Batch 08 — 16 页视觉样式一致性审计（只审计，不修改页面）
+﻿## Batch 09A — 统一第 12、14、15 页固定画布与基础背景
+
+- **Commit hash**：本次提交（提交信息 `refactor(slides): unify fixed canvas for ai and outlook pages`）
+- **基线 Commit**：`a527869d19181e952799e3ac936a6db7c9962a66`
+- **分支**：main
+- **说明**：本批为审查方在 PERSISTENT-LOOP-V1 协议下重新下发的 Batch 09A（首次下发未到达对话，已由 RECOVERY 回调确认）。
+
+### 修改文件
+
+| 文件 | 变更 |
+| --- | --- |
+| `12-AI案例.html` | 改为固定 1600×900 画布 + 统一背景/顶线/字体；删除重排媒体查询 |
+| `14-AI转变.html` | 同上 |
+| `15-下一步规划.html` | 同上 |
+| `STYLE_AUDIT.md` | 追加 Batch 09A 实施状态（12/14/15 标记为固定画布，P0-1/P0-2 标记为已解决，16 页保持待处理） |
+| `CODEX_REPORT.md` | 新增本记录 |
+
+未修改：`index.html`、第 16 页及其他页面、备用页面、`.gitignore`、图片资源、页面正文/章节号/页脚文案。
+
+### 修改前后结构
+
+**修改前（三页一致）**：
+
+```html
+<body>
+  <main class="slide">
+    ...内容...
+  </main>
+</body>
+```
+
+```css
+.slide { width: 100vw; height: 100vh; padding: clamp(...) clamp(...) clamp(...); background: <各自渐变>; }
+.slide::before { inset: 0; <全页网格纹理> }
++ @media (max-height:760px) / @media (max-width:1100~1120px) 重排规则
+```
+
+**修改后（三页一致）**：
+
+```html
+<body>
+  <div id="viewport">
+    <main id="slide">
+      <div class="page">
+        ...原内容...
+      </div>
+    </main>
+  </div>
+  <script>resizeSlide + load/resize/orientationchange + visualViewport</script>
+</body>
+```
+
+```css
+#viewport { position: fixed; inset: 0; display:flex; align-items:center; justify-content:center; overflow:hidden; background:#05060a; }
+#slide { position:relative; width:1600px; height:900px; flex:0 0 auto; overflow:hidden; transform-origin:center center; container-type:size; background:<统一渐变>; }
+.page { position:absolute; inset:0; display:grid; grid-template-rows:<原行定义>; gap:<原 gap>; padding:<原 padding>; overflow:hidden; }
+#slide::before { z-index:5; top:0; left:0; width:680px; height:4px; background:linear-gradient(90deg,#f2b93b,#8b7cff,transparent); }
+```
+
+### 关键技术处理
+
+- **画布内比例保留**：原页面所有 `vw/vh` 尺寸改为 `cqw/cqh`（`#slide` 设 `container-type: size`）。因 `#slide` 恒为 1600×900，`1cqw=16px`、`1cqh=9px`，与原 1600×900 窗口下的渲染**完全等价**，字号/字重未被修改。
+- **删除重排媒体查询**：`@media (max-height:760px)` 与 `@media (max-width:1100/1120px)` 整块删除（含“双栏变单栏、隐藏内容、缩小 padding”等规则）。
+- **背景统一**：`radial(92% 8%, rgba(139,124,255,.17), 28%) + radial(4% 96%, rgba(242,185,59,.05), 25%) + linear(135deg,#080910,#0a0b12 64%,#161229)`。
+- **顶线统一**：删除全页网格纹理 `::before`，改为 680×4px 黄→紫渐变细线（`z-index:5`，`pointer-events:none`）。
+- **字体栈统一**：移除 `Inter`，正文统一为 `"Microsoft YaHei","PingFang SC","Noto Sans CJK SC",Arial,sans-serif`。
+- **缩放脚本**：三页使用同一 `resizeSlide()`，含 `#slide` 空值保护、`visualViewport` 优先、`load/resize/orientationchange` 与 `visualViewport.resize` 监听。
+
+### 三页布局保留结果
+
+| 页 | 修改前主体（h1 x/y） | 修改后主体（h1 x/y） | 页脚（画布底距） | 结论 |
+| --- | --- | --- | --- | --- |
+| 12 | x115 / y17 | x128 / y29 | 882 | 内容完整，仅因内边距改为画布相对后整体内移，无重排 |
+| 14 | x114 / y16 | x128 / y27 | 882 | 同上 |
+| 15 | x115 / y18 | x128 / y36 | 878 | 同上 |
+
+- 全部内容位于画布内：**是**（越界元素计数 0）。
+- 页脚完整：**是**。
+- 卡片无重叠、文字无溢出：**是**。
+- 无滚动条：**是**。
+- 主体位置与修改前基本一致：**是**（背景/顶线/字体渲染变化属预期；h1 因内边距由窗口相对改为画布相对而内移约 13px，属统一后预期）。
+
+### 背景与顶线统一结果
+
+- 三页背景渐变**完全一致**。
+- 三页顶部细线**尺寸/位置/颜色一致**（680×4px，黄 `#f2b93b`→紫 `#8b7cff`→透明）。
+- 原全页网格纹理已移除。
+
+### 三尺寸测试结果（真实窗口）
+
+| 窗口 | #slide 设计尺寸 | 缩放 | 滚动条 | 越界元素 | 12/14/15 页脚底距 |
+| --- | --- | --- | --- | --- | --- |
+| 1920×1080 | 1600×900 | 1.2 | 无 | 0 | 882 / 882 / 878 |
+| 1600×900 | 1600×900 | 1.0 | 无 | 0 | 882 / 882 / 878 |
+| 1366×768 | 1600×900 | 0.853 | 无 | 0 | 882 / 882 / 878 |
+
+三尺寸下画布设计尺寸、内部元素设计坐标、页脚位置**完全一致** → 无内部重排、无脚本错误、无资源 404。
+
+### 第 11～15 页切换结果
+
+经入口 `index.html` 从第 11 页依次翻到第 15 页：
+
+- iframe 外框尺寸恒为 1280×720 @ (0,0)，**无画布跳变**。
+- hash / iframe src / document.title 三者始终一致：`#12→12-AI案例.html`、`#13→13-AI使用.html`、`#14→14-AI转变.html`、`#15→15-下一步规划.html`。
+- 键盘/鼠标热区翻页正常（通过 `#next-zone` 连续切换验证 4 次）。
+
+### 未完成项
+
+- 第 16 页仍非固定画布（按任务要求，本批不处理）。
+- 第 11 页顶部细线仍为 `.page::before`（44% 宽），未纳入本批。
+- 卡片圆角/边框、标题字号、页脚细节、信息密度等统一留待后续批次（Batch 10+）。
+
+### 风险与备注
+
+- 三页 `.page` padding 与页脚底距仍有小差异（属各页原有内边距的等价保留），本批只统一画布/背景/顶线/字体。
+- `container-type: size` 已确认浏览器支持；若未来需兼容旧内核，可将 `cqw/cqh` 替换为审计报告 §4 中列出的固定 px 值。
+- 未新增外部依赖。
+
+---
+## Batch 08 — 16 页视觉样式一致性审计（只审计，不修改页面）
 
 - **Commit hash**：本次提交（提交信息 `docs: audit visual consistency across slides`）
 - **基线 Commit**：`34f99d7da20228fb6e0569fc3de57470a0e8b040`
@@ -451,4 +570,5 @@
 
 - 本报告为 Batch 07-R1 追加记录；未重复执行已记录的 Batch 01–07。
 - 按任务要求，完成 07-R1 后停止自动迭代，等待用户最终视觉验收。
+
 
