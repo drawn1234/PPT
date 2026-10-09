@@ -1,3 +1,122 @@
+## Batch 10B — 统一第 03、04 章标题与页脚系统（第 11～15 页）
+
+- **Commit hash**：本次提交（提交信息 `style(slides): align ai and outlook headers and footers`）
+- **基线 Commit**：`50019060e3fd6086190a3b91dc5140f5f0b3944c`
+- **分支**：main
+- **正式预览**：https://xiaopingping-defense.netlify.app
+- **协议约束**：本批为**单一 Commit**（代码 + 文档 + 报告一并提交）。
+
+### 修改文件
+
+| 文件 | 变更 |
+| --- | --- |
+| `11-AI应用实践.html`（p11） | h1 38→36/700/1.2；`.chapter` 胶囊 31/11/800/`rgba(245,188,36,.6)`→29/10/700/1.5/`#775b18`/rgba(48,39,19,.48)；`.header-en`→`#8178b5`/10/600/3px（去 monospace）；`.subtitle`→15/400/1.5/`#9296a5`；`.footer` 9/600/`#555a68`+strong `#8178b5`；`.title-row` gap 17→16 |
+| `12-AI案例.html`（p12） | h1 `clamp(29,2.45cqw,47)`→固定 36/700/1.2；`.page-number` Grid 48×28/12/850→inline-flex 29/10/700/1.5 胶囊；`.case-mark`→`#8178b5`/10/600/3px；`.subtitle` `clamp`→15/400/1.5/`#9296a5`；`.footer` 9/600/`#555a68`+strong `#8178b5`；`padding-bottom` clamp 15/2cqh/26→24/3cqh/32 |
+| `13-AI使用.html`（p13） | `.title` 34/750→36/700；`.chapter-tag` 30/11/`rgba(yellow,.55)`→29/10/700/`#775b18`；`.header-en`→`#8178b5`/600；`.subtitle` 14→15/400/1.5/`#9296a5`；`.footer` 600/`#555a68`；pad-bottom 22→26，行 542/68→538/66 |
+| `14-AI转变.html`（p14） | h1 `clamp(29,2.35cqw,45)`→36/700/1.2；`.page-number`→inline-flex 胶囊 29/10/700；`.page-mark`→`#8178b5`/10/600/3px；`.subtitle` `clamp`→15/400/1.5/`#9296a5`；`.footer` 9/600/`#555a68`+strong `#8178b5`；`padding-bottom` clamp 14/2cqh/26→24/2.6cqh/32 |
+| `15-下一步规划.html`（p15） | h1 `clamp(30,2.5cqw,48)`→36/700/1.2；`.page-number`→inline-flex 胶囊 29/10/700；`.page-mark`→`#8178b5`/10/600/3px；`.subtitle` `clamp`→15/400/1.5/`#9296a5`；`.footer` 9/600/`#555a68`+strong `#8178b5`；`padding-bottom` clamp 18/2.5cqh/32→24/2.9cqh/34 |
+| `STYLE_AUDIT.md` | 追加 Batch 10B 章节 |
+| `CODEX_REPORT.md` | 新增本记录（前置） |
+
+未修改：`index.html`、第 1～10 与第 16 页、图片资源、正文/数据/章节号/页脚文案、卡片数量与主体结构、背景与 680×4 顶线、`.gitignore`、Git 历史。
+
+### 标题统一结果（36px / 700 / line-height 1.2）
+
+| # | 文件 | 修改前 | 修改后 |
+| --- | --- | --- | --- |
+| 11 | `11-AI应用实践.html` (h1) | 38px / 700 | **36px / 700 / 1.2** |
+| 12 | `12-AI案例.html` (h1) | clamp 实际 39.2px | **36px / 700 / 1.2** |
+| 13 | `13-AI使用.html` (.title) | 34px / 750 | **36px / 700 / 1.2** |
+| 14 | `14-AI转变.html` (h1) | clamp 实际 37.6px | **36px / 700 / 1.2** |
+| 15 | `15-下一步规划.html` (h1) | clamp 实际 40px | **36px / 700 / 1.2** |
+
+未换行、未使用 transform 缩放、未挤右侧英文辅助信息。
+
+### 章节标签统一
+
+统一为 `height 29px / min-width 48px / padding 0 14px / inline-flex center / border 1px #775b18 / radius 15px / color #ffd466 / background rgba(48,39,19,0.48) / 10px / 700 / letter-spacing 1.5px`。
+
+| 页 | 类 | 修改前 | 修改后 |
+| --- | --- | --- | --- |
+| 11 | `.chapter` | 31px / 11 / 800 / min-w 52 / monospace / rgba(245,188,36,.6) | 29px / 10 / 700 / min-w 48 / **#775b18** |
+| 12 | `.page-number` | Grid 48×28 / 12 / 850 / rgba(255,197,71,.65) | inline-flex 29px / 10 / 700 / **#775b18** |
+| 13 | `.chapter-tag` | 30px / 11 / rgba(yellow,.55) | 29px / 10 / 700 / **#775b18** |
+| 14 | `.page-number` | Grid 48×28 / 12 / 850 | inline-flex 29px / 10 / 700 / **#775b18** |
+| 15 | `.page-number` | Grid 48×28 / 12 / 850 | inline-flex 29px / 10 / 700 / **#775b18** |
+
+保留各页 03/04 等文字；无 `font-weight:850`；标签与标题纵向居中。
+
+### 右上英文辅助信息统一
+
+统一为 `padding-top 8px / color #8178b5 / 10px / 600 / letter-spacing 3px / white-space nowrap`。
+
+| 页 | 类 | 修改前 | 修改后 |
+| --- | --- | --- | --- |
+| 11 | `.header-en` | #9488dc / 800 / monospace | **#8178b5 / 600** |
+| 12 | `.case-mark` | 11px / 750 / rgba(177,161,255,.82) / 0.25em | **10 / 600 / #8178b5 / 3px** |
+| 13 | `.header-en` | #8c83c8 / 700 | **#8178b5 / 600** |
+| 14 | `.page-mark` | 11px / 750 / 0.27em | **10 / 600 / #8178b5 / 3px** |
+| 15 | `.page-mark` | 11px / 750 / 0.27em | **10 / 600 / #8178b5 / 3px** |
+
+### 副标题统一（15px / 400 / 1.5 / #9296a5）
+
+| 页 | 修改前 | 修改后 |
+| --- | --- | --- |
+| 11 | 15px / 1.7 / var(--secondary) | **15 / 400 / 1.5 / #9296a5** |
+| 12 | clamp(14,1cqw,18) / var(--sub) | **15 / 400 / 1.5 / #9296a5**（保留左缩进 64px） |
+| 13 | 14px / 1.55 / #9da1af | **15 / 400 / 1.5 / #9296a5** |
+| 14 | clamp(14,1cqw,18) / 1.45 / var(--sub) | **15 / 400 / 1.5 / #9296a5**（保留左缩进 63px） |
+| 15 | clamp(15,1.05cqw,19) / var(--sub) | **15 / 400 / 1.5 / #9296a5**（保留左缩进 64px） |
+
+强调文字保留现有颜色与 700；无新增换行。
+
+### 页脚逐页测量表（`footerBottomGap = 900 − footerBottomY`）
+
+| 页 | 文件 | 修改前
+footerBottomY / Gap | 修改后
+footerBottomY / **Gap** | 页脚↔主体间隔 |
+| --- | --- | --- | --- | --- |
+| 11 | `11-AI应用实践.html` | 872.3 / 27.7 | 873 / **27** | —（底部 Grid 行内，与 CORE INSIGHT 上方栏不重叠） |
+| 12 | `12-AI案例.html` | 882 / 18 | 873 / **27** | 14.4px |
+| 13 | `13-AI使用.html` | 880 / 20 | 874 / **26** | 11px |
+| 14 | `14-AI转变.html` | 882 / 18 | 876 / **24** | 12.1px |
+| 15 | `15-下一步规划.html` | 877.5 / 22.5 | 873.9 / **26.1** | 19.8px |
+
+页脚底距范围：**24 ~ 27px**，全部落入 20～28px 目标区间（实测页脚与主体间隔均 ≥ 11px）。修复方式仅调整底部 padding / Grid 末行，未缩小正文与卡片。
+
+### 三尺寸回归
+
+| 窗口 | 缩放 | 字号 | 画布 | 页脚可见 | 滚动条 |
+| --- | --- | --- | --- | --- | --- |
+| 1920×1080 | 1.2 | 36px | 1600×900 | 是 | 无 |
+| 1600×900 | 1.0 | 36px | 1600×900 | 是 | 无 |
+| 1366×768 | 0.853 | 36px | 1600×900 | 是 | 无 |
+
+### 集成回归（入口）
+
+入口 `index.html` 按 10→11→12→13→14→15→16 再 16→15→…→10 连续翻页：hash / iframe src / `document.title` / 页码 `(n/16)` 始终一致；第 16 页特例自然衔接（末页无“下一页”热区、首页无“上一页”热区）；无跳页、无锁死、无标题抖动、无页脚跳出画布。
+
+### 其他自检
+
+- 图片 404：p11～p15 均 `broken=[]`（无本地图片引用）。
+- 无新增 JavaScript Error；无滚动条（scrollHeight = 窗口，已等比缩放）。
+- 未修改章节号 03/04、页脚文案与主体卡片。
+
+### 编码检查
+
+- 两份 Markdown 以 **UTF-8 无 BOM** 写入；Batch 10B 新章节无连续 `?` 与 U+FFFD；中文文件名完整显示。
+
+### 未完成项 / 风险
+
+- p11 页脚位于底部 Grid 行内并使用 `align-self:center`，实际可见位置与主体间隔正常（为旧式布局特征，未重构）。
+- 卡片圆角/边框/紫黄 token 多值、信息密度差异（P2-1/2/5/6）仍未处理，留待后续批次。
+
+### 线上验证
+
+- 待 Netlify 部署后于 https://xiaopingping-defense.netlify.app 验证：p11～p15 主标题 36/700、胶囊 29px/10/700/`#775b18`、右上英文 10/600/`#8178b5`、页脚 gap 24~27。结果写入回调。
+
+---
+
 ## Batch 10A — 统一第 02 章标题与页脚系统（第 4～10 页）
 
 - **Commit hash**：本次提交（提交信息 `style(slides): align chapter two headers and footers`）
