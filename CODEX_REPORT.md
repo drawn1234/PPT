@@ -1,3 +1,46 @@
+## Batch 08-HF-SIMPLE — 最小化修复 Loading 闪屏
+
+- **Batch 编号**：08-HF-SIMPLE
+- **基线 Commit**：`5dede177d9568130c7d8900961ec76452a6d64dd`（执行时 origin/main 最新）
+- **完成 Commit**：本批单一提交（提交信息 `fix(presentation): remove loading flash between slides`）
+- **修改文件**：`index.html`、`CODEX_REPORT.md`
+
+### 1. 修改内容（仅 index.html）
+
+1. 删除 `showSlide()` 中主动显示 Loading 的代码：
+   - 移除 `loading.classList.remove("hidden");` 及其配套注释。
+   - 不替换为计时器，不新增 Loading 逻辑。
+   - `#loading` 保持 `class="loading hidden"`，配合 `.loading.hidden { display: none; }`，正常切页与首次加载均不显示 `LOADING PRESENTATION`。
+2. 缩短切页等待：
+   - 新增 `const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;`
+   - `const delay = immediate || prefersReducedMotion ? 0 : 60;`（由 150ms 缩短至 60ms）。
+3. 未修改（按要求保留）：
+   - iframe load 完成逻辑、`finalizeSlideChange()`、5 秒超时兜底、`navigationToken`、`loading.classList.add("hidden")`（无害）、键盘/鼠标/触屏监听、Hash、页码、控制栏，以及全部 16 个子页面。
+
+### 2. 自检结果（本地 HTTP：localhost:8080）
+
+| 用例 | 结果 |
+|---|---|
+| 1 → 2 → 3 → 4 → 5 | 页码/src/hash 一致，`loading` 始终 `display:none` |
+| 10 → 11 → 12 | 一致，无 Loading 覆盖层 |
+| 14 → 15 → 16 | 一致，无 Loading 覆盖层 |
+| 16 → 15（反向） | 正常，页码 15/16 |
+| 过渡中截图（page 10→11） | 页面已渲染，无黑屏、无 `LOADING PRESENTATION` |
+| `loading` 出现次数 | **0** |
+| `changing` 释放 | 收尾后 iframe class 为空（无 `is-loading`/`changing-next`/`changing-prev`） |
+| 页码 / Hash / iframe src | 逐步一致（02/16… 16/16） |
+| 控制台 | 未发现新增错误 |
+
+### 3. 未完成项 / 风险
+
+- 无。本批仅删除一行主动显示逻辑并缩短等待时间，未改动其余任何逻辑与子页面。
+
+### 4. Push 记录
+
+- `git push origin main`（普通 push，非 force）。预览：https://xiaopingping-defense.netlify.app/
+
+---
+
 ## Batch 11A — 统一第 02 章 HTML 页面卡片与颜色 Token（第 4 / 6 / 7 / 10 页）
 
 - **Batch 编号**：11A

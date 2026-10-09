@@ -738,15 +738,18 @@
       }
 
       /*
-       * 立即显示加载层，避免旧页面可见。
-       */
-      loading.classList.remove("hidden");
-
-      /*
        * 首次加载立即切换；
-       * 后续切换等待约 150ms 淡出后再切换 src。
+       * 后续切换等待约 60ms 淡出后再切换 src。
+       * 展示层不再主动显示 Loading，避免切页闪屏。
        */
-      const delay = immediate ? 0 : 150;
+      const prefersReducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+      const delay =
+        immediate || prefersReducedMotion
+          ? 0
+          : 60;
 
       window.setTimeout(() => {
         if (token !== navigationToken) {
