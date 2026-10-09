@@ -104,6 +104,15 @@
 - hash / iframe src / document.title 三者始终一致：`#12→12-AI案例.html`、`#13→13-AI使用.html`、`#14→14-AI转变.html`、`#15→15-下一步规划.html`。
 - 键盘/鼠标热区翻页正常（通过 `#next-zone` 连续切换验证 4 次）。
 
+### 线上验收结果（Netlify）
+
+- 站点域名已于本批期间由审查方更新为 **https://xiaopingping-defense.netlify.app/**（`【CODEX CONTROL】PREVIEW-URL-V2`）。
+- 旧域名 `https://positation.netlify.app` 返回 Netlify「site not found」，**不再作为验收依据**。
+- 新域名线上检查：
+  - `index.html` 返回 200，含 `navigationToken`。
+  - `12-AI案例.html` / `14-AI转变.html` / `15-下一步规划.html` 均返回 200，包含 `width: 1600px`、顶部 680px 细线、`Microsoft YaHei`，且**不含 `100vh`**。
+  - 线上入口第 11 → 12 → 13 → 14 → 15 页切换：hash / iframe src / title 三者一致，无画布跳变、无闪动偏移。
+
 ### 未完成项
 
 - 第 16 页仍非固定画布（按任务要求，本批不处理）。
