@@ -32,76 +32,81 @@
     body {
       color: var(--text);
       font-family:
-        Inter,
-        "PingFang SC",
         "Microsoft YaHei",
-        "Noto Sans SC",
+        "PingFang SC",
+        "Noto Sans CJK SC",
         Arial,
         sans-serif;
       -webkit-font-smoothing: antialiased;
     }
 
-    .slide {
-      position: relative;
-      display: grid;
-      grid-template-rows: auto minmax(0, 1fr) auto;
-      width: 100vw;
-      height: 100vh;
-      padding:
-        clamp(28px, 4vh, 54px)
-        clamp(36px, 4vw, 76px)
-        clamp(18px, 2.5vh, 32px);
+    #viewport {
+      position: fixed;
+      inset: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
       overflow: hidden;
+      background: #05060a;
+    }
+
+    #slide {
+      position: relative;
+
+      width: 1600px;
+      height: 900px;
+      flex: 0 0 auto;
+
+      overflow: hidden;
+      transform-origin: center center;
+      container-type: size;
+      color: var(--text);
 
       background:
         radial-gradient(
-          circle at 88% 5%,
-          rgba(118, 86, 225, 0.2),
-          transparent 31%
+          circle at 92% 8%,
+          rgba(139, 124, 255, 0.17),
+          transparent 28%
         ),
         radial-gradient(
-          circle at 8% 100%,
-          rgba(255, 197, 71, 0.07),
-          transparent 29%
+          circle at 4% 96%,
+          rgba(242, 185, 59, 0.05),
+          transparent 25%
         ),
-        linear-gradient(135deg, #080910 0%, #0b0c15 56%, #0d0d18 100%);
+        linear-gradient(135deg, #080910 0%, #0a0b12 64%, #161229 100%);
     }
 
     /* 顶部渐变线 */
-    .slide::before {
+    #slide::before {
       content: "";
       position: absolute;
-      inset: 0 0 auto;
-      height: 2px;
+      z-index: 5;
+      top: 0;
+      left: 0;
+      width: 680px;
+      height: 4px;
+      pointer-events: none;
       background: linear-gradient(
         90deg,
-        var(--yellow),
-        #ddae89 42%,
-        var(--purple) 86%,
+        #f2b93b,
+        #8b7cff,
         transparent
       );
     }
 
-    /* 背景网格 */
-    .slide::after {
-      content: "";
+    .page {
       position: absolute;
       inset: 0;
-      pointer-events: none;
-      opacity: 0.1;
-      background-image:
-        linear-gradient(rgba(255, 255, 255, 0.024) 1px, transparent 1px),
-        linear-gradient(
-          90deg,
-          rgba(255, 255, 255, 0.024) 1px,
-          transparent 1px
-        );
-      background-size: 54px 54px;
-      mask-image: radial-gradient(
-        circle at center,
-        #000 0%,
-        transparent 72%
-      );
+
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      padding:
+        clamp(28px, 4cqh, 54px)
+        clamp(36px, 4cqw, 76px)
+        clamp(18px, 2.5cqh, 32px);
+      overflow: hidden;
     }
 
     .header,
@@ -162,7 +167,7 @@
     .hero-content {
       position: relative;
       display: flex;
-      width: min(920px, 82vw);
+      width: min(920px, 82cqw);
       flex-direction: column;
       align-items: center;
     }
@@ -172,8 +177,8 @@
       position: absolute;
       top: 44%;
       left: 50%;
-      width: min(720px, 72vw);
-      height: min(360px, 42vh);
+      width: min(720px, 72cqw);
+      height: min(360px, 42cqh);
       border-radius: 50%;
       background: rgba(145, 113, 255, 0.09);
       filter: blur(90px);
@@ -186,9 +191,9 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: clamp(16px, 2.2vh, 26px);
+      margin-bottom: clamp(16px, 2.2cqh, 26px);
       color: var(--purple);
-      font-size: clamp(11px, 0.75vw, 14px);
+      font-size: clamp(11px, 0.75cqw, 14px);
       font-weight: 800;
       letter-spacing: 0.24em;
     }
@@ -196,7 +201,7 @@
     .eyebrow::before,
     .eyebrow::after {
       content: "";
-      width: clamp(36px, 4vw, 70px);
+      width: clamp(36px, 4cqw, 70px);
       height: 1px;
       background: linear-gradient(
         90deg,
@@ -212,7 +217,7 @@
     h1 {
       position: relative;
       margin: 0;
-      font-size: clamp(78px, 9vw, 168px);
+      font-size: clamp(78px, 9cqw, 168px);
       line-height: 0.9;
       font-weight: 900;
       letter-spacing: -0.065em;
@@ -232,8 +237,8 @@
 
     .cn-title {
       position: relative;
-      margin-top: clamp(22px, 3vh, 34px);
-      font-size: clamp(27px, 2.25vw, 43px);
+      margin-top: clamp(22px, 3cqh, 34px);
+      font-size: clamp(27px, 2.25cqw, 43px);
       line-height: 1.2;
       font-weight: 850;
       letter-spacing: 0.04em;
@@ -246,9 +251,9 @@
     .closing-line {
       position: relative;
       max-width: 780px;
-      margin: clamp(14px, 2vh, 22px) auto 0;
+      margin: clamp(14px, 2cqh, 22px) auto 0;
       color: var(--sub);
-      font-size: clamp(15px, 1.08vw, 20px);
+      font-size: clamp(15px, 1.08cqw, 20px);
       line-height: 1.65;
     }
 
@@ -270,9 +275,9 @@
       align-items: center;
       justify-content: center;
       gap: 14px;
-      margin-top: clamp(25px, 3.5vh, 42px);
+      margin-top: clamp(25px, 3.5cqh, 42px);
       color: var(--muted);
-      font-size: clamp(11px, 0.78vw, 14px);
+      font-size: clamp(11px, 0.78cqw, 14px);
     }
 
     .meta strong {
@@ -292,7 +297,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-top: clamp(12px, 1.7vh, 20px);
+      padding-top: clamp(12px, 1.7cqh, 20px);
       border-top: 1px solid var(--line);
       color: var(--muted);
       font-size: 10px;
@@ -320,16 +325,16 @@
     .orbit-1 {
       top: 50%;
       left: 50%;
-      width: min(780px, 62vw);
-      height: min(780px, 62vw);
+      width: min(780px, 62cqw);
+      height: min(780px, 62cqw);
       transform: translate(-50%, -50%);
     }
 
     .orbit-2 {
       top: 50%;
       left: 50%;
-      width: min(560px, 45vw);
-      height: min(560px, 45vw);
+      width: min(560px, 45cqw);
+      height: min(560px, 45cqw);
       transform: translate(-50%, -50%);
       border-color: rgba(255, 197, 71, 0.055);
     }
@@ -356,61 +361,14 @@
       box-shadow: 0 0 18px rgba(255, 197, 71, 0.7);
     }
 
-    @media (max-height: 760px) {
-      .slide {
-        padding-top: 22px;
-        padding-bottom: 14px;
-      }
 
-      h1 {
-        font-size: clamp(70px, 8vw, 125px);
-      }
-
-      .cn-title {
-        margin-top: 16px;
-      }
-
-      .closing-line {
-        margin-top: 10px;
-      }
-
-      .meta {
-        margin-top: 20px;
-      }
-    }
-
-    @media (max-width: 800px) {
-      .slide {
-        padding-left: 22px;
-        padding-right: 22px;
-      }
-
-      .page-mark,
-      .section-name {
-        display: none;
-      }
-
-      .hero-content {
-        width: 100%;
-      }
-
-      h1 {
-        font-size: clamp(66px, 18vw, 110px);
-      }
-
-      .meta {
-        flex-wrap: wrap;
-      }
-
-      .footer-right {
-        display: none;
-      }
-    }
   </style>
 </head>
 
 <body>
-  <main class="slide">
+  <div id="viewport">
+    <main id="slide">
+      <div class="page">
     <!-- 背景装饰 -->
     <div class="orbit orbit-1"></div>
     <div class="orbit orbit-2"></div>
@@ -463,6 +421,40 @@
 
       <span class="footer-right">END / THANK YOU</span>
     </footer>
-  </main>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function resizeSlide() {
+      const slide = document.getElementById("slide");
+      if (!slide) return;
+
+      const viewportWidth = window.visualViewport
+        ? window.visualViewport.width
+        : window.innerWidth;
+
+      const viewportHeight = window.visualViewport
+        ? window.visualViewport.height
+        : window.innerHeight;
+
+      const scale = Math.min(
+        viewportWidth / 1600,
+        viewportHeight / 900
+      );
+
+      slide.style.transform = `scale(${scale})`;
+    }
+
+    resizeSlide();
+
+    window.addEventListener("load", resizeSlide);
+    window.addEventListener("resize", resizeSlide);
+    window.addEventListener("orientationchange", resizeSlide);
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", resizeSlide);
+    }
+  </script>
 </body>
 </html>

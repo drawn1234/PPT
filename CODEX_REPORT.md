@@ -1,4 +1,94 @@
-﻿## Batch 09A — 统一第 12、14、15 页固定画布与基础背景
+﻿## Batch 09B — 完成剩余画布与顶部细线统一
+
+- **Commit hash**：本次提交（提交信息 `refactor(slides): complete canvas and accent-line consistency`）
+- **基线 Commit**：`5bfca641491b56c693e2841ca004e1df8c6d1f1d`
+- **分支**：main
+- **正式预览**：https://xiaopingping-defense.netlify.app
+- **协议约束**：本批为**单一 Commit**（代码 + 文档 + 报告一并提交；线上验收结果只写入回调，不再新建报告补充 Commit）。
+
+### 修改文件
+
+| 文件 | 变更 |
+| --- | --- |
+| `16-谢语.html` | 改为固定 1600×900 画布；统一背景/顶线/字体；删除重排媒体查询与网格纹理 |
+| `4-工作产出1.html`（第 5 页） | SVG 根新增 `topAccent` 渐变 + 680×4 rect |
+| `8-工作挑战1.html`（第 8 页） | 同上 |
+| `9-工作挑战2.html`（第 9 页） | 同上 |
+| `11-AI应用实践.html` | 背景统一到 `#slide`；顶线 44%→680×4；删除 `.page::after` 重复紫光；移除 Inter |
+| `STYLE_AUDIT.md` | 追加 Batch 09B 实施状态 |
+| `CODEX_REPORT.md` | 新增本记录 |
+
+未修改：`index.html`、其他正式/备用页面、`.gitignore`、图片资源、页面正文/数据/章节/页脚文案、卡片结构与内容顺序。
+
+### 第 16 页画布修改前后
+
+**修改前**：`<main class="slide">` + `.slide{width:100vw;height:100vh;padding:clamp(...)}` + `.slide::before{height:2px}`（含 `#ddae89` 中段色）+ `.slide::after` 网格纹理 + `@media (max-height:760px)` / `@media (max-width:800px)` 重排（隐藏 page-mark/section-name/footer-right）。
+
+**修改后**：`<div id="viewport"><main id="slide"><div class="page">…` + `#slide{1600×900; container-type:size}` + 统一背景 + `#slide::before{680×4 黄→紫}` + `.page` 三行 Grid + `resizeSlide()`；媒体查询与网格纹理删除；`page-mark`/`section-name`/`footer-right` 保留。
+
+### 第 5、8、9 页 SVG 顶线实现
+
+在三页 SVG 的 `<defs>` 中新增唯一 ID 渐变：
+
+```xml
+<linearGradient id="topAccent" x1="0" y1="0" x2="1" y2="0">
+  <stop offset="0%"  stop-color="#F2B93B" />
+  <stop offset="55%" stop-color="#8B7CFF" />
+  <stop offset="100%" stop-color="#8B7CFF" stop-opacity="0" />
+</linearGradient>
+```
+
+并在背景与光晕之后、正文之前插入：
+
+```xml
+<rect x="0" y="0" width="680" height="4" fill="url(#topAccent)" />
+```
+
+- 三页均 680×4，从 0,0 开始，黄→紫→透明。
+- 未改变 viewBox；未修改正文/卡片/坐标；未引入 SVG `<title>`（无 Tooltip 回归）。
+
+### 第 11 页删除的旧背景层
+
+- `.page` 的 `100deg` 渐变 + `100% 0` 第二套紫光 → 删除（背景统一放 `#slide`）。
+- `.page::after`（`top:0; right:-120px; 460×460` 紫色圆形光晕）→ 删除。
+- `.page::before`（`width:44%; height:3px`）→ 删除，由 `#slide::before`（680×4）取代。
+- 字体：body 与 `.chart text` 的 `Inter` 首选移除；`monospace` 编号保留。
+- 五层 Grid 与所有尺寸、指标、趋势图数据、四个角色、CORE INSIGHT、页脚位置、`resizeSlide()` 均未改动。
+
+### 8 个目标页面顶线实测尺寸
+
+| 页 | 实现 | 实测 |
+| --- | --- | --- |
+| 5 / 8 / 9 | SVG rect | x=0 y=0 w=680 h=4 ✅ |
+| 11 / 12 / 14 / 15 / 16 | CSS `#slide::before` | 680×4 渐变 ✅ |
+
+### 三尺寸回归
+
+| 窗口 | 缩放 | 设计画布 | 内部几何 | 滚动条 | 越界（内容） |
+| --- | --- | --- | --- | --- | --- |
+| 1920×1080 | 1.2 | 1600×900 | 与基准一致 | 无 | 0 |
+| 1600×900 | 1.0 | 1600×900 | 与基准一致 | 无 | 0 |
+| 1366×768 | 0.853 | 1600×900 | 与基准一致 | 无 | 0 |
+
+- 第 5/8/9 页审计脚本报告的 2 个“越界元素”为原有装饰光晕 ellipse（紫光右下、黄光底部），由 `overflow:hidden` 裁切，非内容溢出，非本批引入。
+
+### 第 15 → 16 页切换结果
+
+- iframe 外框恒为 1280×720 @ (0,0)，无画布跳变。
+- 入口第 5→16 页连续前进 11 次：hash 与 iframe src 始终一致（`#5→4-工作产出1.html` … `#16→16-谢语.html`），无一次跳页；键盘/鼠标热区翻页正常。
+
+### 未完成项
+
+- 卡片圆角/边框、标题字号、页脚细节、信息密度统一留待 Batch 10+。
+
+### 风险与备注
+
+- 第 16 页作为结束页保留中心特色构图（圆环、光斑、THANKS），仅统一基础画布/背景/顶线/字体。
+- 第 5/8/9 页 SVG 顶线为矢量绘制，与 CSS 顶线在渐变插值上可能有极细微浏览器差异，几何尺寸与颜色端点一致。
+- 未新增外部依赖。
+
+---
+## Batch 09A — 统一第 12、14、15 页固定画布与基础背景
 
 - **Commit hash**：本次提交（提交信息 `refactor(slides): unify fixed canvas for ai and outlook pages`）
 - **基线 Commit**：`a527869d19181e952799e3ac936a6db7c9962a66`
@@ -579,5 +669,6 @@
 
 - 本报告为 Batch 07-R1 追加记录；未重复执行已记录的 Batch 01–07。
 - 按任务要求，完成 07-R1 后停止自动迭代，等待用户最终视觉验收。
+
 
 
